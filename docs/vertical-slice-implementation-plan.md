@@ -20,6 +20,7 @@
 - Node 内置测试运行器；
 - 领域对象与存储接口分离；
 - 首轮先用内存 CommitStore 完成不变量测试；
+- 同步提供内存 ExperienceStore，验证 world/epistemic 双账本恢复；
 - 随后做 SQLite 单文件事务适配器；
 - Workers AI 通过独立 adapter 调用，仅允许 `@cf/qwen/qwen3.8-27b`；
 - secret 继续只从本地文件或环境绑定读取；
@@ -51,6 +52,7 @@ SQLite 具体库需要一个最小 spike 后决定，不在文档阶段锁死。
 - MaterializedWorld；
 - strict/diagnostic replay；
 - state root；
+- 规范 JSON + SHA-256 测试向量；
 - entity/relation invariants。
 
 验收：C01、C05、C06、C08、F06、F08。
@@ -66,6 +68,7 @@ SQLite 具体库需要一个最小 spike 后决定，不在文档阶段锁死。
 - open operation contract；
 - aperture 与门轴声状态；
 - vision/hearing/touch Observation；
+- ObservationSeed 固化、ExperienceCommit 与崩溃补写；
 - ApprovedPresentationPacket。
 
 验收：I01、I02、P03 的相应变体以及 V1 全链。
@@ -110,6 +113,8 @@ SQLite 具体库需要一个最小 spike 后决定，不在文档阶段锁死。
 
 模型只替换 InputProposal 产生方式，不改变测试预期和提交规则。
 
+关键路径只允许这一次调用。Phase 0–4 使用确定性 Renderer；模型 Renderer 暂缓。低半径 Collapse 使用 fixture 版本化的 DeterministicCollapseResolver，不调用模型。
+
 ### Phase 6：SQLite 与崩溃恢复
 
 产物：
@@ -119,6 +124,7 @@ SQLite 具体库需要一个最小 spike 后决定，不在文档阶段锁死。
 - writer serialization；
 - process restart replay；
 - audit 与 Canon 分表；
+- Experience Ledger、pending recovery 与独立 epistemic root；
 - JSONL 只读导出。
 
 验收：C08、F06、F08 的持久化与跨进程版本。

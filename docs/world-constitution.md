@@ -119,6 +119,8 @@ State: 玩家仍坐在沙发上
 
 Height 不等于回合，也不等于固定秒数。
 
+没有 World Time、Canonical Reality 或 Process State 变化的处理不是 Height。Query、Meta、None 和动作尚未发生前的构成/绑定失败只留下非权威 Audit。世界内确实发生的失败动作与纯输入失败必须区分。
+
 ### 4.2 World Time
 
 `WorldTime` 表示世界内部时间。不同 Height 可以推进不同长度：
@@ -173,6 +175,8 @@ canonicalHeight = 系统在哪个 Height 确定它
 7. 没有 Attempt 与“试图保持不动”不同；
 8. Query 不得修改 Canon 或迫使无关事实坍缩；
 9. Meta 请求不能绕过主体认识边界读取隐藏世界。
+
+只读 Query 与主动观察不同：前者只读取已取得认识或无需新动作即可直接取得的已定信息，不创建 Height；搜索、翻找、改变视线或执行完整检查属于世界内 Attempt/Perception Operation，可以耗时并产生事件。主动观察只能在其动作确实暴露的、预先获准的 blocking address 上触发 Collapse，不能因问题措辞生成答案。
 
 ## 6. 行动裁决
 
@@ -521,6 +525,8 @@ Finalize 后：
 - 后续系统只能读取并追加；
 - Observation 可以在下一 Height 投递；
 - 非权威审计记录可以追加分析，但不能改变世界。
+
+产生主体体验所需的感知种子必须在 Finalize 前固化于世界提交；Finalize 后可以把它们幂等物化为独立的 Experience Ledger。该账本不修改 Canon，必须能够在崩溃后从已提交种子恢复，且不得以重新运行模型来重建。
 
 ## 16. 反剧情偏转原则
 
