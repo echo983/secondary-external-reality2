@@ -65,8 +65,22 @@ function validateWorld(
   validatePlacementAcyclic(facts);
 }
 
-export function createGenesis(worldBasis: WorldBasis, worldTime: string): WorldSnapshot {
-  const withoutRoot = {worldBasis, height: 0, worldTime, facts: [], constraints: [], events: [], processes: []} as const;
+export function createGenesis(
+  worldBasis: WorldBasis,
+  worldTime: string,
+  initial: Partial<Pick<WorldSnapshot, "facts" | "constraints" | "events" | "processes">> = {}
+): WorldSnapshot {
+  const withoutRoot = {
+    worldBasis,
+    height: 0,
+    worldTime,
+    facts: initial.facts ?? [],
+    constraints: initial.constraints ?? [],
+    events: initial.events ?? [],
+    processes: initial.processes ?? []
+  };
+  validateWorld(withoutRoot.facts, withoutRoot.processes,
+    withoutRoot.constraints.map(item => item.constraintId), withoutRoot.events.map(item => item.eventId));
   return {...withoutRoot, stateRoot: sha256Canonical(statePayload(withoutRoot))};
 }
 
@@ -119,6 +133,13 @@ function apply(snapshot: WorldSnapshot, commit: SettlementCommit, verifyRoot: bo
     events: snapshot.events.concat(commit.delta.events),
     processes: [...processMap.values()]
   };
+  const factIds = new Set(withoutRoot.facts.map(fact => fact.factId));
+  const eventIds = new Set(withoutRoot.events.map(event => event.eventId));
+  for (const seed of commit.observationSeeds) {
+    if (seed.sourceFactIds.some(id => !factIds.has(id)) || seed.sourceEventIds.some(id => !eventIds.has(id))) {
+      throw new ProtocolError("REPLAY_INVALID", "observation seed has an uncommitted source");
+    }
+  }
   validateWorld(
     withoutRoot.facts,
     withoutRoot.processes,
