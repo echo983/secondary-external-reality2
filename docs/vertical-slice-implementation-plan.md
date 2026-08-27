@@ -30,7 +30,7 @@ SQLite 具体库需要一个最小 spike 后决定，不在文档阶段锁死。
 
 ## 3. 实施顺序
 
-当前进度：Phase 0–5 已完成；Phase 0–4 由本地自动测试覆盖，Phase 5 另有真实模型 smoke gate。下一阶段为 Phase 6。
+当前进度：Phase 0–6 已完成；本地自动测试覆盖确定性协议和持久化，Phase 5 另有真实模型 smoke gate。首轮纵向切片完成。
 
 ### Phase 0：协议骨架与拒绝路径
 
@@ -131,7 +131,7 @@ SQLite 具体库需要一个最小 spike 后决定，不在文档阶段锁死。
 
 ### Phase 6：SQLite 与崩溃恢复
 
-状态：next
+状态：completed
 
 产物：
 
