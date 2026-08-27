@@ -16,7 +16,7 @@
 
 ## 2. Phase 7A：统一世界与组合回归
 
-状态：in progress
+状态：completed
 
 - 建立包含 self、卧室、走廊、门、水壶和加热 Process 的统一 fixture；
 - 在同一 Genesis 上依次完成推门 H1、Wait H2；
@@ -37,7 +37,7 @@
 
 ## 4. Phase 7C：CLI
 
-状态：next
+状态：completed
 
 - 默认使用本地 SQLite 文件；
 - `--fake` 运行固定提案，普通开发无需网络；
@@ -47,7 +47,7 @@
 
 ## 5. Phase 7D：会话门禁
 
-状态：planned
+状态：completed
 
 - 30–60 Height 脚本化会话；
 - 100 Height replay 保持现有门禁；
