@@ -170,7 +170,7 @@ interface ProposedClause {
 }
 ```
 
-模型不得输出 Canonical ID、成功、RealityDelta 或世界值。
+InputProposal 阶段模型不得输出 Canonical ID、成功、RealityDelta 或世界值。开放行动的局部效果候选属于后续受限 `ActionProposal`，两者不得混为一次无边界自由生成。
 
 ### 4.3 ConstitutedInput
 
@@ -184,7 +184,7 @@ interface ConstitutedInput {
 
 interface ConstitutedClause {
   clauseIndex: number;
-  operation?: string; // closed registry
+  primitives: readonly string[]; // closed trusted effect vocabulary, composable
   goal: string;       // source-grounded semantic description
   method: string;
   targetIds: readonly EntityId[];
@@ -193,9 +193,48 @@ interface ConstitutedClause {
 }
 ```
 
-`operation` 由确定性 compiler 从闭合能力注册表选择。无法唯一绑定时不得猜测。
+闭合的是可信世界原语、effect schema 和对象能力，不是玩家表面动词列表。compiler 可以把一个 clause 编译为多个可组合原语；无法唯一绑定实体时不得猜测。无具体对象的环境感知以主体感知 horizon 为 scope，不因 targetIds 为空而失败。
 
-### 4.4 AttemptAudit
+### 4.4 ActionProposal
+
+```ts
+interface ActionProposal {
+  clauseIndex: number;
+  primitiveCandidates: readonly string[];
+  entityMentions: readonly SourceSpan[];
+  bodyOrToolMentions: readonly SourceSpan[];
+  preconditionClaims: readonly ProposedCondition[];
+  localEffects: readonly ProposedEffect[];
+  durationHintSeconds?: number;
+  unresolvedDependencies: readonly ProposedDependency[];
+}
+
+interface ProposedCondition {
+  kind: "fact" | "capability" | "relation" | "reachability";
+  subjectSlot: string;
+  predicate: string;
+  objectSlotOrValue?: string | JsonScalar;
+  source: "world-slice" | "operation-contract";
+}
+
+interface ProposedEffect {
+  effectKind: string; // closed effect schema
+  subjectSlot: string;
+  relationOrField: string;
+  objectSlotOrValue?: string | JsonScalar;
+  confidence: "required" | "possible";
+}
+
+interface ProposedDependency {
+  kind: "binding" | "fact" | "capability" | "constraint";
+  slotOrAddress: string;
+  reason: string;
+}
+```
+
+`ActionProposal` 是非权威语义裁决候选。它只能使用运行时提供的实体引用槽、原语词汇和 effect schema；不能创建 Canonical ID、不能提交值、不能把玩家 unsupported claim 当作前置事实。可信 validator 可以接受、缩减或拒绝候选，随后由确定性 builder 生成 Candidate Delta。
+
+### 4.5 AttemptAudit
 
 所有输入都可以进入非权威审计：
 
@@ -306,7 +345,8 @@ LLM InputProposal
 → strict schema/type/source-span validation
 → deterministic input-kind policy
 → entity/reference binding
-→ capability compiler
+→ perception-scope resolution or primitive compiler
+→ constrained ActionProposal when deterministic rules are insufficient
 → ConstitutedInput or Boundary
 ```
 
@@ -333,10 +373,11 @@ LLM InputProposal
 
 1. 确定性前置条件；
 2. 已定世界规则；
-3. 获准的低半径 Collapse；
-4. 确定性构造 Candidate Delta。
+3. 必要时验证受限 ActionProposal；
+4. 获准的低半径 Collapse；
+5. 确定性构造 Candidate Delta。
 
-首版没有通用骰子或随机结果，也不在同一交互中追加第二次 LLM 裁决调用。输入构成使用该交互唯一一次关键路径模型调用；Adjudicator 必须确定性运行。遇到规则不能唯一决定且不允许 Collapse 的情况，返回明确边界，不让 LLM 自由挑选。
+首版没有通用骰子。Adjudicator 与 Committer 保持可信和确定性，但可以验证模型提出的非权威局部效果候选。正常交互仍以一次关键路径模型调用为预算目标：模型应在同一结构响应中提供 InputProposal 与可选 ActionProposal，运行时只向其暴露最小相关世界切片；若必须在实体绑定后进行第二阶段提案，必须作为单独延迟实验通过门禁后才能启用。遇到候选无法验证、规则不能唯一决定且不允许 Collapse 的情况，返回明确边界，不让模型自由挑选现实。
 
 ### 6.8 COMPUTE_CLOSURE
 
@@ -406,6 +447,8 @@ Adjudicator 根据动作尺度提出 `worldTimeEnd`，可信 policy 检查合理
 ### 7.4 Query/Meta
 
 只读 Query 只能读取主体已取得的 Evidence/Acquisition，或读取无需新世界行动且已经固定、当前可直接获得的状态；它不创建 Height，也不得 Collapse。搜索、翻找、转头查看、打开后检查完整范围等主动观察必须构成为 Attempt/Perception Operation，并按动作结算时间；只有该动作暴露了 fixture 预授权的 blocking TruthCell 时才可能依一般 CollapsePolicy 收紧真值，玩家期望的答案不能决定地址和值。
+
+环境观察不要求具体 target entity。“看看四周”以 observer 当前 placement、姿态与感官 horizon 为 scope；“听听外面”以听觉可达空间为 scope；“感觉身体”以内感受和本体感觉为 scope。进入新会话、恢复会话或位置显著改变后，可以从已定状态生成不改变 Canon 的初始/更新 Observation。
 
 ## 8. 动作序列
 
@@ -572,7 +615,7 @@ interface ModelTelemetry {
 
 首版规则：
 
-- 正常 Height 最多一次关键路径调用；
+- 正常 Height 以最多一次关键路径调用为目标；任何两阶段语义裁决必须先通过独立延迟与收益门禁；
 - 单调用超时初始值 45 秒；
 - 仅容量类临时错误最多重试 2 次，指数退避；
 - 无 content、length exhaustion、非法 JSON 不自动重试；
@@ -580,7 +623,7 @@ interface ModelTelemetry {
 - 不使用模型 fallback；
 - 输出必须 strict-parse，未知字段和错误类型拒绝；
 - Prompt 和原始输出进入非权威审计，不进入 Canon。
-- Phase 0–4 的 Renderer 使用确定性模板；真实模型只替换 InputProposal 产生方式。模型 Renderer 与模型 Continuity Resolver 均暂缓，因此不会与 InputProposal 串行占用关键路径预算。
+- Phase 0–7 的 Renderer 使用确定性模板；真实模型目前只产生 InputProposal。开放行动阶段可以在同一受限响应内试验 ActionProposal；模型 Renderer 与模型 Continuity Resolver 仍暂缓。
 
 ## 13. 存储接口
 

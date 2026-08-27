@@ -456,6 +456,7 @@ Primary Effect
 LLM 可以：
 
 - 提出原文中的目标、方法、修饰、mention 和顺序；
+- 在获准的相关世界切片和 effect schema 内提出非权威 `ActionProposal`，包括前置条件、身体/工具使用、局部效果、耗时和未决依赖；
 - 对已批准事实提出非权威相关性判断；
 - 在 Policy 批准的 Collapse 空间内提出候选；
 - 在 Approved Presentation 内容范围内组织文字；
@@ -467,12 +468,14 @@ LLM 不得独占决定：
 
 - Canonical Entity ID；
 - 输入是否具有世界写权限；
-- 规范操作标签；
+- Canonical operation/effect identity；
 - 感知可读取的 Canon 范围；
 - Collapse 必要性、地址、半径和值域；
-- RealityDelta；
+- ActionProposal 是否成立以及 RealityDelta；
 - Commit；
 - 已 Finalize 历史的解释权。
+
+模型提出局部效果不等于模型拥有现实权。可信层必须限制其可见 Canon、可引用实体、effect 类型和因果半径，并独立验证前置条件、能力、关系、时间和玩家断言隔离。只有验证后的效果才能由确定性 builder 转换为 Candidate Delta。
 
 ### 14.3 故障
 

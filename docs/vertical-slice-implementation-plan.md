@@ -4,6 +4,8 @@
 日期：2026-08-27
 输入：`demo-goals.md`、`world-constitution.md`、`runtime-protocol.md`、`adjudication-cases.md`
 
+> 历史计划说明：Phase 0–6 已完成并保留为可信内核基线。本文不再代表当前下一步；开放交互纠偏后的后续工作以 `interactive-demo-implementation-plan.md` v0.2 为准。本文中“模型只替换 InputProposal”等描述记录当时纵切边界，不再限制 Phase 8 的受约束 ActionProposal spike。
+
 ## 1. 目标
 
 用最小代码证明三条完整链路：
