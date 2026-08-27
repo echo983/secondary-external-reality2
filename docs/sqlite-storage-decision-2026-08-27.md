@@ -5,12 +5,13 @@
 
 ## 决议
 
-本地 Demo 使用 `better-sqlite3@12.4.6`，每个世界使用一个 SQLite 文件。该版本固定写入 lockfile，不自动追随最新 major/minor。
+本地 Demo 使用 `better-sqlite3@13.0.3`，每个世界使用一个 SQLite 文件。该版本固定写入 lockfile，不自动追随最新 major/minor。
 
 ## 原因
 
-- 当前运行环境是 Node `v20.19.2`；内置 `node:sqlite` 从 Node 22.5 才加入，不能作为当前基线；
-- `better-sqlite3@12.4.6` 的包元数据声明支持 Node 20，且当前 Linux 环境已验证可安装和运行；
+- `better-sqlite3` 12.x 的原生二进制绑定到安装时的 Node module ABI；在 Node 20 安装后由 Node 24 运行会发生 `ERR_DLOPEN_FAILED`；
+- 13.x 改用 Node-API 并要求 Node 22+，能让同一安装跨当前 Node 22/24 运行；
+- 仓库以 `.nvmrc` 固定推荐 Node 24.18.0，并在 `package.json` 声明 Node 22+；
 - 同步事务与 Demo 的单 writer Commit 边界一致，避免再引入异步连接池；
 - Phase 6 测试已经覆盖关闭并重开数据库后的 replay 与 Experience pending recovery。
 
@@ -25,7 +26,7 @@
 
 ## 已知约束
 
-- 原生 addon 与 Node ABI 有关；升级 Node 或驱动时必须重新运行安装和跨进程测试；
+- 升级 Node 或驱动时仍必须重新运行安装和跨进程测试；不再支持 Node 20；
 - 当前 schema 假定一个数据库文件只承载一个 world；多世界部署需要把 `world_id` 加入复合主键或按文件隔离；
 - SQLite 适配器不改变领域层 root、幂等和 replay 规则；
 - 若未来部署到 Cloudflare Workers，应单独实现 D1/DO 适配器，不能把本地原生 addon 带入 Worker runtime。

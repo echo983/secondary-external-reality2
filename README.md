@@ -4,13 +4,16 @@
 
 ## 运行
 
-需要 Node.js 20。
+需要 Node.js 22 或更高版本，推荐使用仓库 `.nvmrc` 中固定的版本：
 
 ```bash
+nvm use
 npm install
 npm test
 npm run demo
 ```
+
+`better-sqlite3` 使用 Node-API 构建。如果曾在旧提交或不同 Node 版本下安装依赖，升级后先执行一次 `npm install`。
 
 `npm run demo` 默认使用本地确定性提案器和 `.world/demo.sqlite`，不访问网络。当前可尝试：
 
