@@ -1,0 +1,11 @@
+{
+  "name": "secondary-external-reality2",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "eval:qwen:smoke": "node experiments/qwen-boundary/run.mjs --smoke",
+    "eval:qwen:full": "node experiments/qwen-boundary/run.mjs",
+    "eval:qwen:score": "node experiments/qwen-boundary/score.mjs"
+  }
+}
