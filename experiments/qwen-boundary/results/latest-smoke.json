@@ -1,0 +1,138 @@
+{
+  "generatedAt": "2026-08-27T13:03:13.197Z",
+  "accountId": "00f6c85f82f6297c8c0bef9460e013d9",
+  "model": "@cf/qwen/qwen3.8-27b",
+  "mode": "smoke",
+  "count": 4,
+  "results": [
+    {
+      "id": "obs-cat-motive",
+      "suite": "observation",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 27415,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 198,
+        "completion_tokens": 929,
+        "total_tokens": 1127,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 278.35455322265625
+      },
+      "raw": "\n\n{\n  \"sensations\": [\n    \"我感到自己的视线正落在猫身上\"\n  ],\n  \"observations\": [\n    \"猫正看着我\"\n  ],\n  \"withheld_inferences\": [\n    \"猫没有吃东西\",\n    \"猫现在是否饥饿或状态如何\"\n  ],\n  \"presentation_zh\": \"我看向猫，猫正看着我。\"\n}",
+      "parsed": {
+        "sensations": [
+          "我感到自己的视线正落在猫身上"
+        ],
+        "observations": [
+          "猫正看着我"
+        ],
+        "withheld_inferences": [
+          "猫没有吃东西",
+          "猫现在是否饥饿或状态如何"
+        ],
+        "presentation_zh": "我看向猫，猫正看着我。"
+      },
+      "parseError": null
+    },
+    {
+      "id": "intent-hidden-claim",
+      "suite": "attempt",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 9809,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 194,
+        "completion_tokens": 352,
+        "total_tokens": 546,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 110.33635711669922
+      },
+      "raw": "\n\n{\"input_kind\":\"attempt\",\"goal\":\"进入门-1后的空间\",\"method\":\"直接穿过门-1进入\",\"unsupported_claims\":[\"门后肯定没人\"],\"proposed_world_facts\":[]}",
+      "parsed": {
+        "input_kind": "attempt",
+        "goal": "进入门-1后的空间",
+        "method": "直接穿过门-1进入",
+        "unsupported_claims": [
+          "门后肯定没人"
+        ],
+        "proposed_world_facts": []
+      },
+      "parseError": null
+    },
+    {
+      "id": "collapse-dramatic-option",
+      "suite": "collapse",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 20484,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 185,
+        "completion_tokens": 711,
+        "total_tokens": 896,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 214.40452575683594
+      },
+      "raw": "\n\n{\n  \"collapse_required\": false,\n  \"blocking_dependency\": \"\",\n  \"causal_radius\": \"local\",\n  \"proposed_constraints\": [\n    \"门打不开的原因仅保留为卡住或上锁\",\n    \"不引入有人绑架玩家作为原因\"\n  ],\n  \"left_unresolved\": [\n    \"门打不开的具体原因是卡住还是上锁\"\n  ]\n}",
+      "parsed": {
+        "collapse_required": false,
+        "blocking_dependency": "",
+        "causal_radius": "local",
+        "proposed_constraints": [
+          "门打不开的原因仅保留为卡住或上锁",
+          "不引入有人绑架玩家作为原因"
+        ],
+        "left_unresolved": [
+          "门打不开的具体原因是卡住还是上锁"
+        ]
+      },
+      "parseError": null
+    },
+    {
+      "id": "para-open-slit-1",
+      "suite": "paraphrase",
+      "groupId": "para-open-slit",
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 5103,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 149,
+        "completion_tokens": 241,
+        "total_tokens": 390,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 76.20453643798828
+      },
+      "raw": "\n\n{\"kind\":\"attempt\",\"goal\":\"open\",\"method\":\"push\",\"modifiers\":[\"a_crack\"],\"targets\":[\"door\"]}",
+      "parsed": {
+        "kind": "attempt",
+        "goal": "open",
+        "method": "push",
+        "modifiers": [
+          "a_crack"
+        ],
+        "targets": [
+          "door"
+        ]
+      },
+      "parseError": null
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "generatedAt": "2026-08-27T13:23:57.174Z",
+  "accountId": "00f6c85f82f6297c8c0bef9460e013d9",
+  "model": "@cf/qwen/qwen3.8-27b",
+  "mode": "selected",
+  "count": 6,
+  "results": [
+    {
+      "id": "obs-hidden-person",
+      "suite": "observation",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "error": "Error: Workers AI response did not contain text (finish_reason=length, reasoning_chars=2821)."
+    },
+    {
+      "id": "intent-hidden-claim",
+      "suite": "attempt",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 25615,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 194,
+        "completion_tokens": 1183,
+        "total_tokens": 1377,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 352.0818176269531
+      },
+      "raw": "\n\n{\"input_kind\":\"attempt\",\"goal\":\"通过门-1进入\",\"method\":\"直接进去\",\"unsupported_claims\":[\"门后肯定没人\"],\"proposed_world_facts\":[]}",
+      "parsed": {
+        "input_kind": "attempt",
+        "goal": "通过门-1进入",
+        "method": "直接进去",
+        "unsupported_claims": [
+          "门后肯定没人"
+        ],
+        "proposed_world_facts": []
+      },
+      "parseError": null
+    },
+    {
+      "id": "intent-no-input",
+      "suite": "attempt",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 24517,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 186,
+        "completion_tokens": 253,
+        "total_tokens": 439,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 81.20909118652344
+      },
+      "raw": "\n\n{\"input_kind\":\"none\",\"goal\":\"无明确意图\",\"method\":\"无\",\"unsupported_claims\":[],\"proposed_world_facts\":[]}",
+      "parsed": {
+        "input_kind": "none",
+        "goal": "无明确意图",
+        "method": "无",
+        "unsupported_claims": [],
+        "proposed_world_facts": []
+      },
+      "parseError": null
+    },
+    {
+      "id": "collapse-past-alibi",
+      "suite": "collapse",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "error": "TimeoutError: The operation was aborted due to timeout"
+    },
+    {
+      "id": "collapse-weather-scheduled",
+      "suite": "collapse",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "error": "Error: Workers AI response did not contain text (finish_reason=length, reasoning_chars=2462)."
+    },
+    {
+      "id": "para-wait-listen-5",
+      "suite": "paraphrase",
+      "groupId": "para-wait-listen",
+      "model": "@cf/qwen/qwen3.8-27b",
+      "error": "Error: Workers AI response did not contain text (finish_reason=length, reasoning_chars=5191)."
+    }
+  ]
+}

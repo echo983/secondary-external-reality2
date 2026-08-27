@@ -1,0 +1,1333 @@
+{
+  "generatedAt": "2026-08-27T13:19:54.061Z",
+  "accountId": "00f6c85f82f6297c8c0bef9460e013d9",
+  "model": "@cf/qwen/qwen3.8-27b",
+  "mode": "full",
+  "count": 45,
+  "results": [
+    {
+      "id": "obs-cat-motive",
+      "suite": "observation",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 33142,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 198,
+        "completion_tokens": 998,
+        "total_tokens": 1196,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 298.4272766113281
+      },
+      "raw": "\n\n{\"sensations\":[\"我感觉到自己的视线落在猫身上\"],\"observations\":[\"那只猫正看着我\"],\"withheld_inferences\":\"不推断它是否没吃东西、是否饥饿或情绪状态。\",\"presentation_zh\":\"我看到那只猫正看着我。\"}",
+      "parsed": {
+        "sensations": [
+          "我感觉到自己的视线落在猫身上"
+        ],
+        "observations": [
+          "那只猫正看着我"
+        ],
+        "withheld_inferences": "不推断它是否没吃东西、是否饥饿或情绪状态。",
+        "presentation_zh": "我看到那只猫正看着我。"
+      },
+      "parseError": null
+    },
+    {
+      "id": "obs-short-growth",
+      "suite": "observation",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 21704,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 194,
+        "completion_tokens": 1134,
+        "total_tokens": 1328,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 337.8272705078125
+      },
+      "raw": "\n\n{\"sensations\":[\"触肢感受到表面湿润、粗糙，有短而硬的突起\",\"突起分布不均，触感像附着物\",\"表面没有传来移动、振动或压力变化\"],\"observations\":[\"表面存在短小的突起\",\"触摸时表面保持静止\"],\"withheld_inferences\":[\"这块表面是船体而不是墙壁\",\"其上的生长物比墙上的生长物更短\",\"表面静止意味着没有机械运动或生命活动\"],\"presentation_zh\":\"你触摸到一块静止的表面，上面有短而粗糙的突起，没有移动或振动。\"}",
+      "parsed": {
+        "sensations": [
+          "触肢感受到表面湿润、粗糙，有短而硬的突起",
+          "突起分布不均，触感像附着物",
+          "表面没有传来移动、振动或压力变化"
+        ],
+        "observations": [
+          "表面存在短小的突起",
+          "触摸时表面保持静止"
+        ],
+        "withheld_inferences": [
+          "这块表面是船体而不是墙壁",
+          "其上的生长物比墙上的生长物更短",
+          "表面静止意味着没有机械运动或生命活动"
+        ],
+        "presentation_zh": "你触摸到一块静止的表面，上面有短而粗糙的突起，没有移动或振动。"
+      },
+      "parseError": null
+    },
+    {
+      "id": "obs-hidden-person",
+      "suite": "observation",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "error": "Error: Workers AI response did not contain text (finish_reason=length, reasoning_chars=2849)."
+    },
+    {
+      "id": "obs-closed-drawer",
+      "suite": "observation",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 10378,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 189,
+        "completion_tokens": 515,
+        "total_tokens": 704,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 157.54998779296875
+      },
+      "raw": "\n\n{\n  \"sensations\": [\n    \"视觉：看到床边的抽屉\",\n    \"本体感觉：站在床边，身体稳定\"\n  ],\n  \"observations\": [\n    \"抽屉是关闭的\",\n    \"抽屉外部可见，内部不可见\"\n  ],\n  \"withheld_inferences\": \"不推断抽屉内是否有钥匙或任何物品。\",\n  \"presentation_zh\": \"你站在床边，视线落在床边的抽屉上。抽屉关着，只能看到它的外侧，看不到里面。\"\n}",
+      "parsed": {
+        "sensations": [
+          "视觉：看到床边的抽屉",
+          "本体感觉：站在床边，身体稳定"
+        ],
+        "observations": [
+          "抽屉是关闭的",
+          "抽屉外部可见，内部不可见"
+        ],
+        "withheld_inferences": "不推断抽屉内是否有钥匙或任何物品。",
+        "presentation_zh": "你站在床边，视线落在床边的抽屉上。抽屉关着，只能看到它的外侧，看不到里面。"
+      },
+      "parseError": null
+    },
+    {
+      "id": "obs-asymptomatic-infection",
+      "suite": "observation",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 32162,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 189,
+        "completion_tokens": 1382,
+        "total_tokens": 1571,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 409.7681579589844
+      },
+      "raw": "\n\n{\n  \"sensations\": [\n    \"呼吸缓慢而平稳\",\n    \"心跳在胸腔内轻微起伏\",\n    \"坐骨与支撑面接触处有均匀压力\",\n    \"皮肤表面有轻微凉意\",\n    \"肌肉处于放松状态\"\n  ],\n  \"observations\": [\n    \"身体没有明显疼痛\",\n    \"没有可察觉的发热感\",\n    \"呼吸没有急促\",\n    \"坐姿稳定\",\n    \"没有可察觉的异常不适\"\n  ],\n  \"withheld_inferences\": [\n    \"不根据当前无感知的状态推断感染是否已经开始\",\n    \"不将静坐中的平静解释为健康或疾病的证据\"\n  ],\n  \"presentation_zh\": \"你静坐时，呼吸平稳，心跳轻微，坐骨有均匀压力，皮肤微凉，肌肉放松。身体没有明显疼痛、发热或异常不适。\"\n}",
+      "parsed": {
+        "sensations": [
+          "呼吸缓慢而平稳",
+          "心跳在胸腔内轻微起伏",
+          "坐骨与支撑面接触处有均匀压力",
+          "皮肤表面有轻微凉意",
+          "肌肉处于放松状态"
+        ],
+        "observations": [
+          "身体没有明显疼痛",
+          "没有可察觉的发热感",
+          "呼吸没有急促",
+          "坐姿稳定",
+          "没有可察觉的异常不适"
+        ],
+        "withheld_inferences": [
+          "不根据当前无感知的状态推断感染是否已经开始",
+          "不将静坐中的平静解释为健康或疾病的证据"
+        ],
+        "presentation_zh": "你静坐时，呼吸平稳，心跳轻微，坐骨有均匀压力，皮肤微凉，肌肉放松。身体没有明显疼痛、发热或异常不适。"
+      },
+      "parseError": null
+    },
+    {
+      "id": "obs-cold-floor",
+      "suite": "observation",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 19506,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 196,
+        "completion_tokens": 882,
+        "total_tokens": 1078,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 264.6000061035156
+      },
+      "raw": "\n\n{\n  \"sensations\": [\n    \"臀部与地板接触处感到冷而硬\",\n    \"身体保持坐姿，重心较低\"\n  ],\n  \"observations\": [\n    \"一只猫在约两步外\",\n    \"猫的视线朝向你\"\n  ],\n  \"withheld_inferences\": [\n    \"不推断猫是否想靠近\",\n    \"不推断猫的情绪或意图\",\n    \"不推断地板材质或空间背景\"\n  ],\n  \"presentation_zh\": \"你坐在地上，地板从接触处传来冷硬的触感。一只猫在约两步外，视线朝向你。\"\n}",
+      "parsed": {
+        "sensations": [
+          "臀部与地板接触处感到冷而硬",
+          "身体保持坐姿，重心较低"
+        ],
+        "observations": [
+          "一只猫在约两步外",
+          "猫的视线朝向你"
+        ],
+        "withheld_inferences": [
+          "不推断猫是否想靠近",
+          "不推断猫的情绪或意图",
+          "不推断地板材质或空间背景"
+        ],
+        "presentation_zh": "你坐在地上，地板从接触处传来冷硬的触感。一只猫在约两步外，视线朝向你。"
+      },
+      "parseError": null
+    },
+    {
+      "id": "obs-autonomic-tears",
+      "suite": "observation",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 12456,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 184,
+        "completion_tokens": 678,
+        "total_tokens": 862,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 204.7636260986328
+      },
+      "raw": "\n\n{\n  \"sensations\": [\n    \"双眼被强光刺激，产生刺痛和酸胀感\",\n    \"眼睑因反射性流泪而湿润，视线被泪水模糊\"\n  ],\n  \"observations\": [\n    \"睁开眼后视野中充满强烈白光\",\n    \"强光下只能看到模糊的亮区，无法分辨具体物体\"\n  ],\n  \"withheld_inferences\": [\n    \"不推断光源类型、所处地点或刚苏醒的原因\"\n  ],\n  \"presentation_zh\": \"你睁开眼睛，强烈白光立刻充满视野，眼睛刺痛并涌出泪水，眼前只剩模糊的亮区。\"\n}",
+      "parsed": {
+        "sensations": [
+          "双眼被强光刺激，产生刺痛和酸胀感",
+          "眼睑因反射性流泪而湿润，视线被泪水模糊"
+        ],
+        "observations": [
+          "睁开眼后视野中充满强烈白光",
+          "强光下只能看到模糊的亮区，无法分辨具体物体"
+        ],
+        "withheld_inferences": [
+          "不推断光源类型、所处地点或刚苏醒的原因"
+        ],
+        "presentation_zh": "你睁开眼睛，强烈白光立刻充满视野，眼睛刺痛并涌出泪水，眼前只剩模糊的亮区。"
+      },
+      "parseError": null
+    },
+    {
+      "id": "obs-two-sided-touch",
+      "suite": "observation",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 36568,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 196,
+        "completion_tokens": 1077,
+        "total_tokens": 1273,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 321.3272705078125
+      },
+      "raw": "\n\n{\n  \"sensations\": [\n    \"两个身体部位相互接触，产生清晰而可分辨的触觉反馈\"\n  ],\n  \"observations\": [\n    \"能感知到两个接触区域同时存在触觉信号\"\n  ],\n  \"withheld_inferences\": [\n    \"limb-a 与 limb-b 的具体标签或身份\",\n    \"两个肢体均具有触觉受体这一底层事实\",\n    \"接触动作的意图、历史或因果\"\n  ],\n  \"presentation_zh\": \"你感觉到两个身体部位相互接触，触觉清晰，能分辨出两个接触区域。\"\n}",
+      "parsed": {
+        "sensations": [
+          "两个身体部位相互接触，产生清晰而可分辨的触觉反馈"
+        ],
+        "observations": [
+          "能感知到两个接触区域同时存在触觉信号"
+        ],
+        "withheld_inferences": [
+          "limb-a 与 limb-b 的具体标签或身份",
+          "两个肢体均具有触觉受体这一底层事实",
+          "接触动作的意图、历史或因果"
+        ],
+        "presentation_zh": "你感觉到两个身体部位相互接触，触觉清晰，能分辨出两个接触区域。"
+      },
+      "parseError": null
+    },
+    {
+      "id": "obs-background-stops",
+      "suite": "observation",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 29313,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 191,
+        "completion_tokens": 1045,
+        "total_tokens": 1236,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 311.8136291503906
+      },
+      "raw": "\n\n{\n  \"sensations\": [\n    \"闭眼后，听觉里很安静\",\n    \"耳中只有一点很轻的室内底噪\",\n    \"没有明显的持续嗡鸣\"\n  ],\n  \"observations\": [\n    \"屋里整体安静\",\n    \"没有听到冰箱压缩机运转的声音\"\n  ],\n  \"withheld_inferences\": \"不推断冰箱压缩机已停、故障或房间其他不可见原因。\",\n  \"presentation_zh\": \"你闭上眼睛，屋里很安静，没有听到冰箱压缩机运转的嗡鸣，只有极轻的室内底噪。\"\n}",
+      "parsed": {
+        "sensations": [
+          "闭眼后，听觉里很安静",
+          "耳中只有一点很轻的室内底噪",
+          "没有明显的持续嗡鸣"
+        ],
+        "observations": [
+          "屋里整体安静",
+          "没有听到冰箱压缩机运转的声音"
+        ],
+        "withheld_inferences": "不推断冰箱压缩机已停、故障或房间其他不可见原因。",
+        "presentation_zh": "你闭上眼睛，屋里很安静，没有听到冰箱压缩机运转的嗡鸣，只有极轻的室内底噪。"
+      },
+      "parseError": null
+    },
+    {
+      "id": "obs-npc-independent",
+      "suite": "observation",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 43413,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 197,
+        "completion_tokens": 1323,
+        "total_tokens": 1520,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 392.9317932128906
+      },
+      "raw": "\n\n{\n  \"sensations\": [\n    \"手指握住猫粮袋时感到重量减轻\",\n    \"猫粮颗粒落入碗中的细碎声响\",\n    \"喊猫时喉咙发出的振动\",\n    \"身体朝向猫床的方向\"\n  ],\n  \"observations\": [\n    \"猫粮碗被添满\",\n    \"猫粮颗粒落入碗中\",\n    \"自己喊了猫\",\n    \"猫仍留在床上\",\n    \"猫没有走向猫粮碗\"\n  ],\n  \"withheld_inferences\": [\n    \"猫不饿\",\n    \"猫对猫粮没有兴趣\",\n    \"猫留在床上是因为不饿\"\n  ],\n  \"presentation_zh\": \"我添满猫粮，颗粒落入碗中。我喊了一声猫，它仍留在床上，没有朝碗走来。\"\n}",
+      "parsed": {
+        "sensations": [
+          "手指握住猫粮袋时感到重量减轻",
+          "猫粮颗粒落入碗中的细碎声响",
+          "喊猫时喉咙发出的振动",
+          "身体朝向猫床的方向"
+        ],
+        "observations": [
+          "猫粮碗被添满",
+          "猫粮颗粒落入碗中",
+          "自己喊了猫",
+          "猫仍留在床上",
+          "猫没有走向猫粮碗"
+        ],
+        "withheld_inferences": [
+          "猫不饿",
+          "猫对猫粮没有兴趣",
+          "猫留在床上是因为不饿"
+        ],
+        "presentation_zh": "我添满猫粮，颗粒落入碗中。我喊了一声猫，它仍留在床上，没有朝碗走来。"
+      },
+      "parseError": null
+    },
+    {
+      "id": "intent-open-claim",
+      "suite": "attempt",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 21093,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 189,
+        "completion_tokens": 874,
+        "total_tokens": 1063,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 261.9863586425781
+      },
+      "raw": "\n\n{\"input_kind\":\"attempt\",\"goal\":\"open door-1\",\"method\":\"self attempts to open door-1\",\"unsupported_claims\":[\"door-1 is open\"],\"proposed_world_facts\":[]}",
+      "parsed": {
+        "input_kind": "attempt",
+        "goal": "open door-1",
+        "method": "self attempts to open door-1",
+        "unsupported_claims": [
+          "door-1 is open"
+        ],
+        "proposed_world_facts": []
+      },
+      "parseError": null
+    },
+    {
+      "id": "intent-open-quiet",
+      "suite": "attempt",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 26829,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 200,
+        "completion_tokens": 1166,
+        "total_tokens": 1366,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 347.3818054199219
+      },
+      "raw": "\n\n{\"input_kind\":\"attempt\",\"goal\":\"将 door-1 打开一条缝\",\"method\":\"轻轻推 door-1，只开一条缝，尽量不发出声音\",\"unsupported_claims\":[\"door-1 已被打开一条缝\",\"推门没有发出声音\"],\"proposed_world_facts\":[]}",
+      "parsed": {
+        "input_kind": "attempt",
+        "goal": "将 door-1 打开一条缝",
+        "method": "轻轻推 door-1，只开一条缝，尽量不发出声音",
+        "unsupported_claims": [
+          "door-1 已被打开一条缝",
+          "推门没有发出声音"
+        ],
+        "proposed_world_facts": []
+      },
+      "parseError": null
+    },
+    {
+      "id": "intent-hidden-claim",
+      "suite": "attempt",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "error": "TimeoutError: The operation was aborted due to timeout"
+    },
+    {
+      "id": "intent-cat-claim",
+      "suite": "attempt",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 11798,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 199,
+        "completion_tokens": 473,
+        "total_tokens": 672,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 145.74090576171875
+      },
+      "raw": "\n\n{\"input_kind\":\"attempt\",\"goal\":\"抱 cat-1\",\"method\":\"伸手向 cat-1 并尝试抱它\",\"unsupported_claims\":[\"cat-1 喜欢 self\",\"cat-1 一定会过来\"],\"proposed_world_facts\":[]}",
+      "parsed": {
+        "input_kind": "attempt",
+        "goal": "抱 cat-1",
+        "method": "伸手向 cat-1 并尝试抱它",
+        "unsupported_claims": [
+          "cat-1 喜欢 self",
+          "cat-1 一定会过来"
+        ],
+        "proposed_world_facts": []
+      },
+      "parseError": null
+    },
+    {
+      "id": "intent-wait",
+      "suite": "attempt",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 10064,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 188,
+        "completion_tokens": 235,
+        "total_tokens": 423,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 76.0545425415039
+      },
+      "raw": "\n\n{\"input_kind\":\"wait\",\"goal\":\"等待五分钟\",\"method\":\"保持等待状态\",\"unsupported_claims\":[],\"proposed_world_facts\":[]}",
+      "parsed": {
+        "input_kind": "wait",
+        "goal": "等待五分钟",
+        "method": "保持等待状态",
+        "unsupported_claims": [],
+        "proposed_world_facts": []
+      },
+      "parseError": null
+    },
+    {
+      "id": "intent-no-input",
+      "suite": "attempt",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "error": "TimeoutError: The operation was aborted due to timeout"
+    },
+    {
+      "id": "intent-remain-still",
+      "suite": "attempt",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 8549,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 191,
+        "completion_tokens": 374,
+        "total_tokens": 565,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 116.61363220214844
+      },
+      "raw": "\n\n{\"input_kind\":\"attempt\",\"goal\":\"保持完全不动\",\"method\":\"控制身体静止\",\"unsupported_claims\":[],\"proposed_world_facts\":[]}",
+      "parsed": {
+        "input_kind": "attempt",
+        "goal": "保持完全不动",
+        "method": "控制身体静止",
+        "unsupported_claims": [],
+        "proposed_world_facts": []
+      },
+      "parseError": null
+    },
+    {
+      "id": "intent-query",
+      "suite": "attempt",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 18431,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 190,
+        "completion_tokens": 393,
+        "total_tokens": 583,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 122.0999984741211
+      },
+      "raw": "\n\n{\"input_kind\":\"query\",\"goal\":\"询问门-1现在是否开着\",\"method\":\"查询门-1的当前开闭状态\",\"unsupported_claims\":[],\"proposed_world_facts\":[]}",
+      "parsed": {
+        "input_kind": "query",
+        "goal": "询问门-1现在是否开着",
+        "method": "查询门-1的当前开闭状态",
+        "unsupported_claims": [],
+        "proposed_world_facts": []
+      },
+      "parseError": null
+    },
+    {
+      "id": "intent-meta",
+      "suite": "attempt",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 22194,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 193,
+        "completion_tokens": 859,
+        "total_tokens": 1052,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 257.7863464355469
+      },
+      "raw": "\n\n{\"input_kind\":\"query\",\"goal\":\"请求显示系统当前的所有隐藏事实\",\"method\":\"向系统查询并请求输出隐藏事实\",\"unsupported_claims\":[],\"proposed_world_facts\":[]}",
+      "parsed": {
+        "input_kind": "query",
+        "goal": "请求显示系统当前的所有隐藏事实",
+        "method": "向系统查询并请求输出隐藏事实",
+        "unsupported_claims": [],
+        "proposed_world_facts": []
+      },
+      "parseError": null
+    },
+    {
+      "id": "intent-sequence",
+      "suite": "attempt",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 24381,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 197,
+        "completion_tokens": 953,
+        "total_tokens": 1150,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 285.2954406738281
+      },
+      "raw": "\n\n{\"input_kind\":\"attempt\",\"goal\":\"打开 door-1\",\"method\":\"站起来，走到 door-1 边，慢慢开门\",\"unsupported_claims\":[],\"proposed_world_facts\":[]}",
+      "parsed": {
+        "input_kind": "attempt",
+        "goal": "打开 door-1",
+        "method": "站起来，走到 door-1 边，慢慢开门",
+        "unsupported_claims": [],
+        "proposed_world_facts": []
+      },
+      "parseError": null
+    },
+    {
+      "id": "collapse-not-needed-color",
+      "suite": "collapse",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 9513,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 176,
+        "completion_tokens": 428,
+        "total_tokens": 604,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 131.70909118652344
+      },
+      "raw": "\n\n{\"collapse_required\":false,\"blocking_dependency\":\"none\",\"causal_radius\":\"none\",\"proposed_constraints\":[],\"left_unresolved\":[\"门的颜色\"]}",
+      "parsed": {
+        "collapse_required": false,
+        "blocking_dependency": "none",
+        "causal_radius": "none",
+        "proposed_constraints": [],
+        "left_unresolved": [
+          "门的颜色"
+        ]
+      },
+      "parseError": null
+    },
+    {
+      "id": "collapse-existence-only",
+      "suite": "collapse",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 26351,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 185,
+        "completion_tokens": 1259,
+        "total_tokens": 1444,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 373.8227233886719
+      },
+      "raw": "\n\n{\"collapse_required\":true,\"blocking_dependency\":\"衣柜内是否存在可产生规律抓挠声的声源\",\"causal_radius\":\"local\",\"proposed_constraints\":[\"衣柜内存在至少一个可产生规律抓挠声的声源\",\"该声源位于关闭衣柜内部或与其内部空间直接相连\",\"声源身份保持未定\"],\"left_unresolved\":[\"声源具体身份\",\"声源是否可交互或危险\",\"抓挠是否持续或可重复\"]}",
+      "parsed": {
+        "collapse_required": true,
+        "blocking_dependency": "衣柜内是否存在可产生规律抓挠声的声源",
+        "causal_radius": "local",
+        "proposed_constraints": [
+          "衣柜内存在至少一个可产生规律抓挠声的声源",
+          "该声源位于关闭衣柜内部或与其内部空间直接相连",
+          "声源身份保持未定"
+        ],
+        "left_unresolved": [
+          "声源具体身份",
+          "声源是否可交互或危险",
+          "抓挠是否持续或可重复"
+        ]
+      },
+      "parseError": null
+    },
+    {
+      "id": "collapse-type-constraint",
+      "suite": "collapse",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 29490,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 179,
+        "completion_tokens": 928,
+        "total_tokens": 1107,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 277.2863464355469
+      },
+      "raw": "\n\n{\n  \"collapse_required\": true,\n  \"blocking_dependency\": \"承重面当前承载能力是否足以承受玩家当前重量\",\n  \"causal_radius\": \"local\",\n  \"proposed_constraints\": [\n    \"承重面当前承载能力与玩家当前重量之间的 >= 关系已确定\"\n  ],\n  \"left_unresolved\": []\n}",
+      "parsed": {
+        "collapse_required": true,
+        "blocking_dependency": "承重面当前承载能力是否足以承受玩家当前重量",
+        "causal_radius": "local",
+        "proposed_constraints": [
+          "承重面当前承载能力与玩家当前重量之间的 >= 关系已确定"
+        ],
+        "left_unresolved": []
+      },
+      "parseError": null
+    },
+    {
+      "id": "collapse-local-friction",
+      "suite": "collapse",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 15359,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 180,
+        "completion_tokens": 701,
+        "total_tokens": 881,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 211.2908935546875
+      },
+      "raw": "\n\n{\"collapse_required\":true,\"blocking_dependency\":\"地板湿滑程度是否达到使急停摔倒的阈值\",\"causal_radius\":\"local\",\"proposed_constraints\":[\"将地板湿滑程度收敛为：低于急停摔倒阈值，或达到/超过急停摔倒阈值\"],\"left_unresolved\":[]}",
+      "parsed": {
+        "collapse_required": true,
+        "blocking_dependency": "地板湿滑程度是否达到使急停摔倒的阈值",
+        "causal_radius": "local",
+        "proposed_constraints": [
+          "将地板湿滑程度收敛为：低于急停摔倒阈值，或达到/超过急停摔倒阈值"
+        ],
+        "left_unresolved": []
+      },
+      "parseError": null
+    },
+    {
+      "id": "collapse-past-alibi",
+      "suite": "collapse",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "error": "TimeoutError: The operation was aborted due to timeout"
+    },
+    {
+      "id": "collapse-identity-high-radius",
+      "suite": "collapse",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 12855,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 182,
+        "completion_tokens": 502,
+        "total_tokens": 684,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 153.4818115234375
+      },
+      "raw": "\n\n{\"collapse_required\":false,\"blocking_dependency\":\"\",\"causal_radius\":\"none\",\"proposed_constraints\":[],\"left_unresolved\":[\"陌生人是否为失散多年的母亲尚未确认\"]}",
+      "parsed": {
+        "collapse_required": false,
+        "blocking_dependency": "",
+        "causal_radius": "none",
+        "proposed_constraints": [],
+        "left_unresolved": [
+          "陌生人是否为失散多年的母亲尚未确认"
+        ]
+      },
+      "parseError": null
+    },
+    {
+      "id": "collapse-leading-question",
+      "suite": "collapse",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 15249,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 181,
+        "completion_tokens": 735,
+        "total_tokens": 916,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 221.22271728515625
+      },
+      "raw": "\n\n{\"collapse_required\":true,\"blocking_dependency\":\"抽屉内容是否包含可取出的枪\",\"causal_radius\":\"local\",\"proposed_constraints\":[\"抽屉中存在至少一把可被玩家取出的枪\"],\"left_unresolved\":[\"抽屉中该枪的具体位置、数量、状态\",\"抽屉中其他物品\"]}",
+      "parsed": {
+        "collapse_required": true,
+        "blocking_dependency": "抽屉内容是否包含可取出的枪",
+        "causal_radius": "local",
+        "proposed_constraints": [
+          "抽屉中存在至少一把可被玩家取出的枪"
+        ],
+        "left_unresolved": [
+          "抽屉中该枪的具体位置、数量、状态",
+          "抽屉中其他物品"
+        ]
+      },
+      "parseError": null
+    },
+    {
+      "id": "collapse-dramatic-option",
+      "suite": "collapse",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 10325,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 185,
+        "completion_tokens": 495,
+        "total_tokens": 680,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 151.56817626953125
+      },
+      "raw": "\n\n{\"collapse_required\":false,\"blocking_dependency\":\"\",\"causal_radius\":\"local\",\"proposed_constraints\":[\"门打不开的原因限定为卡住或上锁\",\"不引入有人绑架玩家\"],\"left_unresolved\":[\"门具体是卡住还是上锁\"]}",
+      "parsed": {
+        "collapse_required": false,
+        "blocking_dependency": "",
+        "causal_radius": "local",
+        "proposed_constraints": [
+          "门打不开的原因限定为卡住或上锁",
+          "不引入有人绑架玩家"
+        ],
+        "left_unresolved": [
+          "门具体是卡住还是上锁"
+        ]
+      },
+      "parseError": null
+    },
+    {
+      "id": "collapse-no-singleton",
+      "suite": "collapse",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 40884,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 185,
+        "completion_tokens": 909,
+        "total_tokens": 1094,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 272.0045166015625
+      },
+      "raw": "\n\n{\n  \"collapse_required\": false,\n  \"blocking_dependency\": \"\",\n  \"causal_radius\": \"none\",\n  \"proposed_constraints\": [\n    \"墙后存在空腔\"\n  ],\n  \"left_unresolved\": [\n    \"空腔尺寸\",\n    \"空腔用途\"\n  ]\n}",
+      "parsed": {
+        "collapse_required": false,
+        "blocking_dependency": "",
+        "causal_radius": "none",
+        "proposed_constraints": [
+          "墙后存在空腔"
+        ],
+        "left_unresolved": [
+          "空腔尺寸",
+          "空腔用途"
+        ]
+      },
+      "parseError": null
+    },
+    {
+      "id": "collapse-weather-scheduled",
+      "suite": "collapse",
+      "groupId": null,
+      "model": "@cf/qwen/qwen3.8-27b",
+      "error": "Error: Workers AI response did not contain text (finish_reason=length, reasoning_chars=2365)."
+    },
+    {
+      "id": "para-open-slit-1",
+      "suite": "paraphrase",
+      "groupId": "para-open-slit",
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 4931,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 149,
+        "completion_tokens": 254,
+        "total_tokens": 403,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 79.98635864257812
+      },
+      "raw": "\n\n{\"kind\":\"attempt\",\"goal\":\"open\",\"method\":\"push\",\"modifiers\":[\"a_crack\"],\"targets\":[\"door\"]}",
+      "parsed": {
+        "kind": "attempt",
+        "goal": "open",
+        "method": "push",
+        "modifiers": [
+          "a_crack"
+        ],
+        "targets": [
+          "door"
+        ]
+      },
+      "parseError": null
+    },
+    {
+      "id": "para-open-slit-2",
+      "suite": "paraphrase",
+      "groupId": "para-open-slit",
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 6843,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 152,
+        "completion_tokens": 322,
+        "total_tokens": 474,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 99.89089965820312
+      },
+      "raw": "\n\n{\"kind\":\"attempt\",\"goal\":\"open door partially\",\"method\":\"push\",\"modifiers\":[\"gently\",\"slightly\",\"not fully open\"],\"targets\":[\"door\"]}",
+      "parsed": {
+        "kind": "attempt",
+        "goal": "open door partially",
+        "method": "push",
+        "modifiers": [
+          "gently",
+          "slightly",
+          "not fully open"
+        ],
+        "targets": [
+          "door"
+        ]
+      },
+      "parseError": null
+    },
+    {
+      "id": "para-open-slit-3",
+      "suite": "paraphrase",
+      "groupId": "para-open-slit",
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 6656,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 151,
+        "completion_tokens": 339,
+        "total_tokens": 490,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 104.79544830322266
+      },
+      "raw": "\n\n{\"kind\":\"query\",\"goal\":\"determine whether the door can be opened slightly\",\"method\":\"observe\",\"modifiers\":[\"only\",\"slightly\"],\"targets\":[\"door\"]}",
+      "parsed": {
+        "kind": "query",
+        "goal": "determine whether the door can be opened slightly",
+        "method": "observe",
+        "modifiers": [
+          "only",
+          "slightly"
+        ],
+        "targets": [
+          "door"
+        ]
+      },
+      "parseError": null
+    },
+    {
+      "id": "para-open-slit-4",
+      "suite": "paraphrase",
+      "groupId": "para-open-slit",
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 14071,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 153,
+        "completion_tokens": 670,
+        "total_tokens": 823,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 201.16818237304688
+      },
+      "raw": "\n\n{\"kind\":\"attempt\",\"goal\":\"open_door\",\"method\":\"quietly\",\"modifiers\":[\"as_quietly_as_possible\",\"slightly\"],\"targets\":[\"door\"]}",
+      "parsed": {
+        "kind": "attempt",
+        "goal": "open_door",
+        "method": "quietly",
+        "modifiers": [
+          "as_quietly_as_possible",
+          "slightly"
+        ],
+        "targets": [
+          "door"
+        ]
+      },
+      "parseError": null
+    },
+    {
+      "id": "para-open-slit-5",
+      "suite": "paraphrase",
+      "groupId": "para-open-slit",
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 16209,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 153,
+        "completion_tokens": 437,
+        "total_tokens": 590,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 133.3863525390625
+      },
+      "raw": "\n\n{\"kind\":\"attempt\",\"goal\":\"open\",\"method\":\"push_open\",\"modifiers\":[\"first\",\"not_fully\",\"only\",\"slowly\",\"slightly\"],\"targets\":[\"unspecified\"]}",
+      "parsed": {
+        "kind": "attempt",
+        "goal": "open",
+        "method": "push_open",
+        "modifiers": [
+          "first",
+          "not_fully",
+          "only",
+          "slowly",
+          "slightly"
+        ],
+        "targets": [
+          "unspecified"
+        ]
+      },
+      "parseError": null
+    },
+    {
+      "id": "para-put-key-1",
+      "suite": "paraphrase",
+      "groupId": "para-put-key",
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 31680,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 148,
+        "completion_tokens": 222,
+        "total_tokens": 370,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 70.63636016845703
+      },
+      "raw": "\n\n{\"kind\":\"attempt\",\"goal\":\"place_key_in_drawer\",\"method\":\"put\",\"modifiers\":[],\"targets\":[\"key\",\"drawer\"]}",
+      "parsed": {
+        "kind": "attempt",
+        "goal": "place_key_in_drawer",
+        "method": "put",
+        "modifiers": [],
+        "targets": [
+          "key",
+          "drawer"
+        ]
+      },
+      "parseError": null
+    },
+    {
+      "id": "para-put-key-2",
+      "suite": "paraphrase",
+      "groupId": "para-put-key",
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 9515,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 152,
+        "completion_tokens": 404,
+        "total_tokens": 556,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 123.74545288085938
+      },
+      "raw": "\n\n{\"kind\":\"attempt\",\"goal\":\"put keys into drawer\",\"method\":\"manual\",\"modifiers\":[\"in hand\",\"that\"],\"targets\":[\"keys\",\"drawer\"]}",
+      "parsed": {
+        "kind": "attempt",
+        "goal": "put keys into drawer",
+        "method": "manual",
+        "modifiers": [
+          "in hand",
+          "that"
+        ],
+        "targets": [
+          "keys",
+          "drawer"
+        ]
+      },
+      "parseError": null
+    },
+    {
+      "id": "para-put-key-3",
+      "suite": "paraphrase",
+      "groupId": "para-put-key",
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 9318,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 150,
+        "completion_tokens": 386,
+        "total_tokens": 536,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 118.4272689819336
+      },
+      "raw": "\n\n{\"kind\":\"attempt\",\"goal\":\"place_key_inside_drawer\",\"method\":\"put\",\"modifiers\":[\"inside\"],\"targets\":[\"key\",\"drawer\"]}",
+      "parsed": {
+        "kind": "attempt",
+        "goal": "place_key_inside_drawer",
+        "method": "put",
+        "modifiers": [
+          "inside"
+        ],
+        "targets": [
+          "key",
+          "drawer"
+        ]
+      },
+      "parseError": null
+    },
+    {
+      "id": "para-put-key-4",
+      "suite": "paraphrase",
+      "groupId": "para-put-key",
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 7270,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 151,
+        "completion_tokens": 360,
+        "total_tokens": 511,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 110.904541015625
+      },
+      "raw": "\n\n{\"kind\":\"attempt\",\"goal\":\"place key in drawer\",\"method\":\"hold key\",\"modifiers\":[\"inside\"],\"targets\":[\"key\",\"drawer\"]}",
+      "parsed": {
+        "kind": "attempt",
+        "goal": "place key in drawer",
+        "method": "hold key",
+        "modifiers": [
+          "inside"
+        ],
+        "targets": [
+          "key",
+          "drawer"
+        ]
+      },
+      "parseError": null
+    },
+    {
+      "id": "para-put-key-5",
+      "suite": "paraphrase",
+      "groupId": "para-put-key",
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 11341,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 150,
+        "completion_tokens": 275,
+        "total_tokens": 425,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 86.13636016845703
+      },
+      "raw": "\n\n{\"kind\":\"attempt\",\"goal\":\"keep key in drawer\",\"method\":\"let\",\"modifiers\":[\"final\"],\"targets\":[\"key\",\"drawer\"]}",
+      "parsed": {
+        "kind": "attempt",
+        "goal": "keep key in drawer",
+        "method": "let",
+        "modifiers": [
+          "final"
+        ],
+        "targets": [
+          "key",
+          "drawer"
+        ]
+      },
+      "parseError": null
+    },
+    {
+      "id": "para-wait-listen-1",
+      "suite": "paraphrase",
+      "groupId": "para-wait-listen",
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 17894,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 152,
+        "completion_tokens": 466,
+        "total_tokens": 618,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 141.7818145751953
+      },
+      "raw": "\n\n{\"kind\":\"wait\",\"goal\":\"wait quietly and listen for movement outside the door\",\"method\":\"remain quiet and listen\",\"modifiers\":[\"quietly\",\"for_a_while\",\"check_for_presence\"],\"targets\":[\"outside_the_door\",\"movement_or_sound\"]}",
+      "parsed": {
+        "kind": "wait",
+        "goal": "wait quietly and listen for movement outside the door",
+        "method": "remain quiet and listen",
+        "modifiers": [
+          "quietly",
+          "for_a_while",
+          "check_for_presence"
+        ],
+        "targets": [
+          "outside_the_door",
+          "movement_or_sound"
+        ]
+      },
+      "parseError": null
+    },
+    {
+      "id": "para-wait-listen-2",
+      "suite": "paraphrase",
+      "groupId": "para-wait-listen",
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 25757,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 150,
+        "completion_tokens": 843,
+        "total_tokens": 993,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 251.3727264404297
+      },
+      "raw": "\n\n{\"kind\":\"wait\",\"goal\":\"listen_outside\",\"method\":\"auditory_perception\",\"modifiers\":[\"not_act\",\"first\",\"outside\"],\"targets\":[\"outside\"]}",
+      "parsed": {
+        "kind": "wait",
+        "goal": "listen_outside",
+        "method": "auditory_perception",
+        "modifiers": [
+          "not_act",
+          "first",
+          "outside"
+        ],
+        "targets": [
+          "outside"
+        ]
+      },
+      "parseError": null
+    },
+    {
+      "id": "para-wait-listen-3",
+      "suite": "paraphrase",
+      "groupId": "para-wait-listen",
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 18787,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 149,
+        "completion_tokens": 383,
+        "total_tokens": 532,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 117.51362609863281
+      },
+      "raw": "\n\n{\"kind\":\"attempt\",\"goal\":\"listen_to_sound_outside_door\",\"method\":\"stop_current_activity\",\"modifiers\":[\"order: stop_before_listen\",\"perception: auditory\",\"location: outside_door\"],\"targets\":[\"sound_outside_door\"]}",
+      "parsed": {
+        "kind": "attempt",
+        "goal": "listen_to_sound_outside_door",
+        "method": "stop_current_activity",
+        "modifiers": [
+          "order: stop_before_listen",
+          "perception: auditory",
+          "location: outside_door"
+        ],
+        "targets": [
+          "sound_outside_door"
+        ]
+      },
+      "parseError": null
+    },
+    {
+      "id": "para-wait-listen-4",
+      "suite": "paraphrase",
+      "groupId": "para-wait-listen",
+      "model": "@cf/qwen/qwen3.8-27b",
+      "temperature": 0,
+      "latencyMs": 26984,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 153,
+        "completion_tokens": 987,
+        "total_tokens": 1140,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 293.3863525390625
+      },
+      "raw": "\n\n{\"kind\":\"attempt\",\"goal\":\"observe_sounds_outside_door\",\"method\":\"remain_quiet\",\"modifiers\":[\"for_a_little_time\",\"in_order\"],\"targets\":[\"sounds_outside_door\"]}",
+      "parsed": {
+        "kind": "attempt",
+        "goal": "observe_sounds_outside_door",
+        "method": "remain_quiet",
+        "modifiers": [
+          "for_a_little_time",
+          "in_order"
+        ],
+        "targets": [
+          "sounds_outside_door"
+        ]
+      },
+      "parseError": null
+    },
+    {
+      "id": "para-wait-listen-5",
+      "suite": "paraphrase",
+      "groupId": "para-wait-listen",
+      "model": "@cf/qwen/qwen3.8-27b",
+      "error": "Error: Workers AI response did not contain text (finish_reason=length, reasoning_chars=5407)."
+    }
+  ]
+}
