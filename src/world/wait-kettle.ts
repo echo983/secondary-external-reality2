@@ -1,9 +1,47 @@
-import type {CanonicalFact, ConstitutedInput, SettlementCommit, WorldSnapshot} from "../domain/types.js";
+import type {ApprovedPresentationPacket, CanonicalFact, ConstitutedInput, EpistemicAcquisition, EvidenceRecord,
+  ExperienceCommit, Observation, SettlementCommit, WorldSnapshot} from "../domain/types.js";
 import {ProtocolError} from "../protocol/errors.js";
 import {InMemoryCommitStore} from "../storage/in-memory-commit-store.js";
+import {computeEpistemicRoot, InMemoryExperienceStore} from "../storage/in-memory-experience-store.js";
 import {applyCommit, computeFutureStateRoot} from "./materialized-world.js";
 
 export interface WaitPolicy {interruptAt?: string}
+
+export async function materializeWaitExperience(
+  commit: SettlementCommit,
+  store: InMemoryExperienceStore,
+  committedAt = new Date().toISOString()
+): Promise<{experience: ExperienceCommit; packet: ApprovedPresentationPacket}> {
+  const seed = commit.observationSeeds[0];
+  if (seed === undefined) throw new ProtocolError("REPLAY_INVALID", "wait commit has no perceivable result");
+  const sourceEvent = commit.delta.events.find(event => seed.sourceEventIds.includes(event.eventId));
+  if (sourceEvent === undefined) throw new ProtocolError("REPLAY_INVALID", "wait observation source is missing");
+  const content = Object.fromEntries(seed.perceivableFields.flatMap(field =>
+    sourceEvent.payload[field] === undefined ? [] : [[field, sourceEvent.payload[field]]]
+  ));
+  if (Object.keys(content).length !== seed.perceivableFields.length) {
+    throw new ProtocolError("REPLAY_INVALID", "wait observation field is not committed");
+  }
+  const observation: Observation = {
+    observationId: `obs:${commit.height}:${seed.modality}`, observerId: seed.observerId, modality: seed.modality,
+    content, scope: seed.scope, completeness: "partial", sourceFactIds: seed.sourceFactIds,
+    sourceEventIds: seed.sourceEventIds, observedAtHeight: commit.height
+  };
+  const evidence: EvidenceRecord = {evidenceId: `evidence:${observation.observationId}`,
+    observationId: observation.observationId, sourceHeight: commit.height};
+  const acquisition: EpistemicAcquisition = {agentId: seed.observerId, evidenceId: evidence.evidenceId,
+    mode: seed.modality === "testimony" ? "testimony" : "perception"};
+  const parentEpistemicRoot = store.commits.filter(item => item.observerId === seed.observerId).at(-1)?.epistemicRoot ?? "genesis";
+  const base = {experienceId: `${commit.worldBasis.worldId}:${commit.height}:${seed.observerId}`,
+    sourceHeight: commit.height, observerId: seed.observerId, observations: [observation], evidence: [evidence],
+    acquisitions: [acquisition], parentEpistemicRoot};
+  const experience: ExperienceCommit = {...base, epistemicRoot: computeEpistemicRoot(base), committedAt};
+  await store.append(experience);
+  const packet: ApprovedPresentationPacket = {packetId: `packet:${commit.height}:${seed.observerId}`,
+    observerId: seed.observerId, language: "zh", observationIds: [observation.observationId], boundaryCodes: [],
+    approvedValues: Object.values(content).flatMap(value => Array.isArray(value) ? value : [value])};
+  return {experience, packet};
+}
 
 export async function settleWait(
   snapshot: WorldSnapshot,

@@ -12,3 +12,9 @@ export function renderApprovedPacket(packet: ApprovedPresentationPacket): string
   const soundText = sound === "quiet_hinge" ? "一声很轻的摩擦声" : "摩擦声";
   return `门${motionText}移开，留下约 ${aperture} 厘米的缝；铰链发出${soundText}。`;
 }
+
+export function renderWaitPacket(packet: ApprovedPresentationPacket): string {
+  if (packet.approvedValues.includes("whistle")) return "水壶发出了持续的鸣笛声。";
+  if (packet.approvedValues.includes(true)) return "一声突发的警示打断了等待。";
+  throw new ProtocolError("INTERNAL_INVARIANT", "wait packet lacks an approved perceivable value");
+}

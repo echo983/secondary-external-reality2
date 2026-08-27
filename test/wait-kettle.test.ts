@@ -2,9 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {FakeProposalModel, requestInputProposal} from "../src/ai/model-adapter.js";
 import {compileInput} from "../src/protocol/compiler.js";
+import {renderWaitPacket} from "../src/presentation/deterministic-renderer.js";
 import {InMemoryCommitStore} from "../src/storage/in-memory-commit-store.js";
+import {InMemoryExperienceStore} from "../src/storage/in-memory-experience-store.js";
 import {createKettleFixture} from "../src/world/kettle-fixture.js";
-import {settleWait} from "../src/world/wait-kettle.js";
+import {materializeWaitExperience, settleWait} from "../src/world/wait-kettle.js";
 
 async function waitInput() {
   const raw = "我等五分钟";
@@ -25,6 +27,14 @@ test("V2/T01 Wait advances five minutes and settles kettle at its due instant", 
   assert.equal(result.snapshot.facts.find(item => item.address === "kettle:kettle-1:state" && item.status === "active")?.value, "boiling");
   assert.equal(result.commit.observationSeeds[0]?.modality, "hearing");
   assert.deepEqual(result.commit.observationSeeds[0]?.forbiddenSourceLabels, ["temperature"]);
+  const experienceStore = new InMemoryExperienceStore();
+  const materialized = await materializeWaitExperience(result.commit, experienceStore, "2026-08-27T18:29:01.000Z");
+  assert.deepEqual(materialized.experience.observations[0]?.content, {sound: "whistle"});
+  assert.equal(Object.hasOwn(materialized.experience.observations[0]?.content ?? {}, "temperature"), false);
+  assert.equal(renderWaitPacket(materialized.packet), "水壶发出了持续的鸣笛声。");
+  const recoveryStore = new InMemoryExperienceStore();
+  const recovered = await materializeWaitExperience(result.commit, recoveryStore, "2026-08-27T18:29:02.000Z");
+  assert.equal(recovered.experience.epistemicRoot, materialized.experience.epistemicRoot);
 });
 
 test("T02 danger interrupts Wait before the kettle transition", async () => {
@@ -34,4 +44,6 @@ test("T02 danger interrupts Wait before the kettle transition", async () => {
   assert.equal(result.commit.worldTimeEnd, "2026-08-27T18:26:00.000Z");
   assert.deepEqual(result.commit.delta.events.map(item => item.kind), ["danger_interrupt"]);
   assert.equal(result.snapshot.processes[0]?.revision, 1);
+  const materialized = await materializeWaitExperience(result.commit, new InMemoryExperienceStore());
+  assert.equal(renderWaitPacket(materialized.packet), "一声突发的警示打断了等待。");
 });
