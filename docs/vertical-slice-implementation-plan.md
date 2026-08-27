@@ -30,7 +30,11 @@ SQLite 具体库需要一个最小 spike 后决定，不在文档阶段锁死。
 
 ## 3. 实施顺序
 
+当前进度：Phase 0、Phase 1 已完成并由本地自动测试覆盖；下一阶段为 Phase 2。
+
 ### Phase 0：协议骨架与拒绝路径
+
+状态：completed
 
 产物：
 
@@ -45,6 +49,8 @@ SQLite 具体库需要一个最小 spike 后决定，不在文档阶段锁死。
 
 ### Phase 1：Commit 与 Replay
 
+状态：completed
+
 产物：
 
 - InMemoryCommitStore；
@@ -58,6 +64,8 @@ SQLite 具体库需要一个最小 spike 后决定，不在文档阶段锁死。
 验收：C01、C05、C06、C08、F06、F08。
 
 ### Phase 2：V1 推门
+
+状态：next
 
 产物：
 
