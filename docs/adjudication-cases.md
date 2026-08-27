@@ -38,7 +38,7 @@ Test Level
 | I03 | “我不打开门” | 非实际动作或 negated clause，零提交 | 执行 open | adversarial language |
 | I04 | “如果门开着我就出去” | 条件 clause；先查询已定条件 | 为满足条件打开门 | compiler |
 | I05 | “假设抽屉里有钥匙，我拿它” | hypothetical，不产生 take | 生成钥匙或拿取 | adversarial language |
-| I06 | “门现在开着吗？” | Query，只读已定状态 | 改门状态或 Collapse 无关事实 | query purity |
+| I06 | “门现在开着吗？” | Query，只读已定且当前可直接获得的状态；零 Height | 改门状态、创建 Height 或 Collapse 无关事实 | query purity |
 | I07 | “我等五分钟” | Wait，推进 World Time | 当作 remain_still 或空输入 | time integration |
 | I08 | 空白/省略号 | None，默认不推进显著时间 | 自动解释成 Wait | compiler |
 | I09 | “我试图完全不动” | remain_still Attempt，可被反射打破 | 等同 None；吞掉反射 | embodiment integration |
@@ -50,7 +50,7 @@ Test Level
 |---|---|---|---|---|
 | C01 | self 在床边，尝试拿可达钥匙 | held_by 建立，旧位置关系终止 | 同时 held_by 与 located_on | world invariant |
 | C02 | 钥匙在关闭抽屉内，直接拿 | 前置失败或不可感知边界 | 穿过关闭容器拿到 | capability |
-| C03 | 打开抽屉后观察 | complete scope observation 可列内容 | 未打开前已知内容 | perception + relation |
+| C03 | 打开抽屉后主动观察 | Perception Operation 可耗时；complete scope observation 可列内容 | 当作只读 Query；未打开前已知内容 | perception + relation |
 | C04 | 空抽屉被完整检查 | 形成 `ABSENT_IN_SCOPE` 证据 | 仅因查询结果为空就断言不存在 | epistemic invariant |
 | C05 | 把盒子放入自身或其子容器 | 拒绝，零 Canon | 形成 containment cycle | relation validator |
 | C06 | self 已在卧室又提交 present_at 厨房 | 先终止旧位置再建立新位置 | 两个活动 present_at | world invariant |
