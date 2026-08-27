@@ -16,5 +16,7 @@ export function renderApprovedPacket(packet: ApprovedPresentationPacket): string
 export function renderWaitPacket(packet: ApprovedPresentationPacket): string {
   if (packet.approvedValues.includes("whistle")) return "水壶发出了持续的鸣笛声。";
   if (packet.approvedValues.includes(true)) return "一声突发的警示打断了等待。";
+  const elapsed = packet.approvedValues.find(value => typeof value === "number");
+  if (typeof elapsed === "number") return `等待结束了；大约过去了 ${elapsed} 秒。`;
   throw new ProtocolError("INTERNAL_INVARIANT", "wait packet lacks an approved perceivable value");
 }

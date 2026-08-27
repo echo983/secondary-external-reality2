@@ -1,15 +1,15 @@
 import type {ApprovedPresentationPacket, CanonicalFact, ConstitutedInput, EpistemicAcquisition, EvidenceRecord,
   ExperienceCommit, Observation, SettlementCommit, WorldSnapshot} from "../domain/types.js";
 import {ProtocolError} from "../protocol/errors.js";
-import {InMemoryCommitStore} from "../storage/in-memory-commit-store.js";
-import {computeEpistemicRoot, InMemoryExperienceStore} from "../storage/in-memory-experience-store.js";
+import {computeEpistemicRoot} from "../storage/in-memory-experience-store.js";
+import type {ExperiencePort, WorldCommitPort} from "../storage/ports.js";
 import {applyCommit, computeFutureStateRoot} from "./materialized-world.js";
 
 export interface WaitPolicy {interruptAt?: string}
 
 export async function materializeWaitExperience(
   commit: SettlementCommit,
-  store: InMemoryExperienceStore,
+  store: ExperiencePort,
   committedAt = new Date().toISOString()
 ): Promise<{experience: ExperienceCommit; packet: ApprovedPresentationPacket}> {
   const seed = commit.observationSeeds[0];
@@ -31,7 +31,7 @@ export async function materializeWaitExperience(
     observationId: observation.observationId, sourceHeight: commit.height};
   const acquisition: EpistemicAcquisition = {agentId: seed.observerId, evidenceId: evidence.evidenceId,
     mode: seed.modality === "testimony" ? "testimony" : "perception"};
-  const parentEpistemicRoot = store.commits.filter(item => item.observerId === seed.observerId).at(-1)?.epistemicRoot ?? "genesis";
+  const parentEpistemicRoot = await store.latestRoot(seed.observerId);
   const base = {experienceId: `${commit.worldBasis.worldId}:${commit.height}:${seed.observerId}`,
     sourceHeight: commit.height, observerId: seed.observerId, observations: [observation], evidence: [evidence],
     acquisitions: [acquisition], parentEpistemicRoot};
@@ -47,7 +47,7 @@ export async function settleWait(
   snapshot: WorldSnapshot,
   input: ConstitutedInput,
   attemptId: string,
-  store: InMemoryCommitStore,
+  store: WorldCommitPort,
   policy: WaitPolicy = {},
   committedAt = new Date().toISOString()
 ): Promise<{commit: SettlementCommit; snapshot: WorldSnapshot}> {
@@ -75,7 +75,8 @@ export async function settleWait(
   ] : policy.interruptAt !== undefined ? [
     {eventId: `event:${height}:danger`, kind: "danger_interrupt", participants: [input.actorId], causedBy: ["schedule"],
       worldTime: worldTimeEnd, payload: {danger: true}}
-  ] : [];
+  ] : [{eventId: `event:${height}:wait-elapsed`, kind: "wait_elapsed", participants: [input.actorId], causedBy: [attemptId],
+    worldTime: worldTimeEnd, payload: {elapsedSeconds: duration}}];
   const addFacts: CanonicalFact[] = kettleDue && prior !== undefined ? [{factId, address: prior.address, value: "boiling", status: "active",
     canonicalHeight: height, validFromWorldTime: process?.nextSemanticTransitionAt as string, sourceRef: eventId, revision: prior.revision + 1}] : [];
   const draft: SettlementCommit = {
@@ -88,7 +89,9 @@ export async function settleWait(
     observationSeeds: kettleDue ? [{observerId: input.actorId, modality: "hearing", sourceFactIds: [factId],
       sourceEventIds: [`event:${height}:kettle-whistle`], perceivableFields: ["sound"], forbiddenSourceLabels: ["temperature"],
       scope: "kitchen", salience: 1}] : policy.interruptAt !== undefined ? [{observerId: input.actorId, modality: "hearing", sourceFactIds: [],
-      sourceEventIds: [`event:${height}:danger`], perceivableFields: ["danger"], forbiddenSourceLabels: [], scope: "kitchen", salience: 1}] : [],
+      sourceEventIds: [`event:${height}:danger`], perceivableFields: ["danger"], forbiddenSourceLabels: [], scope: "kitchen", salience: 1}]
+      : [{observerId: input.actorId, modality: "interoception", sourceFactIds: [], sourceEventIds: [`event:${height}:wait-elapsed`],
+        perceivableFields: ["elapsedSeconds"], forbiddenSourceLabels: [], scope: "self", salience: 0.2}],
     stateRoot: "", committedAt
   };
   const commit = {...draft, stateRoot: computeFutureStateRoot(snapshot, draft)};

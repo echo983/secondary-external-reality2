@@ -3,8 +3,8 @@ import type {
   ExperienceCommit, Observation, ObservationSeed, SettlementCommit, WorldSnapshot
 } from "../domain/types.js";
 import {ProtocolError} from "../protocol/errors.js";
-import {InMemoryCommitStore} from "../storage/in-memory-commit-store.js";
-import {computeEpistemicRoot, InMemoryExperienceStore} from "../storage/in-memory-experience-store.js";
+import {computeEpistemicRoot} from "../storage/in-memory-experience-store.js";
+import type {ExperiencePort, WorldCommitPort} from "../storage/ports.js";
 import {applyCommit, computeFutureStateRoot} from "./materialized-world.js";
 
 function activeFact(snapshot: WorldSnapshot, address: string): CanonicalFact {
@@ -22,7 +22,7 @@ export interface DoorSettlement {
 
 export async function materializeDoorExperience(
   commit: SettlementCommit,
-  experienceStore: InMemoryExperienceStore,
+  experienceStore: ExperiencePort,
   committedAt = new Date().toISOString()
 ): Promise<{experience: ExperienceCommit; packet: ApprovedPresentationPacket}> {
   const observerId = commit.observationSeeds[0]?.observerId;
@@ -53,7 +53,7 @@ export async function materializeDoorExperience(
     evidenceId: `evidence:${observation.observationId}`, observationId: observation.observationId, sourceHeight: height
   }));
   const acquisitions: EpistemicAcquisition[] = evidence.map(item => ({agentId: observerId, evidenceId: item.evidenceId, mode: "perception"}));
-  const parentEpistemicRoot = experienceStore.commits.filter(item => item.observerId === observerId).at(-1)?.epistemicRoot ?? "genesis";
+  const parentEpistemicRoot = await experienceStore.latestRoot(observerId);
   const experienceBase = {experienceId: `${commit.worldBasis.worldId}:${height}:${observerId}`, sourceHeight: height,
     observerId, observations, evidence, acquisitions, parentEpistemicRoot};
   const experience: ExperienceCommit = {...experienceBase, epistemicRoot: computeEpistemicRoot(experienceBase), committedAt};
@@ -69,8 +69,8 @@ export async function settleOpenDoor(
   snapshot: WorldSnapshot,
   input: ConstitutedInput,
   attemptId: string,
-  commitStore: InMemoryCommitStore,
-  experienceStore: InMemoryExperienceStore,
+  commitStore: WorldCommitPort,
+  experienceStore: ExperiencePort,
   committedAt = new Date().toISOString()
 ): Promise<DoorSettlement> {
   const clause = input.clauses[0];

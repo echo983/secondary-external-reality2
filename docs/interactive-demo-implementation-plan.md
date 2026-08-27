@@ -1,7 +1,7 @@
 # 可交互 Demo 实施计划 v0.1
 
 日期：2026-08-27
-状态：in progress
+状态：completed
 前置：`vertical-slice-implementation-plan.md` Phase 0–6 completed
 
 ## 1. 当前判断
@@ -26,7 +26,7 @@
 
 ## 3. Phase 7B：存储端口与 RuntimeSession
 
-状态：planned
+状态：completed
 
 - 从 operation 中移除对具体 InMemoryStore 的依赖；
 - 定义 WorldCommitPort、ExperiencePort、AuditPort；
@@ -37,7 +37,7 @@
 
 ## 4. Phase 7C：CLI
 
-状态：planned
+状态：next
 
 - 默认使用本地 SQLite 文件；
 - `--fake` 运行固定提案，普通开发无需网络；
