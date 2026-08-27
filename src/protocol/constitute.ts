@@ -19,14 +19,17 @@ export async function constituteInput(
   const base = {attemptId: randomUUID(), rawInput};
   try {
     const proposal = await requestInputProposal(model, rawInput.text);
-    const audit: AttemptAudit = {...base, proposal, status: "constituted"};
+    const telemetry = model.telemetry?.();
+    const audit: AttemptAudit = {...base, proposal, status: "constituted", ...(telemetry === undefined ? {} : {modelTelemetry: telemetry})};
     await auditStore.appendAttempt(audit);
     return {proposal, audit, heightCreated: false};
   } catch (error) {
     const failure = error instanceof ProtocolError
       ? error
       : new ProtocolError("INTERNAL_INVARIANT", "unexpected constitution failure", {cause: error});
-    const audit: AttemptAudit = {...base, status: "failed", failureCode: failure.code};
+    const telemetry = model.telemetry?.();
+    const audit: AttemptAudit = {...base, status: "failed", failureCode: failure.code,
+      ...(telemetry === undefined ? {} : {modelTelemetry: telemetry})};
     await auditStore.appendAttempt(audit);
     return {audit, heightCreated: false};
   }

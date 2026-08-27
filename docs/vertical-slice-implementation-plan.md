@@ -30,7 +30,7 @@ SQLite 具体库需要一个最小 spike 后决定，不在文档阶段锁死。
 
 ## 3. 实施顺序
 
-当前进度：Phase 0–4 已完成并由本地自动测试覆盖；下一阶段为 Phase 5。
+当前进度：Phase 0–5 已完成；Phase 0–4 由本地自动测试覆盖，Phase 5 另有真实模型 smoke gate。下一阶段为 Phase 6。
 
 ### Phase 0：协议骨架与拒绝路径
 
@@ -113,7 +113,7 @@ SQLite 具体库需要一个最小 spike 后决定，不在文档阶段锁死。
 
 ### Phase 5：真实 Qwen 接入
 
-状态：next
+状态：completed
 
 在所有可信路径已经能用 fake proposal 测试后才接入：
 
@@ -130,6 +130,8 @@ SQLite 具体库需要一个最小 spike 后决定，不在文档阶段锁死。
 关键路径只允许这一次调用。Phase 0–4 使用确定性 Renderer；模型 Renderer 暂缓。低半径 Collapse 使用 fixture 版本化的 DeterministicCollapseResolver，不调用模型。
 
 ### Phase 6：SQLite 与崩溃恢复
+
+状态：next
 
 产物：
 

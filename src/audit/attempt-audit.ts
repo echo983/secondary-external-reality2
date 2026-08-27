@@ -1,6 +1,7 @@
 import type {AttemptId, EntityId, Height} from "../domain/types.js";
 import type {InputProposal} from "../protocol/input.js";
 import type {ProtocolErrorCode} from "../protocol/errors.js";
+import type {ModelTelemetry} from "../ai/model-adapter.js";
 
 export interface RawInput {
   sessionId: string;
@@ -17,6 +18,7 @@ export interface AttemptAudit {
   status: "received" | "constituted" | "boundary" | "failed" | "committed";
   failureCode?: ProtocolErrorCode;
   committedHeight?: Height;
+  modelTelemetry?: ModelTelemetry;
 }
 
 export class InMemoryAuditStore {

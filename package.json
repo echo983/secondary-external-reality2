@@ -7,6 +7,7 @@
     "build": "tsc -p tsconfig.json",
     "test": "npm run build && node --test dist/test",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "eval:qwen:runtime-smoke": "npm run build && node dist/scripts/qwen-runtime-smoke.js",
     "eval:qwen:smoke": "node experiments/qwen-boundary/run.mjs --smoke",
     "eval:qwen:full": "node experiments/qwen-boundary/run.mjs",
     "eval:qwen:score": "node experiments/qwen-boundary/score.mjs"
