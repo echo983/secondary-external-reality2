@@ -4,8 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test dist/test",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "eval:qwen:smoke": "node experiments/qwen-boundary/run.mjs --smoke",
     "eval:qwen:full": "node experiments/qwen-boundary/run.mjs",
     "eval:qwen:score": "node experiments/qwen-boundary/score.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.0",
+    "typescript": "^7.0.2"
   }
 }
