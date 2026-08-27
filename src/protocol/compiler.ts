@@ -36,6 +36,23 @@ export function compileInput(
   actorId: EntityId,
   entities: readonly FixtureEntity[]
 ): ConstitutedInput {
+  if (proposal.kind === "wait") {
+    return {
+      kind: proposal.kind,
+      actorId,
+      clauses: proposal.clauses.map(clause => {
+        const goal = clause.goalSpan?.text ?? "";
+        const minutes = goal.match(/(\d+)\s*分钟/u)?.[1];
+        const durationSeconds = minutes !== undefined ? Number(minutes) * 60 : /五分钟/u.test(goal) ? 300 : undefined;
+        if (durationSeconds === undefined || durationSeconds <= 0) {
+          throw new ProtocolError("INPUT_INVALID", "wait duration is not supported");
+        }
+        return {clauseIndex: clause.clauseIndex, operation: "wait", goal, method: goal,
+          targetIds: [], modifiers: {durationSeconds}};
+      }),
+      unsupportedClaims: proposal.unsupportedClaims
+    };
+  }
   return {
     kind: proposal.kind,
     actorId,
