@@ -4,6 +4,7 @@ import type {EntityId, ExperienceCommit, Height, SettlementCommit} from "../doma
 import {canonicalJson} from "../protocol/canonical-json.js";
 import {ProtocolError} from "../protocol/errors.js";
 import {computeEpistemicRoot} from "./in-memory-experience-store.js";
+import type {AuditPort, ExperiencePort, WorldCommitPort} from "./ports.js";
 
 interface JsonRow {json: string}
 
@@ -110,6 +111,12 @@ export class SqliteRuntimeStore {
         .get(observerId, commit.height) === undefined);
   }
 
+  latestExperienceRoot(observerId: EntityId): string {
+    const row = this.database.prepare("SELECT epistemic_root FROM experience_commits WHERE observer_id = ? ORDER BY source_height DESC LIMIT 1")
+      .get(observerId) as {epistemic_root: string} | undefined;
+    return row?.epistemic_root ?? "genesis";
+  }
+
   appendAttempt(audit: AttemptAudit): void {
     const json = canonicalJson(audit);
     this.database.prepare(`INSERT INTO attempt_audit (attempt_id, received_at, status, json) VALUES (?, ?, ?, ?)
@@ -123,5 +130,21 @@ export class SqliteRuntimeStore {
     for (const row of this.database.prepare("SELECT json FROM experience_commits ORDER BY observer_id, source_height").all() as JsonRow[]) lines.push(row.json);
     for (const row of this.database.prepare("SELECT json FROM attempt_audit ORDER BY received_at, attempt_id").all() as JsonRow[]) lines.push(row.json);
     return lines.length === 0 ? "" : `${lines.join("\n")}\n`;
+  }
+
+
+  worldPort(): WorldCommitPort {
+    return {append: async commit => this.appendWorld(commit)};
+  }
+
+  experiencePort(): ExperiencePort {
+    return {
+      append: async commit => this.appendExperience(commit),
+      latestRoot: async observerId => this.latestExperienceRoot(observerId)
+    };
+  }
+
+  auditPort(): AuditPort {
+    return {appendAttempt: async audit => { this.appendAttempt(audit); }};
   }
 }

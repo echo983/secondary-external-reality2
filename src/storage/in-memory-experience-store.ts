@@ -30,6 +30,10 @@ export class InMemoryExperienceStore {
     }
   }
 
+  async latestRoot(observerId: EntityId): Promise<string> {
+    return this.commits.filter(item => item.observerId === observerId).at(-1)?.epistemicRoot ?? "genesis";
+  }
+
   pending(commits: readonly SettlementCommit[], observerId: EntityId, from: Height = 1): SettlementCommit[] {
     const completed = new Set(this.commits.filter(item => item.observerId === observerId).map(item => item.sourceHeight));
     return commits.filter(commit => commit.height >= from &&

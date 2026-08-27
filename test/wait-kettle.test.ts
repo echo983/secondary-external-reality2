@@ -47,3 +47,14 @@ test("T02 danger interrupts Wait before the kettle transition", async () => {
   const materialized = await materializeWaitExperience(result.commit, new InMemoryExperienceStore());
   assert.equal(renderWaitPacket(materialized.packet), "一声突发的警示打断了等待。");
 });
+
+test("a later Wait still creates a sourced elapsed-time experience", async () => {
+  const fixture = createKettleFixture();
+  const store = new InMemoryCommitStore();
+  const first = await settleWait(fixture.genesis, await waitInput(), "wait-1", store);
+  const second = await settleWait(first.snapshot, await waitInput(), "wait-2", store);
+  assert.deepEqual(second.commit.delta.events.map(item => item.kind), ["wait_elapsed"]);
+  const projected = await materializeWaitExperience(second.commit, new InMemoryExperienceStore());
+  assert.deepEqual(projected.experience.observations[0]?.content, {elapsedSeconds: 300});
+  assert.equal(renderWaitPacket(projected.packet), "等待结束了；大约过去了 300 秒。");
+});
