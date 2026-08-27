@@ -117,6 +117,32 @@ export interface WorldSnapshot {
   stateRoot: string;
 }
 
+export interface ConstitutedClause {
+  clauseIndex: number;
+  operation?: string;
+  goal: string;
+  method: string;
+  targetIds: readonly EntityId[];
+  modifiers: Readonly<Record<string, JsonScalar>>;
+  conditionalOn?: number;
+}
+
+export interface ConstitutedInput {
+  kind: "attempt" | "query" | "recall" | "wait" | "speech" | "meta" | "none" | "ambiguous" | "invalid";
+  actorId: EntityId;
+  clauses: readonly ConstitutedClause[];
+  unsupportedClaims: readonly {text: string; start: number; end: number}[];
+}
+
+export interface ApprovedPresentationPacket {
+  packetId: string;
+  observerId: EntityId;
+  language: "zh" | "en";
+  observationIds: readonly ObservationId[];
+  boundaryCodes: readonly string[];
+  approvedValues: readonly JsonScalar[];
+}
+
 export interface Observation {
   observationId: ObservationId;
   observerId: EntityId;
