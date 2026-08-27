@@ -8,9 +8,21 @@ export interface ModelResponse {
   reasoning?: string;
 }
 
+export interface ModelTelemetry {
+  model: typeof ALLOWED_MODEL;
+  startedAt: string;
+  latencyMs: number;
+  attempts: number;
+  finishReason?: string;
+  promptTokens?: number;
+  completionTokens?: number;
+  errorCode?: string;
+}
+
 export interface ProposalModel {
   readonly model: typeof ALLOWED_MODEL;
   propose(rawInput: string): Promise<ModelResponse>;
+  telemetry?(): ModelTelemetry | undefined;
 }
 
 export async function requestInputProposal(model: ProposalModel, rawInput: string): Promise<InputProposal> {

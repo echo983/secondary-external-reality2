@@ -40,14 +40,18 @@ export async function constituteAndScreen(
   try {
     const proposal = await requestInputProposal(model, rawInput.text);
     const decision = screenGroundedPrefix(proposal, rawInput.actorId, entities);
+    const telemetry = model.telemetry?.();
     const audit: AttemptAudit = decision.boundaryCode === undefined
-      ? {...base, proposal, status: "constituted"}
-      : {...base, proposal, status: "boundary", failureCode: decision.boundaryCode};
+      ? {...base, proposal, status: "constituted", ...(telemetry === undefined ? {} : {modelTelemetry: telemetry})}
+      : {...base, proposal, status: "boundary", failureCode: decision.boundaryCode,
+        ...(telemetry === undefined ? {} : {modelTelemetry: telemetry})};
     await auditStore.appendAttempt(audit);
     return {proposal, decision, audit, heightCreated: false};
   } catch (cause) {
     const error = cause instanceof ProtocolError ? cause : new ProtocolError("INTERNAL_INVARIANT", "grounding failed", {cause});
-    const audit: AttemptAudit = {...base, status: "failed", failureCode: error.code};
+    const telemetry = model.telemetry?.();
+    const audit: AttemptAudit = {...base, status: "failed", failureCode: error.code,
+      ...(telemetry === undefined ? {} : {modelTelemetry: telemetry})};
     await auditStore.appendAttempt(audit);
     return {audit, heightCreated: false};
   }
