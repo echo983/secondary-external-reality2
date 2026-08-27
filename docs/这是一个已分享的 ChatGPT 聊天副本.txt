@@ -1,0 +1,3302 @@
+这是一个已分享的 ChatGPT 聊天副本。它不会被添加到记忆中。
+
+举报对话
+今天 11:30
+跟我详细说说桌游的fate框架
+它是什么
+哪来的
+有公司吗？
+
+对。先纠正一个分类：Fate 严格说不是“桌游规则”，而是 tabletop role-playing game（桌面角色扮演游戏，TTRPG）的通用规则系统。它和 D&D、GURPS、BRP 属于同一个大类，但设计方向差别很大。
+
+而且 Fate 很值得单独研究，因为它做了一件相当明确的事情：
+
+它试图把“故事里的自然语言事实”直接接到“可计算的裁决机制”上。
+
+这正是 Fate 和很多传统 RPG 最大的结构差别。
+
+一、Fate 到底是什么
+
+最短定义可以写成：
+
+Fate = 以自然语言命题 Aspect 为核心状态，以 Fate Point 为叙事资源，以 Skill/Approach + 4dF 为不确定性裁决，以四种 Action 为通用行为类型的 RPG 框架。
+
+官方自己把它定位为没有默认世界设定的通用系统，可以拿来跑很多不同世界。
+
+它不首先问：
+
+你力量多少？
+你有多少 HP？
+你的武器伤害是 1d8 还是 2d6？
+
+它更经常首先问：
+
+现在什么是真的？
+
+你想做什么？
+
+什么事实会帮助或阻碍你？
+
+这件事是否值得进行不确定性裁决？
+
+这是 Fate 的核心。
+
+二、Fate 最重要的发明：Aspect
+
+中文一般译作：
+
+特征、面向、特质、方面。
+
+但这些翻译都会稍微误导。
+
+我认为更准确的结构名称是：
+
+叙事事实标签 / Narrative Fact
+
+或者进一步说：
+
+可机械调用的自然语言事实。
+
+例如一个人物可以有：
+
+王国最后一名骑士
+绝不会抛弃朋友
+欠黑市医生一条命
+控制不住自己的好奇心
+父亲留下的旧左轮手枪
+
+一个房间也可以有：
+
+满地汽油
+漆黑一片
+唯一出口正在燃烧
+人群已经开始恐慌
+
+一个国家可以有：
+
+王位继承战争正在扩大
+
+一场战斗甚至可以出现：
+
+敌人的注意力被吸引到东侧
+桥梁即将坍塌
+
+Fate 官方明确说，Aspect 是描述某个对象“独特或值得注意之处”的短语；人物、环境、局势、游戏世界都可以有 Aspect。
+
+更重要的一条是 Fate Condensed 明确强调的：
+
+Aspects are true.
+
+也就是说：
+
+如果人物拥有：
+
+Precog Sniper
+
+那么这不是：
+
+射击 +2 的一个技能描述。
+
+而首先意味着：
+
+这个人在虚构世界中确实是一个能够预知的狙击手。
+
+这项事实先成立，然后规则再决定什么时候需要掷骰、什么时候得到优势。
+
+这是 Fate 非常重要的设计。
+
+三、所以 Fate 不是“把所有现实数字化”
+
+传统 RPG 经常走：
+
+世界事实 → 数值模型 → 数值计算 → 结果 → 再翻译成故事
+
+例如：
+
+Alice 力量 14
+铁门 AC / DC 18
+Strength modifier +2
+掷 d20
+算成功失败
+
+Fate 更倾向：
+
+世界事实 → 判断行动意图 → 必要时调用抽象裁决 → 更新世界事实
+
+比如：
+
+门是沉重的锈蚀铁门。
+
+Alice 是退役消防员。
+
+Alice：“我试图把门撞开。”
+
+GM 首先不是寻找一本：
+
+铁门硬度表。
+
+而是判断：
+
+有没有不确定性？失败是否有意义？
+
+如果没有：
+
+门开了。
+
+Fate Core 明确规定：通常只有面对真正的障碍，或者别人积极反抗时才需要掷骰；否则直接认为角色做到了。
+
+所以 Fate 本质上不是世界模拟器。
+
+它是：
+
+局势裁决器。
+
+四、Aspect 为什么不是普通“标签”
+
+因为 Aspect 同时存在三个层次。
+
+1. 它是事实
+
+腿骨折了
+
+意味着腿确实骨折了。
+
+你不能因为规则没有写：
+
+移动速度 -50%
+
+就说：
+
+那我正常百米冲刺。
+
+Fiction 本身已经限制了行动可能性。
+
+2. 它是机械接口
+
+如果：
+
+地板满是机油
+
+某人试图奔跑。
+
+这个 Aspect 可以参与裁决。
+
+例如对方利用它：
+
+你跑过去的时候很容易滑倒。
+
+或者有人主动利用：
+
+我把敌人诱导到油污区域。
+
+于是 Aspect 能进入规则。
+
+3. 它是叙事资源接口
+
+玩家可以花 Fate Point 调用有利 Aspect。
+
+例如：
+
+我在这里长大
+
+正在追捕一个逃犯。
+
+玩家说：
+
+我认识这条巷子的捷径。
+
+花一个 Fate Point，通常可以：
+
++2
+或重掷
+
+Aspect 因而是：
+
+自然语言世界状态 ↔ 机械裁决
+
+之间的接口。
+
+我认为这才是 Fate 最值得注意的部分。
+
+五、Fate Point 是什么
+
+Fate Point 可以理解成：
+
+玩家拥有的一小部分叙事因果干预预算。
+
+玩家可以消费 Fate Point：
+
+“这个已经存在的事实，现在非常重要。”
+
+比如角色有：
+
+前皇家海军军官
+
+现在在暴风雨里操纵船只。
+
+花 Fate Point 调用：
+
+前皇家海军军官
+
+通常获得 +2 或重掷。
+
+但 Fate Point 不是单向消耗。
+
+它存在一个循环：
+
+麻烦 → 获得 Fate Point → 后面制造优势
+
+这就是 Compel。
+
+例如人物 Aspect：
+
+无法拒绝受苦的人
+
+GM：
+
+你本来可以现在离开城市，但你看见有人被秘密警察带走。
+
+因为你“无法拒绝受苦的人”，我认为你会介入。
+
+如果玩家接受这个 complication：
+
+获得一个 Fate Point。
+
+如果玩家真的不想：
+
+可以付 Fate Point 拒绝。
+
+因此 Fate 的经济系统实际上在鼓励：
+
+让角色的性格、关系、缺陷真正产生因果后果。
+
+官方把 Fate Point 的主要获得途径之一明确写成接受 Compel。
+
+六、这个机制非常不寻常
+
+传统角色游戏里的缺点经常是：
+
+开局拿一些点数。
+
+“怕水” -2 点。
+
+“独眼” -5 点。
+
+然后玩家以后尽量想办法不让这些缺点出现。
+
+Fate 反过来。
+
+它建立了循环：
+
+缺陷实际产生麻烦
+↓
+你得到 Fate Point
+↓
+以后你可以让自己的优势变得重要
+↓
+角色再遇到麻烦
+
+因此故事动力不是系统的副产品。
+
+它直接写进资源循环里。
+
+Fate Codex 对这点概括得很准确：Aspect 构成 Fate 中央经济，制造“糟糕决定—不幸局势—解决”的循环。
+
+七、Fate 对所有行为做了一个很强的抽象
+
+这可能是整个系统第二值得研究的地方。
+
+Fate Core 把需要进行技能裁决的行为压缩成 四种 Action：
+
+Overcome
+
+克服
+
+改变一个阻碍你实现目的的障碍。
+
+比如：
+
+开锁
+翻墙
+破解电脑
+说服守卫
+扑灭火灾
+Create an Advantage
+
+创造优势
+
+这是 Fate 特别重要的一项。
+
+你不是直接“打掉对方 HP”。
+
+而是改变局势。
+
+比如：
+
+我把桌子推翻当掩体。
+
+产生：
+
+坚固掩体
+
+或者：
+
+我朝敌人脸上扬沙。
+
+产生：
+
+睁不开眼
+
+或者：
+
+我研究他的财务记录。
+
+发现：
+
+秘密海外账户
+
+或者：
+
+我煽动群众。
+
+产生：
+
+群众开始倒向我们
+
+这些都属于同一种抽象操作：
+
+改变状态空间，建立一个以后可利用的事实。
+
+Attack
+
+攻击
+
+不是特指：
+
+用剑砍人。
+
+而是：
+
+试图使另一主体退出当前 Conflict。
+
+所以 Attack 可以是：
+
+刀砍
+射击
+精神攻击
+审讯
+羞辱
+政治攻击
+
+Fate Core 明确允许 Conflict 是身体性的，也可以是精神性的。
+
+Defend
+
+防御
+
+阻止 Attack，或者阻止别人的某些 Create Advantage / Overcome。
+
+官方就是这四类：
+
+Overcome / Create Advantage / Attack / Defend。
+
+八、这里有一个很漂亮的地方
+
+同一个物理动作：
+
+把一个人推开
+
+并不对应固定 function：
+
+push()
+
+它是什么 Action，取决于意图。
+
+例如：
+
+推他下悬崖
+
+意图：
+
+伤害/消灭他。
+
+于是是：
+
+Attack
+
+把他推倒
+
+意图：
+
+让他处于不利姿态。
+
+于是：
+
+Create Advantage
+
+产生：
+
+倒在地上
+
+把他从门口推开
+
+意图：
+
+清除道路。
+
+于是：
+
+Overcome
+
+Fate 的相关官方解释明确就使用了“推人”这个例子：同一个表面动作，根据 intended result 和 scene goal，可以属于 Attack、Create Advantage 或 Overcome。
+
+所以 Fate 的 action taxonomy 并不是：
+
+手做什么动作。
+
+而是：
+
+主体试图造成什么类型的状态变化。
+
+这一点非常重要。
+
+九、所以 Fate 不是“动作模拟”
+
+可以把它表示成：
+
+Intent
+   ↓
+Fictional situation
+   ↓
+Action class
+   ↓
+Resolution
+   ↓
+New fictional situation
+
+而不是：
+
+physical command
+   ↓
+physics simulation
+   ↓
+result
+
+这也是所谓：
+
+Fiction First
+
+虚构事实优先。
+
+规则不是先运行然后决定世界发生了什么。
+
+而是：
+
+先理解这个世界现在是什么情况、角色想达到什么结果，再选择需要什么规则。
+
+官方 Fate 资料称这一原则为其 Golden Rule。
+
+十、真正掷骰的时候怎么算
+
+Fate 使用一种来自 Fudge 的骰子。
+
+每颗六面骰：
+
+-  -  0  0  +  +
+
+也就是：
+
+两面 −1
+两面 0
+两面 +1
+
+一次投四颗：
+
+4dF
+
+所以骰子结果范围：
+
+-4 … +4
+
+但集中在 0 附近。
+
+然后：
+
+结果 = Skill + 4dF
+
+例如：
+
+Shoot +3
+
+骰子：
++ 0 - +
+
+骰子总和 = +1
+
+最终 = +4
+
+这是直接继承 Fudge 的部分。
+
+十一、Fate 的随机性实际上没有 D20 那么大
+
+这是它设计上的一个重要结果。
+
+d20：
+
+1~20
+
+均匀分布。
+
+每个数字一样可能。
+
+Fate 4dF：
+
+-4 ... +4
+
+呈钟形集中。
+
+所以：
+
+Skill 更像真正稳定的能力。
+
+如果：
+
+Alice +4
+Bob +1
+
+随机性通常不会随便把这种能力差距抹掉。
+
+骰子主要制造：
+
+小幅扰动。
+
+而不是：
+
+一个大师有 5% 概率像完全不会一样行动。
+
+十二、Fate 还有一个“结果分类层”
+
+它没有简单停在：
+
+成功 / 失败
+
+Fate Core 通常有：
+
+Fail
+Tie
+Succeed
+Succeed with Style
+
+也就是说：
+
+Fail
+
+可能：
+
+没做到。
+
+但 Fate 很重要的一种处理是：
+
+可以做到，但付重大代价。
+
+Tie
+
+通常：
+
+做到了，但付小代价。
+
+Success
+
+正常做到。
+
+Success with Style
+
+超过目标至少 3 shifts，得到额外收益。
+
+这使 Fate 的裁决不是：
+
+bool success
+
+而近似：
+
+Result {
+    achievement,
+    cost,
+    advantage
+}
+十三、人物是由什么组成的
+
+标准 Fate Core 人物大概有：
+
+Aspects
+Skills
+Stunts
+Stress
+Consequences
+Refresh
+
+官方 Fate Condensed 也是这么概括角色组成。
+
+其中三个特别重要。
+
+Skills
+
+回答：
+
+你擅长做什么？
+
+例如：
+
+Fight +4
+Athletics +3
+Investigate +2
+Rapport +1
+
+Skill 是能力量。
+
+Aspects
+
+回答：
+
+你是谁？这个世界关于你的什么事情是真的？
+
+例如：
+
+流亡王子的最后一名护卫
+欠地下黑帮一个巨大人情
+从不伤害孩子
+
+这是身份和世界事实。
+
+Stunts
+
+回答：
+
+你有什么特殊规则例外？
+
+典型形式比如：
+
+当 X 条件成立时，某技能 +2。
+
+或者：
+
+在某种特定情形下，可以用 Skill A 替代 Skill B。
+
+所以 Stunt 很接近：
+
+局部规则覆盖 / rule override。
+
+十四、伤害系统也不是 HP 模型
+
+Fate 有：
+
+Stress
+
+和：
+
+Consequences
+
+Stress 是比较短期的冲突消耗。
+
+Consequences 是持续存在的事实。
+
+例如你受到很重的一击。
+
+你可以承受一个 Consequence：
+
+肋骨断了
+
+它随后成为一个 Aspect。
+
+于是：
+
+受伤
+
+不是简单：
+
+HP 37 → 21
+
+而是世界里多出了一个新事实：
+
+Alice:
+    consequence = "肋骨断了"
+
+这个事实以后可以继续参与因果。
+
+官方就是这样定义 Consequence：它是一种持续时间更长的 Aspect，例如 Dislocated Shoulder。
+
+这一点实际上非常先进。
+
+十五、输掉冲突也不是简单死亡
+
+Fate 有一个机制叫：
+
+Concede
+
+主动认输。
+
+例如：
+
+“我打不过了，我认输。”
+
+对方取得冲突目标。
+
+但是你保留一部分对自己角色之后发生什么的叙事控制。
+
+例如可以谈：
+
+我输了，剑被抢走，但没有被杀死。
+
+而如果一直打到 Taken Out：
+
+你就失去了对角色此次结果的这种控制。
+
+官方甚至明确解释：
+
+concession 是现实玩家层面的机制，不是角色行为本身。
+
+也就是说：
+
+角色没有按一个“投降按钮”；玩家是在元层决定如何结束冲突。
+
+这进一步说明 Fate 根本不是纯粹的“角色内部模拟系统”。
+
+它公开存在一个：
+
+玩家—叙事层。
+
+十六、Fate 是从哪来的
+
+它的祖先是：
+
+Fudge
+
+Fudge 是 Steffan O'Sullivan 在 1990 年代早期发展起来的一套通用 RPG 系统。
+
+Fudge 已经有两个后来 Fate 继续使用的关键东西：
+
+形容词 Ladder
+
+比如：
+
+Terrible  -2
+Poor      -1
+Mediocre   0
+Average   +1
+Fair      +2
+Good      +3
+Great     +4
+Superb    +5
+
+也就是说：
+
+数字和自然语言能力描述绑定。
+
+Fudge Dice
+
+就是：
+
+-
+0
++
+
+那种骰子。
+
+Fate 保留了这两项。
+
+十七、真正创造 Fate 的两个人
+
+主要是：
+
+Fred Hicks
+
+和
+
+Rob Donoghue
+
+大约 2000 年前后，两人讨论：
+
+如果再跑一次《Amber》题材游戏，应该怎样修改 Fudge？
+
+《Amber Diceless Roleplaying》本身也是 RPG 史上一个比较另类的系统——它甚至主要不靠骰子。
+
+Hicks 后来回忆，他们觉得 Fudge 很灵活，但是：
+
+经常需要 GM 自己做很多设计才能开始玩。
+
+他们最初的 Fate，就是想把 Fudge 改成更加可以直接拿起来运行的东西。
+
+十八、Aspect 从哪里来的
+
+这里还有一条很有意思的设计血统。
+
+Fred Hicks 后来明确说，7th Sea 对 Aspect 的诞生是一个直接刺激。
+
+传统 RPG 经常说：
+
+缺点是不好的东西，因此给你一些角色创建点作为补偿。
+
+7th Sea 里出现了一种想法：
+
+有一个宿敌其实很酷，因为它会让你的故事获得更多戏份。
+
+于是 Fate 把这个思想进一步一般化：
+
+角色身上一个事实既可以帮你，也可以害你。
+
+它害你时，你获得资源。
+
+以后这个资源又能让别的事实帮助你。
+
+这逐渐变成 Aspect + Fate Point 的循环。
+
+Hicks 还提到 Amber Diceless、Over the Edge、Risus 等也是设计背景的一部分。
+
+十九、时间线大致是这样的
+≈2000
+
+Fred Hicks + Rob Donoghue：
+
+Fudge house rules / hack。
+
+后来官方自己的 Fate 关系图也把 Fate 1 描述为：
+
+Rob Donoghue 与 Fred Hicks 的 Fudge house-rule hacks，约 2000 年。
+
+2003
+
+早期完整 Fate 在互联网社区公开。
+
+第一版和第二版都在这一时期出现。
+
+最早 FATE 甚至真的是缩写：
+
+Fudge Adventures in Tabletop Entertainment
+
+后来又曾解释为：
+
+Fantastic Adventures in Tabletop Entertainment
+
+到 Fate 3 左右，官方已经不再把它当缩写，所以今天正确写法是：
+
+Fate
+
+而不是必须写：
+
+FATE。
+
+2006
+
+出现很重要的一部作品：
+
+Spirit of the Century
+
+它使用 Fate 3。
+
+这让 Fate 开始从一个互联网 RPG hack 变成比较成熟的商业 RPG 系统。
+
+2010
+The Dresden Files Roleplaying Game
+
+出版。
+
+这是 Fate 历史上很重要的一次商业应用。
+
+事实上 Dresden Files 的授权机会也是促使 Evil Hat 从一个松散项目名称变成真正公司的重要因素。Fred Hicks 自己后来回忆，大约 2006 年左右他们把 Evil Hat 变成了一个真正的游戏公司。
+
+2013
+
+出现今天最重要的版本：
+
+Fate Core
+
+这是一次比较彻底的重构。
+
+官方自己的版本图把它描述为：
+
+complete rewrite of Fate from the ground up
+
+并且把 Action 收敛成今天的四种：
+
+Overcome
+Create Advantage
+Attack
+Defend
+
+Fate Core 的 Kickstarter 有超过一万名支持者。正式版 2013 年 7 月发布。
+
+所以你现在研究 Fate，主要研究 Fate Core 这一族就行。
+
+二十、现在其实有三个主要版本
+
+它们不是三个互相不兼容的世代。
+
+更接近：
+
+                 Fate Core
+                 /       \
+      Accelerated       Condensed
+Fate Core
+
+完整版。
+
+约 300 页。
+
+优点不是规则本身有 300 页那么复杂，而是有：
+
+原理
+GM 指南
+示例
+世界构建方法
+设计解释
+
+如果是为了研究系统结构，最值得读这个。
+
+Fate Accelerated / FAE
+
+快速版。
+
+它有一个特别重要的改变：
+
+不是问：
+
+你会什么 Skill？
+
+而更倾向问：
+
+你采取什么 Approach？
+
+比如：
+
+Careful
+Clever
+Flashy
+Forceful
+Quick
+Sneaky
+
+所以：
+
+同样是开门，
+
+可以：
+
+Forceful：撞开
+Clever：找到机关
+Sneaky：偷偷撬锁
+Careful：慢慢拆锁
+
+这是 Fate 的另一个有意思的抽象方向：
+
+能力分类从“行为领域”转成“行为方式”。
+
+Fate Condensed
+
+不是“第五版”。
+
+它基本仍然是 Fate Core。
+
+只是：
+
+把经过多年实际运行后形成的修订和澄清压缩成一个更小、更干净的版本。
+
+官方甚至明确说：
+
+最终它仍然是 Fate Core。
+
+所以如果你要真正运行：
+
+我反而建议先看 Fate Condensed。
+
+如果要研究设计思想：
+
+看 Fate Core + System Toolkit。
+
+二十一、有没有公司？
+
+有。
+
+而且非常明确：
+
+Evil Hat Productions, LLC
+
+就是 Fate 背后的公司。
+
+Fate 本身的商标属于 Evil Hat Productions, LLC。
+
+它最早不是典型意义上：
+
+几个人融资开公司，然后设计产品。
+
+而是反过来的。
+
+大致是：
+
+一群 RPG 玩家
+↓
+Evil Hat 这个圈子/名称
+↓
+Hicks + Donoghue 做 Fate
+↓
+Fate 在网络 RPG 社区传播
+↓
+拿到 Dresden Files RPG 授权
+↓
+约 2006 年把 Evil Hat 正式商业化
+↓
+成为 RPG 出版公司
+
+所以：
+
+Fate 先于成熟的 Evil Hat 公司。
+
+不是 Evil Hat 公司成立以后安排一个产品经理：
+
+“我们开发一个 Fate 产品。”
+
+这个因果顺序很重要。
+
+二十二、Evil Hat 今天还存在吗？
+
+存在，而且 2026 年仍然在正常运营。
+
+它现在仍然出版 RPG，而且官网在 2026 年 8 月还有正在开发和即将发行的项目。它目前不再把棋盘游戏/卡牌作为主要业务，官方投稿说明直接写的是现在主要出版 role-playing games。
+
+不过 Evil Hat 今天并不是：
+
+只做 Fate 的公司。
+
+它还出版/参与：
+
+Powered by the Apocalypse
+Forged in the Dark
+Fate
+
+等系统的作品。
+
+所以关系准确说是：
+
+Evil Hat Productions
+        │
+        ├── Fate 系统的创造者/主要出版者/商标持有人
+        │
+        ├── Fate 游戏
+        │
+        └── 其他 RPG
+二十三、更有意思的是：Fate 的“规则”本身是开放的
+
+这是 Fate 与许多商业 RPG 很不一样的一面。
+
+Evil Hat 把：
+
+Fate Core
+Fate Accelerated
+Fate Condensed
+Fate System Toolkit
+
+都提供了可开放授权的 SRD — System Reference Document。
+
+目前官方仍然提供：
+
+CC-BY
+OGL
+
+两种授权路径，并明确说如果不知道选哪个，推荐 Creative Commons。
+
+CC-BY 的重要之处是：
+
+你可以基于 Fate 做自己的游戏。
+
+甚至可以：
+
+做商业游戏。
+
+而且你自己的新增内容不必也开放，只需要满足 attribution 等许可证要求。
+
+所以它实际上形成了：
+
+Evil Hat
+    ↓
+开放 Fate 核心规则
+    ↓
+任何人可以 fork / modify / specialize
+    ↓
+Powered by Fate 游戏生态
+
+这和软件世界里的 framework 很接近。
+
+二十四、为什么人们会叫它“框架”
+
+因为 Fate 与其说是：
+
+一个游戏
+
+不如说是：
+
+制作 RPG 的 meta-system。
+
+比如 D&D 会告诉你：
+
+力量
+敏捷
+体质
+智力
+感知
+魅力
+
+战士
+法师
+牧师
+
+AC
+HP
+法术位
+……
+
+Fate 更像告诉你：
+
+世界里存在 Facts。
+人物有 Competencies。
+主体形成 Intent。
+Intent 被映射成 Action。
+存在 Opposition 时才 Resolution。
+Resolution 更新 Facts。
+部分 Facts 可以被 Invoke。
+Complication 产生 Fate Points。
+Fate Points 又可以改变未来 Resolution。
+
+然后：
+
+你自己决定魔法是什么。
+
+你自己决定机器人是什么。
+
+你自己决定国家战争怎么表示。
+
+你自己决定财富是不是 Stress Track。
+
+你自己决定技能有哪些。
+
+官方的 Fate System Toolkit 甚至专门就是教人怎么修改技能系统、魔法、装备、社会等模块。
+
+二十五、如果把 Fate 剥掉所有 RPG 文学包装
+
+其实可以得到一个很小的系统
+
+我会把它抽象成：
+
+WorldState
+    = set<Fact>
+
+Agent
+    = {
+        aspects,
+        competencies,
+        special_rules,
+        resources,
+        consequences
+      }
+
+Attempt
+    = {
+        actor,
+        intent,
+        target,
+        desired_state_change
+      }
+
+然后：
+
+Attempt
+   ↓
+interpret in current WorldState
+   ↓
+is outcome uncertain/contested?
+   ├── no → update reality directly
+   │
+   └── yes
+        ↓
+      classify:
+        Overcome
+        CreateAdvantage
+        Attack
+        Defend
+        ↓
+      select competency
+        ↓
+      resolve
+        ↓
+      apply relevant facts
+        ↓
+      generate outcome
+        ↓
+      update WorldState
+
+Aspect 则可以表示成：
+
+Aspect {
+    proposition
+    scope
+    owner
+    duration
+    invocation_state
+}
+
+例如：
+
+Aspect {
+    proposition: "桥面覆盖着薄冰",
+    scope: bridge,
+    owner: environment,
+    duration: until_melted
+}
+
+它首先：
+
+TRUE
+
+然后才问：
+
+对当前 attempt 有没有机械意义？
+
+二十六、这里其实就是 Fate 最强和最弱的地方
+
+它最强的地方是：
+
+没有强迫设计者把所有语义事实提前翻译成数值属性。
+
+所以：
+
+他怕自己的父亲
+
+不需要变成：
+
+FearOfFather = 7
+
+它就可以作为一句事实存在。
+
+只有真正进入因果链的时候，规则才要求它产生机械效果。
+
+这非常节省建模。
+
+但它的弱点也完全一样：
+
+谁来判断一个 Aspect 与某次 Attempt 是否真的相关？
+
+比如：
+
+前皇家海军军官
+
+玩家说：
+
+所以我知道怎么修核潜艇反应堆。
+
+是否成立？
+
+规则本身不能算出来。
+
+需要：
+
+GM
+玩家共识
+世界设定
+语义判断
+
+来裁决。
+
+所以 Fate 在数学层很轻，但它把大量复杂性转移到了：
+
+语义裁决层
+
+这也是为什么 Fate 对人类跑团来说非常依赖一个懂得判断语境的 GM。
+
+二十七、这也是它和 D&D 的真正区别
+
+粗略说：
+
+D&D
+
+倾向于：
+
+尽量提前规定：
+什么东西是什么
+→
+它对应什么规则
+→
+怎么算
+GURPS
+
+甚至进一步：
+
+尽量把世界现象参数化
+→
+建立通用模型
+→
+计算结果
+Fate
+
+则倾向：
+
+允许事实以自然语言存在
+→
+真正需要裁决时再判断相关性
+→
+使用少数几个通用 resolution operator
+
+所以如果要给这三者起结构名字，我会叫：
+
+D&D
+= 类型化规则系统
+
+GURPS
+= 参数化模拟系统
+
+Fate
+= 语义裁决系统
+
+当然这是我的抽象命名，不是这三个系统自己的官方术语。
+
+二十八、为什么 Fate 对今天的 LLM 特别有意思
+
+Fate 是 2000 年左右设计的，当时根本不存在今天的 LLM。
+
+但它碰巧做了一件非常适合 LLM 的事情：
+
+把大量状态保留成自然语言命题，而不是要求人类先把世界彻底 schema 化。
+
+传统计算机特别不擅长判断：
+
+“曾经在皇家海军服役”
+
+与：
+
+“在暴风雨中接管一艘失控的帆船”
+
+有什么关系。
+
+所以以前必须靠 GM。
+
+但是这恰恰是今天 LLM 很擅长的任务：
+
+Fact
++
+Situation
++
+Intent
+→
+semantic relevance judgment
+
+所以 Fate 原本最昂贵的那一层：
+
+语义仲裁
+
+现在第一次有可能部分机器化。
+
+这也是为什么我认为 Fate 不是简单的“比较自由的 D&D”。
+
+它里面其实已经存在一种很清楚的计算结构：
+
+事实层不是数值表。
+
+Attempt 才触发裁决。
+
+裁决不是模拟所有物理过程，而是判断 Attempt 导致什么状态变化。
+
+新的结果重新成为事实。
+
+如果把职业、骰子、角色卡等 RPG 表层全部拿掉，这个骨架其实相当漂亮。
+
+而这大概也是 Fate 在 2026 年重新拿出来看，比 2003 年它刚出现时更有意思的地方。
+
+来源
+
+对，这一块必须单独建模，否则“主体只能发出 Attempt”会误导成“世界只有主体行动时才前进”。
+
+更准确的结构应该是：
+
+主体只能主动提交 Attempt，但 Reality 还会被非主体意图过程持续改变。
+
+所以世界里的状态变化至少有两大来源：
+
+1. Attempt-driven change
+2. Autonomous change
+
+第二类就是你说的：
+
+饿了
+困了
+膀胱越来越满
+伤口继续流血
+猫突然咬你
+下雨
+门因为风自己关上
+股票跌了
+别人在背后做事
+细菌感染继续发展
+
+即使当前意识主体：
+
+什么都不做
+
+Reality 也继续变化。
+
+我会给这一类一个正式名字：
+
+Autonomous Process
+
+自主过程
+
+注意这里的“自主”不是说有意识，而是：
+
+不需要当前主体发出 Attempt 就会推进的因果过程。
+
+例如：
+
+HungerProcess
+WoundBleedingProcess
+WeatherProcess
+CatBehaviorProcess
+OtherAgentProcess
+DecayProcess
+EconomicProcess
+
+于是世界状态更新可以写成：
+
+Reality(t+Δt)
+=
+Reality(t)
++ AttemptEffects
++ AutonomousProcessEffects
+“饿了”其实不是一个单一事件
+
+这里最好拆三层。
+
+假设一个人长时间没吃饭。
+
+首先是现实身体状态：
+
+Reality:
+energy reserve ↓
+blood glucose changes
+stomach state changes
+
+这些是身体过程。
+
+然后出现主体可感知信号：
+
+Observation:
+"腹部空"
+"饥饿感增强"
+"注意力开始被食物吸引"
+
+再进入主体的意识状态：
+
+Epistemic / phenomenal state:
+"I am hungry"
+
+最后才可能影响行为生成：
+
+Motivation:
+seek food ↑
+
+所以：
+
+Autonomous physiology
+→ sensation
+→ awareness
+→ motivation
+→ possible Attempt
+
+而不是：
+
+Agent decides:
+"I become hungry"
+
+这与你之前的“肠子疼不是意识点让它疼”完全一致。
+
+因此主体本身也应该分成两部分
+
+至少：
+
+Conscious Agent
+Embodied Substrate
+Conscious Agent
+
+拥有：
+
+perception
+belief
+memory
+goals
+attention
+Attempt generation
+Body / Substrate
+
+拥有：
+
+physiology
+injury
+fatigue
+hunger
+reflexes
+autonomic responses
+
+意识点并不直接控制后者。
+
+比如：
+
+我试图不打喷嚏。
+
+这是 Attempt。
+
+现实裁决可能：
+
+sneeze reflex strength = high
+suppression ability = moderate
+→ attempt fails
+→ sneeze occurs
+
+这比把“打喷嚏”当成角色 action 要合理。
+
+“被猫咬了”又是另一种
+
+它不是自己的自主生理过程。
+
+而是：
+
+另一个主体的 Attempt
+
+假设猫也是 Agent。
+
+Cat:
+    perceives hand
+    affect = irritated
+    goal = stop contact
+
+Cat Attempt:
+    bite hand
+
+人什么都没做。
+
+但：
+
+Reality Judge
+→ bite succeeds
+→ skin puncture
+
+随后人的 Observation：
+
+sharp pain
+pressure
+cat attached to hand
+
+于是：
+
+Human Epistemic State changes
+
+这很好，因为：
+
+“主动性”是相对于哪个主体而言的。
+
+对猫：
+
+主动行为
+
+对人：
+
+外源事件
+
+所以最好不要建立一个全局：
+
+active / passive
+
+而是定义：
+
+Agency-relative event
+
+同一个事件对不同主体具有不同来源。
+
+甚至“猫咬你”也不一定需要意识决策
+
+这里还可以进一步细分。
+
+猫可能：
+
+有意识地攻击
+
+也可能：
+
+疼痛反射
+惊跳反射
+捕猎反射
+
+如果我们把所有动物动作都要求走一个完整 LLM deliberation，会非常浪费。
+
+所以 Agent 可以拥有两种行为源：
+
+Deliberative Attempt
+Reactive Attempt
+
+例如：
+
+Deliberative
+猫想从房间出去
+→ 去抓门
+Reactive
+尾巴突然被踩
+→ 回头咬
+
+Reactive Attempt 可以由低成本规则或小模型产生。
+
+这样主体仍然只有 Attempt 能影响外部世界，但：
+
+Attempt 不一定都来自高层意识 deliberation。
+
+我觉得这里应该再引入一个很重要的概念
+Pressure
+
+压力
+
+它不是事件，也不是 Attempt。
+
+它是：
+
+如果主体继续什么都不做，会越来越推动某类结果的状态变量。
+
+例如：
+
+hunger_pressure
+sleep_pressure
+urination_pressure
+oxygen_deprivation
+fear_pressure
+pain_pressure
+social_pressure
+debt_pressure
+temperature_pressure
+
+它们随着时间变化。
+
+例如：
+
+hunger_pressure:
+0.1 → 0.3 → 0.6 → 0.9
+
+低的时候：
+
+偶尔想到吃东西。
+
+高的时候：
+
+很难专注。
+
+极端时：
+
+身体虚弱。
+
+所以：
+
+Pressure ≠ command
+Pressure ≠ motivation necessarily
+Pressure = causal tendency
+
+主体可以：
+
+知道自己饿，但决定继续工作。
+
+这时候：
+
+hunger exists
+motivation exists
+Attempt = keep working
+
+世界继续运行：
+
+hunger_pressure ↑
+
+这正是我们需要的“什么都不做也有反馈”。
+
+这可以统一很多不同东西
+
+比如：
+
+生理压力
+hunger
+thirst
+sleep
+pain
+oxygen
+temperature
+情绪压力
+fear
+anger
+grief
+stress
+
+不过情绪不要简单做成单变量，可以先保持语义事实。
+
+社会压力
+老板等你的报告
+债主催款
+朋友正在失去耐心
+环境压力
+房间温度持续降低
+建筑正在燃烧
+洪水上涨
+
+它们都有共同结构：
+
+Process
+→ accumulates / changes
+→ threshold or continuous effects
+→ generates observations / constraints
+“什么都不做”本身也不应该被当成 Attempt
+
+这一点值得明确。
+
+假设玩家沉默 10 秒。
+
+不要自动创建：
+
+Attempt:
+do nothing
+
+因为“不产生 Attempt”和：
+
+“我明确试图保持一动不动”
+
+不是同一件事。
+
+例如：
+
+No Attempt
+
+意味着：
+
+意识没有对外施加主动控制目标。
+
+但身体仍可能：
+
+呼吸
+眨眼
+平衡
+心跳
+摇晃
+因疲劳坐下
+
+而：
+
+Attempt:
+remain perfectly still
+
+则可能需要裁决：
+
+能不能抵抗疼痛、痒、肌肉疲劳。
+
+所以：
+
+Null Action ≠ Attempt to remain unchanged
+
+这个区分很好用。
+
+时间因此必须成为一等结构
+
+如果世界只有 Attempt 时才 tick：
+
+player acts
+→ world advances
+
+那么“饿了”这种过程会非常别扭。
+
+应该有：
+
+World Time
+
+以及：
+
+Processes with next relevant transition
+
+但也不需要每毫秒模拟。
+
+可以用事件驱动：
+
+now = 12:00
+
+next scheduled/relevant events:
+12:03 kettle boils
+12:17 Bob arrives
+12:30 hunger becomes noticeable
+13:05 rain begins
+
+系统直接跳到：
+
+下一个会产生语义意义的变化。
+
+也就是：
+
+Semantic Event Scheduling
+
+语义事件调度
+
+而不是物理 tick simulation。
+
+这个 ROI 很高。
+
+对持续过程也不需要每秒更新
+
+例如：
+
+hunger += 0.001 per second
+
+没必要真的跑 3600 次。
+
+存：
+
+last_meal = 08:00
+metabolic_state = normal
+
+当需要时计算：
+
+hunger_at(13:00)
+
+或者直接排：
+
+12:20 noticeable_hunger
+14:00 strong_hunger
+
+这和我们前面对 unresolved 的原则一致：
+
+只计算能够产生因果意义的状态变化。
+
+因此我会把 Reality 的事件来源分成四类
+
+这个分类我觉得很有用：
+
+1. Intentional
+2. Reactive
+3. Endogenous
+4. Exogenous
+Intentional
+
+有意识主体的 Attempt。
+
+我试图打开门。
+
+Reactive
+
+由已有刺激自动触发的行为。
+
+手碰到烫锅立刻缩回。
+
+Endogenous
+
+实体内部过程。
+
+饿、老化、流血、发烧、药物代谢。
+
+Exogenous
+
+外部世界过程。
+
+下雨、地震、远处战争、别人来敲门。
+
+这四类最终统一进入：
+
+RealityDelta
+
+所以 Reality 不关心它们“是不是玩家按了按钮”。
+
+再往下一步，还有一个特别重要的问题：意识怎么收到这些反馈
+
+不能所有 RealityDelta 都直接告诉主体。
+
+依然要经过：
+
+Reality
+↓
+Perception Gate
+↓
+Observation
+↓
+Epistemic update
+
+例如：
+
+Reality:
+stomach physiological hunger = high
+
+意识可能：
+
+Observation:
+"you feel hungry"
+
+但有些变化意识完全不知道：
+
+Reality:
+small infection begins
+
+没有症状：
+
+Observation:
+none
+
+所以后台世界可以变化，而意识没有任何消息。
+
+这保持主体视角。
+
+甚至“疼”应该属于哪一层也可以明确
+
+例如猫咬：
+
+Reality:
+skin puncture
+nerve stimulation
+
+然后：
+
+Perceptual event:
+pain
+
+所以疼痛既不是纯外界事实，也不是纯 belief。
+
+它是：
+
+Phenomenal State
+
+体验状态
+
+我会在 Epistemic 和 Reality 之间加一个很薄的层：
+
+Reality
+↓
+Sensation / Observation
+↓
+Conscious State
+
+例如：
+
+Reality:
+room.temperature = 8°C
+
+Sensation:
+cold sensation
+
+Belief:
+"这个房间很冷"
+
+这三者并不相同。
+
+一个人可能：
+
+感觉冷
+但温度实际上正常
+
+也可能：
+
+环境很冷
+但因为神经损伤感觉不到
+所以完整主体循环应该改成
+                 Reality
+                    │
+        ┌───────────┼───────────┐
+        │           │           │
+   autonomous    other       own body
+    processes    agents      processes
+        │           │           │
+        └───────────┼───────────┘
+                    ↓
+              RealityDelta
+                    ↓
+             Perception Gate
+                    ↓
+               Experience
+                    ↓
+             Epistemic State
+                    ↓
+                Consciousness
+                    ↓
+                 Attempt
+                    ↓
+               Adjudication
+                    ↓
+                 Reality
+
+这就是闭环。
+
+而不是：
+
+player input → world response
+
+我觉得这里出现了一个很重要的架构结论：
+
+世界的基本单位不是“回合”，甚至也不是“行动”。
+
+而是 RealityDelta。
+
+Attempt 只是 RealityDelta 的一个来源。
+
+其他东西——饥饿、衰老、天气、别人行动、化学反应、猫咬人——都可以产生 RealityDelta。
+
+这样一来，我们之前那个系统就从“开放行动裁决器”真正变成了一个持续存在的世界运行时。
+
+世界使用区块链高度式的时间，每个高度允许一个attempt
+高度打包后结算世界状态
+下个轮次开始是 有一个区域/通道/组件 提供新的反馈
+
+你觉得如何？
+
+我觉得这个结构很好，而且它把前面几个零散问题一下统一了。
+
+关键是把“区块高度”理解成逻辑时间，不是物理时间。每个高度都是一次不可逆的现实结算点：
+
+Height n
+    ↓
+读取上一高度已经确定的 Reality
+    ↓
+主体获得反馈
+    ↓
+主体提交一个 Attempt
+    ↓
+世界裁决
+    ↓
+加入自主过程 / 他者行为 / 环境事件
+    ↓
+统一结算
+    ↓
+Commit Reality[n]
+    ↓
+Height n+1
+
+我甚至会把它直接叫：
+
+World Height
+
+世界高度
+
+它比传统 RPG 的“回合”准确，因为“回合”通常意味着战斗行动顺序；而 World Height 表示的是：
+
+世界状态从一个已经封闭的现实版本，跃迁到下一个已经封闭的现实版本。
+
+最有价值的一点是：
+
+高度一旦封包，过去就不能被改写
+
+例如：
+
+H1042:
+Alice tried to open Door17.
+
+Settlement:
+Door17 opened 4 cm.
+Bob heard the hinge.
+Alice perceived resistance.
+
+一旦 H1042 finalized：
+
+RealityRoot(H1042)
+
+就固定了。
+
+H1043 的任何 LLM：
+
+编剧
+裁决者
+史官
+NPC
+评审者
+
+都只能：
+
+read H1042
+append H1043
+
+不能重新解释成：
+
+“其实 H1042 门没有动。”
+
+这与区块链式时间最大的共同点并不是密码学，而是：
+
+append-only reality
+
+这正好解决 LLM 世界最麻烦的“后来一句话覆盖以前事实”。
+
+每个高度一个 Attempt，我基本赞成
+
+但我会稍微精确定义成：
+
+每个主体意识通道，每个高度最多提交一个 Deliberative Attempt。
+
+而不是：
+
+整个宇宙每个高度只能发生一个 Attempt。
+
+因为否则多主体世界会出现奇怪问题。
+
+例如：
+
+Alice
+Bob
+Cat
+100 个 NPC
+
+如果全世界 H100 只能有一个 Attempt：
+
+H100 Alice
+H101 Bob
+H102 Cat
+...
+
+那是把并发世界人工串行化了。
+
+更好的结构可能是：
+
+World Height H100
+
+Intent transactions:
+    Alice: Attempt A
+    Bob: Attempt B
+    Cat: no deliberative attempt
+
+Autonomous transactions:
+    rain progresses
+    wound continues bleeding
+    kettle finishes boiling
+
+Reactive transactions:
+    cat reacts to loud sound
+
+        ↓
+
+统一结算
+
+RealityRoot H100
+
+但对于玩家自己的意识接口：
+
+one height
+=
+one opportunity to issue one Attempt
+
+这个限制非常漂亮。
+
+这里其实可以借真正区块链中的两个概念，但不需要真的做区块链。
+
+Transaction
+
+Attempt 可以直接视为：
+
+Intent Transaction
+
+意图交易
+
+例如：
+
+IntentTx {
+    height: 1042
+    actor: Alice
+    attempt:
+        "慢慢把门推开一条缝"
+}
+
+它不是：
+
+door.open = true
+
+就像普通用户不能直接改数据库。
+
+它只是向世界状态机提交一个请求：
+
+我希望尝试造成这个变化。
+
+然后 Reality Judge 相当于：
+
+Execution Engine
+
+执行：
+
+PreviousState
++
+IntentTx
++
+WorldEvents
+→
+NextState
+
+所以整体实际上很像：
+
+S[n+1] = Transition(S[n], Block[n])
+
+其中：
+
+Block[n] =
+    attempts
+    autonomous events
+    reactive events
+    necessary collapses
+
+最后得到：
+
+StateRoot[n+1]
+
+这个抽象非常干净。
+
+你说的“下个轮次开始先提供新的反馈”尤其重要
+
+我会把它独立成一个正式组件：
+
+Observation Channel
+
+观测通道
+
+或者更强调意识视角：
+
+Consciousness Feed
+
+意识反馈流
+
+H1042 结算以后，世界里实际发生了很多东西：
+
+Door opened 4 cm
+Bob heard door
+Rain started outside
+Alice's blood glucose declined
+Cat moved behind sofa
+Someone sent Alice a message
+
+但 H1043 开始时 Alice 不应该收到 WorldDelta 全量。
+
+先经过：
+
+RealityDelta
+↓
+Perception Filter
+↓
+Observation Packet
+
+Alice 得到的可能只是：
+
+ObservationPacket H1043 {
+    "门只开了一点。"
+    "门后有明显阻力。"
+    "你听见门轴发出轻微摩擦声。"
+    "你开始觉得有点饿。"
+}
+
+而不会得到：
+
+Bob is holding the door.
+Cat moved behind sofa.
+Rain started outside.
+
+如果她没有感知到这些。
+
+这就把主体意识接口定义得非常漂亮：
+
+Observation
+↓
+Consciousness
+↓
+Attempt
+↓
+World
+↓
+Settlement
+↓
+Observation
+
+它成为一个严格闭环。
+
+我甚至会让一个高度明确分成几个阶段
+
+例如：
+
+HEIGHT H
+
+0. OPEN
+   世界高度开启
+
+1. OBSERVE
+   向各主体投递 Observation Packet
+
+2. DELIBERATE
+   主体更新认知、记忆、目标
+
+3. ATTEMPT
+   每个主体最多产生一个主动 Attempt
+
+4. RESOLVE
+   检索相关 Truth
+   必要时申请 Collapse
+   应用规律 / 判例
+   裁决 Attempt
+
+5. AUTONOMOUS
+   结算持续过程、环境和定时事件
+
+6. REACTIVE
+   结算被当前变化触发的即时反应
+
+7. VALIDATE
+   一致性检查
+   因果检查
+   信息泄漏检查
+
+8. COMMIT
+   写入 Event Log
+   生成新 Reality State
+
+9. FINALIZE
+   H 不可再修改
+
+下一轮：
+
+H+1
+→ OBSERVE
+
+这样“反馈”就不是 Narrator 随便写段话。
+
+它是正式协议的一部分。
+
+这里还有一个非常重要的优点：时间顺序彻底明确
+
+很多自然语言世界都有这种问题：
+
+Alice 正在开门的时候 Bob 开枪了吗？
+
+Bob 听见声音以后才躲，还是之前已经躲了？
+
+有了 Height：
+
+H40
+Alice attempts door
+
+H40 settlement
+Bob hears sound
+
+H41 observation
+Bob becomes aware of sound
+
+H41
+Bob attempts to hide
+
+因果顺序非常清楚。
+
+你甚至不需要大量：
+
+before
+after
+simultaneously
+
+的自然语言解释。
+
+高度就是主顺序。
+
+但“一个高度 = 固定现实秒数”我不建议
+
+这一点我会坚持区分。
+
+不要：
+
+1 height = 1 second
+
+更适合：
+
+1 height = 1 meaningful causal cycle
+
+所以：
+
+在枪战时：
+
+H102 → H103
+
+可能现实只过去：
+
+0.3 秒
+
+而两个人坐火车什么都没做：
+
+H500 → H501
+
+可以过去：
+
+20 分钟
+
+因此每个 Block 还应记录：
+
+world_time_start
+world_time_end
+
+例如：
+
+height: 1042
+world_time:
+    2026-08-27T12:31:04.200
+    →
+    2026-08-27T12:31:05.100
+
+高度负责：
+
+因果排序
+
+物理时间负责：
+
+持续时间
+
+两者不要混。
+
+这是区块链类比里必须主动脱离的地方。
+
+“什么都不做”也因此很好表达
+
+H100：
+
+主体收到：
+
+"你有些饿。"
+
+主体不产生 Attempt：
+
+Attempt = NONE
+
+仍然封包：
+
+H100 block:
+    no Alice attempt
+    hunger process advances
+    rain process advances
+    Bob acts elsewhere
+
+H101：
+
+Observation:
+"饥饿感比刚才明显。"
+
+所以：
+
+NONE
+
+仍然是一个合法 Height。
+
+这点非常重要。
+
+世界不会因为意识没有输入就停止。
+
+还有一种情况要特别处理：反射
+
+比如 H100：
+
+Cat bites Alice
+
+人的手自动缩回。
+
+我不建议占用 Alice 在 H101 的唯一 Attempt。
+
+因为那不是她的高层意识决策。
+
+所以：
+
+Deliberative Attempt
+
+与：
+
+Reactive Transition
+
+要分开。
+
+否则：
+
+被猫咬了一下，系统自动让你缩手，
+
+结果系统却说：
+
+“你的本轮行动已经用掉了。”
+
+这会很奇怪。
+
+因此“每高度一个 Attempt”的真正含义应该是：
+
+每个意识主体每个高度最多拥有一个主动意图提交槽。
+
+身体反射、自主生理、被动力学影响，都不占这个槽。
+
+unresolved 也很适合嵌进 Block
+
+例如 H144：
+
+Alice：
+
+“妈妈，你刚才说的妹妹是谁？”
+
+为了结算这个 Attempt，系统发现：
+
+Alice.sibling = constrained unresolved
+
+那么 H144 block 内部可以包含：
+
+CollapseTx {
+    question: Alice.sibling
+    approved_scope:
+        exists = true
+        identity = Clara
+        shared_father = true
+}
+
+然后和当前事件一起 Commit：
+
+H144:
+    CollapseTx
+    SpeechEvent
+    EpistemicUpdates
+
+从 H145 开始：
+
+Clara
+
+已经属于 Canon。
+
+这还有一个好处：
+
+我们永远能够知道某条真相到底在哪一个高度成为真相。
+
+例如：
+
+Fact F821:
+Alice has a half-sister Clara
+
+canonical_since:
+H144
+
+这里又必须区分：
+
+event_time
+
+和：
+
+canonicalization_height
+
+因为事实可能是：
+
+Clara 1989 年出生。
+
+但它直到 H144 才被世界系统坍缩确定。
+
+于是：
+
+valid_from_world_time = 1989
+canonical_since_height = 144
+
+这两个维度非常值得保留。
+
+这解决了一个此前很棘手的问题
+
+“后来补出的过去事实”到底是不是改历史？
+
+不是。
+
+例如：
+
+H144:
+resolve Clara was born in 1989
+
+它没有修改：
+
+H1...H143
+
+发生过的 Event。
+
+而是在 H144 新增一个：
+
+retroactive truth proposition
+
+其有效时间指向过去。
+
+这就像数据库中的：
+
+transaction time
+vs
+valid time
+
+你得到的是一个双时间世界：
+
+World Time:
+事情在世界中什么时候成立
+
+Truth Height:
+系统什么时候确定它成立
+
+这实际上很强。
+
+所以我会稍微修改你的原句
+
+不是：
+
+每个高度允许一个 attempt，高度打包后结算世界状态。
+
+而是：
+
+每个 World Height 给每个意识主体一个主动 Attempt 槽；该高度收集所有主动 Attempt、反应事件、自主过程和必要的 Truth Collapse，在统一裁决后生成唯一的新 Reality State。下一高度开始时，各主体只通过自己的 Observation Channel 获得上一高度结算结果中自己可感知的部分。
+
+这已经足够成为整个运行时的主协议。
+
+最简化可以压成：
+
+OBSERVE
+   ↓
+ATTEMPT
+   ↓
+RESOLVE
+   ↓
+SETTLE
+   ↓
+COMMIT
+   ↓
+next HEIGHT
+
+我认为这个比我们前面“持续世界 + Attempt”的描述又前进了一步，因为它同时给出了事务边界、因果顺序、真相最终性、主体反馈接口和世界时钟。
+
+你觉得设计应该重构一下吗？
+
+应该。 现在“World Height + 每高度结算”已经把系统的主轴定得更清楚了，前面那套按“很多岗位/很多层”描述的设计有些重复，可以重构成一个事务型世界内核 + 若干可插拔裁决服务。
+
+我建议把核心收缩成下面这个结构。
+
+一、真正的核心只保留 5 个东西
+1. Canonical Reality
+2. Epistemic State
+3. World Height
+4. Attempt
+5. Settlement
+
+其中最重要的是：
+
+S[n+1] = Settle(
+    S[n],
+    Attempts[n],
+    AutonomousEvents[n],
+    ReactiveEvents[n],
+    Collapses[n]
+)
+
+然后：
+
+Observation[n+1]
+= Project(S[n+1], Agent)
+
+这样整个系统的主循环就是：
+
+OBSERVE
+↓
+ATTEMPT
+↓
+COLLECT
+↓
+RESOLVE
+↓
+SETTLE
+↓
+COMMIT
+↓
+NEXT HEIGHT
+
+这比之前按“神、史官、编剧、评审团……”作为顶层架构更干净。
+
+那些都应该降级为 Settlement 内部服务。
+
+二、把“岗位架构”改成“权限架构”
+
+这是我觉得最应该重构的地方。
+
+之前我们容易写成：
+
+编剧
+史官
+物理神
+社会神
+Approach Manager
+评审团
+Reality Judge
+
+看起来像一个组织机构。
+
+但工程上真正重要的不是“谁”，而是：
+
+谁可以读什么，谁可以提出什么，谁可以写什么。
+
+所以我会改成四种权限：
+
+READ
+PROPOSE
+VALIDATE
+COMMIT
+
+例如：
+
+Continuity Resolver
+
+可以：
+
+READ Canon
+READ unresolved
+PROPOSE Collapse
+
+不能：
+
+COMMIT
+Adjudicator
+READ Reality
+READ Attempt
+PROPOSE Outcome
+
+不能：
+
+COMMIT
+Validator
+READ candidate settlement
+VALIDATE
+
+不能改结果。
+
+Reality Committer
+
+唯一拥有：
+
+COMMIT
+
+这样一个模型以后可以同时承担三个角色，也不会破坏架构。
+
+三、把“史官”从实时链路里拿出去
+
+这是第二个值得重构的地方。
+
+以前：
+
+Reality Judge
+→ Historian
+→ Narrator
+
+现在有了 block / height 后，区块本身就是历史。
+
+所以真正的历史应该是：
+
+BlockLog = append-only canonical history
+
+例如：
+
+Height 1842
+ParentRoot: abc...
+Inputs:
+  AttemptTx...
+  AutonomousEvent...
+Collapses:
+  ...
+Settlement:
+  RealityDelta...
+StateRoot:
+  xyz...
+
+这已经比一个 LLM 史官可靠得多。
+
+因此：
+
+史官不再负责记录历史。
+
+史官只是一个异步的派生服务：
+
+Block history
+→ summaries
+→ timelines
+→ causal index
+→ retrieval hints
+
+即：
+
+Historian = indexer / compressor
+
+不是世界核心。
+
+四、“编剧”也应该重新定位
+
+我们刚刚已经基本得出了这个结论：
+
+它不是 writer。
+
+更精确就是：
+
+Continuity Resolver
+
+它只处理：
+
+当前 Settlement
+因为某个 unresolved 无法继续
+→ 提出最小充分补全
+
+流程：
+
+Unresolved dependency detected
+        ↓
+Continuity Resolver
+        ↓
+Minimal Collapse Proposal
+        ↓
+Collapse Governor
+        ↓
+Validator
+        ↓
+included in current block
+
+所以它不应该常驻四处找剧情。
+
+默认状态甚至应该是：
+
+sleep
+
+只有发现：
+
+required_fact == unresolved
+
+才调用。
+
+这会降低大量无谓生成。
+
+五、Collapse Governor 也不必做成独立“人格”
+
+我之前把它想得稍微重了一点。
+
+其实它完全可以首先是规则系统：
+
+CollapsePolicy
+
+例如：
+
+if local + low causal radius:
+    auto approve
+
+if persistent identity/relation:
+    reviewer required
+
+if structural world fact:
+    high-level approval
+
+然后只在边缘情况调用 LLM。
+
+所以：
+
+Collapse Governor
+
+最好不是一个每次都调用的大模型。
+
+而是：
+
+deterministic policy
++
+semantic escalation
+
+ROI 高很多。
+
+六、Approach 应该进一步降级
+
+现在有了高度式运行后，我甚至认为第一版可以完全删除 Approach Manager。
+
+保留：
+
+Attempt {
+    actor
+    goal
+    method
+}
+
+即可。
+
+例如：
+
+goal:
+    enter room
+
+method:
+    slowly push the door while trying not to make noise
+
+裁决者直接理解。
+
+只有以后人物能力系统需要：
+
+同一个人“谨慎做事特别强”。
+
+才增加：
+
+Approach traits
+
+所以 Fate Accelerated 给我们的主要价值已经被吸收到：
+
+不要预定义 Skill taxonomy。
+
+六个 Approach 不必进入内核。
+
+七、Fate 四 Action 也从执行路径删除
+
+它们可以作为分析标签存在：
+
+Overcome
+Create Advantage
+Attack
+Defend
+
+但不要要求每个 Attempt 必须先分类才能裁决。
+
+真正运行：
+
+Attempt
++
+Reality
+→
+Outcome
+
+分类可以事后生成：
+
+Outcome.tags = [...]
+
+否则多一道 LLM 分类反而增加误差。
+
+八、把自主过程全部改成“事件生产者”
+
+前面的：
+
+HungerProcess
+WeatherProcess
+BodyProcess
+NPC process
+
+也不应该全部直接修改 Reality。
+
+统一改成：
+
+Event Producers
+
+例如：
+
+HungerScheduler
+→ proposes:
+    Hunger becomes noticeable at H201
+
+或者：
+
+WeatherSystem
+→ proposes:
+    rain begins
+
+NPC：
+
+Agent Controller
+→ AttemptTx
+
+所有东西最后都进入同一个 block：
+
+BlockCandidate {
+    attempts[]
+    autonomous_events[]
+    reactive_events[]
+    collapse_proposals[]
+}
+
+然后统一 Settlement。
+
+这是非常大的简化：
+
+没有任何子系统可以偷偷更新世界。
+
+包括身体系统也不能。
+
+全部走 block。
+
+九、Reactive Event 最好也包含在同一个结算中
+
+这里有个细节。
+
+比如：
+
+Alice 踩猫尾巴
+→ 猫立即咬她
+→ Alice 手立即缩回
+
+如果每件事都强制下一 Height：
+
+H1 踩
+H2 猫咬
+H3 缩手
+
+会产生不必要的时间量化。
+
+所以一个 Height 内应该允许：
+
+bounded causal cascade
+
+例如：
+
+Attempt
+↓
+primary effect
+↓
+reaction
+↓
+secondary effect
+↓
+settle
+
+但必须有限制，否则：
+
+reaction → reaction → reaction → ...
+
+又能无限递归。
+
+可以规定：
+
+Height settlement computes
+all causally immediate reactions
+until semantic stability
+or reaction budget exhausted
+
+这是一个我觉得值得加入的新概念：
+
+Settlement Closure
+
+结算闭包
+
+即当前高度必须把“即时不可拖延的因果反应”处理完，才能封包。
+
+例如：
+
+子弹射出但还没飞到目标
+
+未必需要在同一个高度结算完。
+
+但：
+
+手碰滚烫金属 → 痛觉/缩手
+
+通常应该。
+
+这可以由时间尺度判断。
+
+十、World Time 和 Height 要正式变成双轴
+
+这一点现在应该进入核心，而不是附属字段：
+
+Height
+= logical / transactional time
+
+WorldTime
+= physical / narrative time
+
+所以任何事实可以有：
+
+canonical_height
+valid_from
+valid_until
+
+例如：
+
+Fact:
+Clara was born in 1989
+
+valid_from:
+1989-04-12
+
+canonical_height:
+H8921
+
+这能非常自然地处理“后来才确定的过去”。
+
+我认为这已经不是可选优化，而应该进入数据模型。
+
+十一、UNRESOLVED 也应该重构成 Constraint Set
+
+之前的：
+
+TRUE
+FALSE
+UNRESOLVED
+
+现在可以正式改成：
+
+TruthCell<T> {
+    constraints
+    resolved_value?
+}
+
+例如：
+
+Clara.mother:
+    type = Person
+    sex = female
+    != Maria
+    alive_in_1997 = true
+    identity = unresolved
+
+那么所谓 Collapse 实际就是：
+
+constraint space
+→ narrower constraint space
+
+最终可能：
+
+→ singleton
+
+才变成具体值。
+
+因此：
+
+Collapse 不必等于“生成一个值”
+
+更准确是：
+
+增加 Canonical Constraint。
+
+这会成为整个系统非常强的一项基础结构。
+
+十二、反馈系统也不需要“Narrator”作为核心
+
+Height H 完成后：
+
+RealityDelta
+↓
+Perception Projection
+↓
+Observation Object
+
+Observation 本身最好是结构化的。
+
+例如：
+
+Observation {
+    modality: touch
+    source: door
+    content: resistance
+    intensity: weak
+}
+
+或者保留自然语言语义：
+
+"你感觉门后存在阻力"
+
+然后最后才：
+
+Observation Renderer
+
+把多个 Observation 组织成玩家看到的语言。
+
+于是：
+
+Narrator = UI renderer
+
+完全没有世界权力。
+
+这个职责也因此变得很轻。
+
+十三、我现在会把整个系统重新画成这样
+                         ┌───────────────┐
+                         │ Canonical     │
+                         │ Reality S[n]  │
+                         └───────┬───────┘
+                                 │
+                    Perception Projection
+                                 │
+                         ┌───────▼───────┐
+                         │ Observation   │
+                         │ Channels      │
+                         └───────┬───────┘
+                                 │
+                         ┌───────▼───────┐
+                         │ Agents        │
+                         │ Epistemic     │
+                         │ States        │
+                         └───────┬───────┘
+                                 │
+                              Attempt
+                                 │
+             ┌───────────────────▼────────────────────┐
+             │             BLOCK BUILDER               │
+             │                                         │
+             │ Attempts                                │
+             │ Autonomous events                      │
+             │ Reactive candidates                    │
+             │ Collapse requests                      │
+             └───────────────────┬────────────────────┘
+                                 │
+                         ┌───────▼────────┐
+                         │ Settlement     │
+                         │ Engine         │
+                         │                │
+                         │ retrieval      │
+                         │ adjudication   │
+                         │ collapse       │
+                         │ closure        │
+                         │ validation     │
+                         └───────┬────────┘
+                                 │
+                         RealityDelta
+                                 │
+                         ┌───────▼────────┐
+                         │ Commit H[n]    │
+                         │ StateRoot      │
+                         └───────┬────────┘
+                                 │
+                              S[n+1]
+
+外面只有辅助服务：
+
+Continuity Resolver
+Historian / Indexer
+Precedent Extractor
+Semantic Reviewer
+Dramaturg（如果以后需要）
+十四、这样重构之后，系统少了很多“神”
+
+这是好事。
+
+原来像：
+
+很多 LLM 组成一个政府
+
+现在更像：
+
+一个事务型世界状态机
++
+若干没有最终写权限的智能辅助器
+
+我觉得后者稳得多。
+
+因为世界的可信性不能建立在：
+
+“我们有 8 个很聪明的模型互相监督。”
+
+而应该建立在：
+
+所有修改必须经过同一个封包协议，并且已经封包的现实不可覆写。
+
+LLM 是里面可以替换的部件。
+
+如果现在从头实现，我会把 MVP 缩到这些
+WorldState
+TruthCell / constraints
+EpistemicState
+Observation
+Attempt
+WorldHeight
+BlockCandidate
+SettlementEngine
+RealityDelta
+CommitLog
+
+只有两个 LLM 职责就够：
+
+Adjudicator
+ContinuityResolver
+
+再配：
+
+deterministic validator
+
+其他全部暂缓。
+
+这应该比我们前面的设计更小、更硬、更容易测试，而且没有丢掉核心能力。
+
+所以我的答案是：应该重构，而且现在正是合适的时候。World Height 不是又加了一个组件，而是提供了新的主骨架；前面的很多组件应该围绕它重新降级、合并或删除。
