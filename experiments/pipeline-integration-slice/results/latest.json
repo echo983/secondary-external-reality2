@@ -1,0 +1,329 @@
+{
+  "generatedAt": "2026-08-28T14:24:20.984Z",
+  "results": [
+    {
+      "attempt": "看看毛毯摸起来怎么样。",
+      "stages": [
+        {
+          "stage": "GROUND",
+          "output": {
+            "entities": [
+              "blanket-1"
+            ],
+            "unbound": []
+          }
+        },
+        {
+          "stage": "RETRIEVE",
+          "output": [
+            "blanket-1 现在放在 bed-1 上。",
+            "blanket-1 摸起来柔软，可以压缩。"
+          ]
+        },
+        {
+          "stage": "ADJUDICATE",
+          "output": "可信，摸起来柔软，可以压缩。"
+        },
+        {
+          "stage": "CLASSIFY",
+          "output": {
+            "missingAbout": "",
+            "outcome": "plausible"
+          }
+        },
+        {
+          "stage": "COMMIT",
+          "height": 1,
+          "outcome": "plausible"
+        },
+        {
+          "stage": "NARRATE",
+          "output": "手指按下去，它陷进去，没有硬的东西顶着。松开手，它慢慢鼓回来。表面是细密的、短的东西，贴着皮肤滑过去的时候没有颗粒感。"
+        }
+      ],
+      "height": 1,
+      "kind": "plausible",
+      "narration": "手指按下去，它陷进去，没有硬的东西顶着。松开手，它慢慢鼓回来。表面是细密的、短的东西，贴着皮肤滑过去的时候没有颗粒感。"
+    },
+    {
+      "attempt": "量一下门缝到底有多宽。",
+      "stages": [
+        {
+          "stage": "GROUND",
+          "output": {
+            "entities": [
+              "door-1"
+            ],
+            "unbound": []
+          }
+        },
+        {
+          "stage": "RETRIEVE",
+          "output": [
+            "door-1 在卧室里，通向走廊。",
+            "door-1 现在是关着的，没有上锁。"
+          ]
+        },
+        {
+          "stage": "ADJUDICATE",
+          "output": "可信，门关着时门与门框之间本就有缝隙，拿尺子一量就行。"
+        },
+        {
+          "stage": "CLASSIFY",
+          "output": {
+            "missingAbout": "",
+            "outcome": "plausible"
+          }
+        },
+        {
+          "stage": "COMMIT",
+          "height": 2,
+          "outcome": "plausible"
+        },
+        {
+          "stage": "NARRATE",
+          "output": "你蹲下来，把尺子平着塞进门和门框之间那道缝里。尺子面贴着门框内侧的直角切面，另一侧被门板边缘的直角切面夹住。两个硬面之间没有弹性，尺子被固定住，不滑不晃。你读刻度，三毫米。"
+        }
+      ],
+      "height": 2,
+      "kind": "plausible",
+      "narration": "你蹲下来，把尺子平着塞进门和门框之间那道缝里。尺子面贴着门框内侧的直角切面，另一侧被门板边缘的直角切面夹住。两个硬面之间没有弹性，尺子被固定住，不滑不晃。你读刻度，三毫米。"
+    },
+    {
+      "attempt": "把毛毯拿起来，塞到门缝下面。",
+      "stages": [
+        {
+          "stage": "GROUND",
+          "output": {
+            "entities": [
+              "blanket-1",
+              "door-1"
+            ],
+            "unbound": []
+          }
+        },
+        {
+          "stage": "RETRIEVE",
+          "output": [
+            "door-1 在卧室里，通向走廊。",
+            "door-1 现在是关着的，没有上锁。",
+            "blanket-1 现在放在 bed-1 上。",
+            "blanket-1 摸起来柔软，可以压缩。",
+            "结果：看看毛毯摸起来怎么样。 —— 可信，摸起来柔软，可以压缩。",
+            "结果：量一下门缝到底有多宽。 —— 可信，门关着时门与门框之间本就有缝隙，拿尺子一量就行。"
+          ]
+        },
+        {
+          "stage": "ADJUDICATE",
+          "output": "可信，毛毯柔软可压缩，门缝又确实存在，塞进去没问题。"
+        },
+        {
+          "stage": "CLASSIFY",
+          "output": {
+            "missingAbout": "",
+            "outcome": "plausible"
+          }
+        },
+        {
+          "stage": "COMMIT",
+          "height": 3,
+          "outcome": "plausible"
+        },
+        {
+          "stage": "NARRATE",
+          "output": "你从床上把毛毯抓起来，它在你手里软塌塌地堆着，手指按下去能陷进去。你把它送到门底下，门和地面之间有一条缝，你把毛毯往那条缝里推，它被挤扁了，厚度变薄，塞进去了。"
+        }
+      ],
+      "height": 3,
+      "kind": "plausible",
+      "narration": "你从床上把毛毯抓起来，它在你手里软塌塌地堆着，手指按下去能陷进去。你把它送到门底下，门和地面之间有一条缝，你把毛毯往那条缝里推，它被挤扁了，厚度变薄，塞进去了。"
+    },
+    {
+      "attempt": "再检查一下毛毯现在的样子。",
+      "stages": [
+        {
+          "stage": "GROUND",
+          "output": {
+            "entities": [
+              "blanket-1"
+            ],
+            "unbound": []
+          }
+        },
+        {
+          "stage": "RETRIEVE",
+          "output": [
+            "blanket-1 现在放在 bed-1 上。",
+            "blanket-1 摸起来柔软，可以压缩。",
+            "结果：看看毛毯摸起来怎么样。 —— 可信，摸起来柔软，可以压缩。",
+            "结果：把毛毯拿起来，塞到门缝下面。 —— 可信，毛毯柔软可压缩，门缝又确实存在，塞进去没问题。"
+          ]
+        },
+        {
+          "stage": "ADJUDICATE",
+          "output": "可信，毛毯被压缩在门缝里，边缘可能微微露出，形状被挤得扁而窄。"
+        },
+        {
+          "stage": "CLASSIFY",
+          "output": {
+            "missingAbout": "",
+            "outcome": "plausible"
+          }
+        },
+        {
+          "stage": "COMMIT",
+          "height": 4,
+          "outcome": "plausible"
+        },
+        {
+          "stage": "NARRATE",
+          "output": "你低头看门缝下面。毛毯被挤成一条扁窄的条状，贴着地面。边缘从门缝两侧微微探出来，那部分还保持着柔软蓬松的厚度，中间被压得薄而紧。"
+        }
+      ],
+      "height": 4,
+      "kind": "plausible",
+      "narration": "你低头看门缝下面。毛毯被挤成一条扁窄的条状，贴着地面。边缘从门缝两侧微微探出来，那部分还保持着柔软蓬松的厚度，中间被压得薄而紧。"
+    },
+    {
+      "attempt": "打开五斗柜，把里面的枪拿出来。",
+      "stages": [
+        {
+          "stage": "GROUND",
+          "output": {
+            "entities": [],
+            "unbound": [
+              "五斗柜",
+              "枪"
+            ]
+          }
+        },
+        {
+          "stage": "BOUNDARY",
+          "height": 5,
+          "text": "边界：提到的\"五斗柜、枪\"在这个世界里没有对应物，不存在。"
+        }
+      ],
+      "height": 5,
+      "kind": "boundary",
+      "narration": "边界：提到的\"五斗柜、枪\"在这个世界里没有对应物，不存在。"
+    }
+  ],
+  "finalStore": [
+    {
+      "id": "p1",
+      "text": "self 在卧室里，站着。",
+      "entities": [
+        "self",
+        "bedroom"
+      ],
+      "height": 0,
+      "status": "active",
+      "source": "genesis"
+    },
+    {
+      "id": "p2",
+      "text": "door-1 在卧室里，通向走廊。",
+      "entities": [
+        "door-1",
+        "bedroom"
+      ],
+      "height": 0,
+      "status": "active",
+      "source": "genesis"
+    },
+    {
+      "id": "p3",
+      "text": "door-1 现在是关着的，没有上锁。",
+      "entities": [
+        "door-1"
+      ],
+      "height": 0,
+      "status": "active",
+      "source": "genesis"
+    },
+    {
+      "id": "p4",
+      "text": "bed-1 在卧室里。",
+      "entities": [
+        "bed-1",
+        "bedroom"
+      ],
+      "height": 0,
+      "status": "active",
+      "source": "genesis"
+    },
+    {
+      "id": "p5",
+      "text": "floor-1 是卧室的地面。",
+      "entities": [
+        "floor-1",
+        "bedroom"
+      ],
+      "height": 0,
+      "status": "active",
+      "source": "genesis"
+    },
+    {
+      "id": "p6",
+      "text": "blanket-1 现在放在 bed-1 上。",
+      "entities": [
+        "blanket-1",
+        "bed-1"
+      ],
+      "height": 0,
+      "status": "active",
+      "source": "genesis"
+    },
+    {
+      "id": "p7",
+      "text": "blanket-1 摸起来柔软，可以压缩。",
+      "entities": [
+        "blanket-1"
+      ],
+      "height": 0,
+      "status": "active",
+      "source": "genesis"
+    },
+    {
+      "id": "p8",
+      "text": "结果：看看毛毯摸起来怎么样。 —— 可信，摸起来柔软，可以压缩。",
+      "entities": [
+        "blanket-1"
+      ],
+      "height": 1,
+      "status": "active",
+      "source": "attempt-outcome"
+    },
+    {
+      "id": "p9",
+      "text": "结果：量一下门缝到底有多宽。 —— 可信，门关着时门与门框之间本就有缝隙，拿尺子一量就行。",
+      "entities": [
+        "door-1"
+      ],
+      "height": 2,
+      "status": "active",
+      "source": "attempt-outcome"
+    },
+    {
+      "id": "p10",
+      "text": "结果：把毛毯拿起来，塞到门缝下面。 —— 可信，毛毯柔软可压缩，门缝又确实存在，塞进去没问题。",
+      "entities": [
+        "blanket-1",
+        "door-1"
+      ],
+      "height": 3,
+      "status": "active",
+      "source": "attempt-outcome"
+    },
+    {
+      "id": "p11",
+      "text": "结果：再检查一下毛毯现在的样子。 —— 可信，毛毯被压缩在门缝里，边缘可能微微露出，形状被挤得扁而窄。",
+      "entities": [
+        "blanket-1"
+      ],
+      "height": 4,
+      "status": "active",
+      "source": "attempt-outcome"
+    }
+  ]
+}
