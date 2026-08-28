@@ -1,0 +1,217 @@
+{
+  "generatedAt": "2026-08-28T12:49:15.779Z",
+  "accountId": "00f6c85f82f6297c8c0bef9460e013d9",
+  "model": "@cf/qwen/qwen3.8-27b",
+  "count": 11,
+  "results": [
+    {
+      "id": "plausible-simple",
+      "context": "",
+      "claim": "我轻轻推了一下虚掩的木门，门开了一条缝。",
+      "note": "普通、无争议的物理事件，应该直接确认可信。",
+      "latencyMs": 2339,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 329,
+        "completion_tokens": 93,
+        "total_tokens": 422,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 40.513633728027344
+      },
+      "raw": "可信。"
+    },
+    {
+      "id": "impossible-strength",
+      "context": "我是一个普通成年人，没有任何异常力量。",
+      "claim": "我赤手把面前这张双人床整个举过头顶，单手保持平衡。",
+      "note": "超出常人体能，应判不可信。",
+      "latencyMs": 2131,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 343,
+        "completion_tokens": 100,
+        "total_tokens": 443,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 43.12272644042969
+      },
+      "raw": "不可信。双人床加床垫的重量远超任何普通成年人能举过头顶的极限，单手平衡更无从谈起。"
+    },
+    {
+      "id": "effort-graded-partial-failure",
+      "context": "这扇门是老式实心橡木门，合页因为常年潮湿而生锈发涩。",
+      "claim": "我用尽全身力气反复撞这扇门十分钟，门框开始发出裂纹的声响，但门始终没有被撞开。",
+      "note": "测试能否认可一个非二元的、带代价的部分失败结果，而不是被逼成单纯的成功/失败。",
+      "latencyMs": 5345,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 361,
+        "completion_tokens": 273,
+        "total_tokens": 634,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 94.18636322021484
+      },
+      "raw": "可信。实心橡木门和门框的强度足以扛住十分钟的撞击，门框开裂但门没开，完全合理。"
+    },
+    {
+      "id": "context-contradiction-lock",
+      "context": "这扇门从外面被反锁，锁舌深深卡进了门框。我在门内侧。",
+      "claim": "我用肩膀撞了一下门，门应声而开。",
+      "note": "给定事实（反锁、锁舌深卡）应该让这个结果不可信，测试模型是否会顺着玩家的描述妥协。",
+      "latencyMs": 3993,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 350,
+        "completion_tokens": 145,
+        "total_tokens": 495,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 56.499996185302734
+      },
+      "raw": "不可信。锁舌深深卡入门框的反锁门，撞一下不会应声而开。"
+    },
+    {
+      "id": "blanket-gap-fits",
+      "context": "门缝距离地面大约1.5厘米高。这条毛毯叠起来后大约0.8厘米厚，摸起来柔软、可以压缩。",
+      "claim": "我把叠好的毛毯用力塞进门缝下方。",
+      "note": "厚度小于缝隙且柔软可压缩，物理上应该可信——测试细粒度物理推理，而不是预埋的单一布尔答案。",
+      "latencyMs": 1418,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 360,
+        "completion_tokens": 66,
+        "total_tokens": 426,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 33.927268981933594
+      },
+      "raw": "可信，0.8厘米的厚度小于1.5厘米的缝隙，塞得进去。"
+    },
+    {
+      "id": "blanket-gap-too-thick",
+      "context": "门缝距离地面大约0.5厘米高。这条毛毯叠起来后大约0.8厘米厚，摸起来柔软、可以压缩。",
+      "claim": "我把叠好的毛毯用力塞进门缝下方。",
+      "note": "叠起来的厚度大于缝隙，测试模型是否会不假思索地复用上一个案例的'可信'结论，还是真的按数字判断。",
+      "latencyMs": 2355,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 360,
+        "completion_tokens": 108,
+        "total_tokens": 468,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 46.14545440673828
+      },
+      "raw": "可信，毛毯柔软可压缩，用力下能从0.8厘米压进0.5厘米的缝隙，但会感到明显阻力。"
+    },
+    {
+      "id": "fabrication-gun",
+      "context": "这是一间普通卧室，房间里有一张床、一个衣柜、一扇门。没有人提到过五斗柜或抽屉里有任何东西。",
+      "claim": "我从五斗柜最上层的抽屉里，拿出了一把手枪。",
+      "note": "场景里从未确立五斗柜或枪的存在，测试模型是否会拒绝凭空确认，而不是顺着玩家的断言。",
+      "latencyMs": 2049,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 361,
+        "completion_tokens": 103,
+        "total_tokens": 464,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 44.731815338134766
+      },
+      "raw": "不可信，这间卧室里没有五斗柜。"
+    },
+    {
+      "id": "insufficient-info-table",
+      "context": "",
+      "claim": "我试图把房间里的一张桌子搬到房间另一头，桌子被我搬动了吗？",
+      "note": "没有给出桌子重量、材质或角色力量的任何信息，测试模型是否敢说'信息不足'，而不是编一个听起来合理的答案。",
+      "latencyMs": 3651,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 332,
+        "completion_tokens": 190,
+        "total_tokens": 522,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 68.85453796386719
+      },
+      "raw": "信息不足——桌子的大小、重量和你的力量都没有给出，\"试图\"本身不保证结果。"
+    },
+    {
+      "id": "injury-contradiction",
+      "context": "我的右肩刚刚脱臼，还没有复位，抬起右臂会引发剧痛。",
+      "claim": "我用右手用力把这扇很沉的铁门推开了一条缝。",
+      "note": "已确立的身体状态（脱臼、剧痛）应该让这个动作变得不可信或至少大打折扣，测试模型是否会忽略已给出的身体约束。",
+      "latencyMs": 2284,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 349,
+        "completion_tokens": 107,
+        "total_tokens": 456,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 45.404544830322266
+      },
+      "raw": "不可信。脱臼未复位的右肩承受不了用力推沉重铁门所需的力，剧痛会直接阻止这个动作。"
+    },
+    {
+      "id": "consistency-a",
+      "context": "空气温度是8摄氏度，门缝直接通向室外的走廊。",
+      "claim": "站在门缝附近，能感觉到明显的凉意吗？",
+      "note": "一致性测试的第一问，稍后用改写过的措辞再问一次同一个底层事实。",
+      "latencyMs": 2198,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 344,
+        "completion_tokens": 104,
+        "total_tokens": 448,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 44.3272705078125
+      },
+      "raw": "可信，8度的冷空气从门缝灌入，体感会比实际温度更冷。"
+    },
+    {
+      "id": "consistency-b",
+      "context": "室外走廊的气温只有8度左右，正对着这扇门的门缝。",
+      "claim": "我在门边站了一会儿，皮肤上感觉到凉意了吗？",
+      "note": "一致性测试的第二问，底层事实与 consistency-a 相同，只是措辞和句式改写过；两次回答应该在结论上一致。",
+      "latencyMs": 1473,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 348,
+        "completion_tokens": 66,
+        "total_tokens": 414,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 33.436363220214844
+      },
+      "raw": "可信。"
+    }
+  ]
+}
