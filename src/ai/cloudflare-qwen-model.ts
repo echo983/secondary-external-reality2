@@ -1,6 +1,8 @@
 import {performance} from "node:perf_hooks";
 import {ALLOWED_MODEL, type ModelResponse, type ModelTelemetry, type ProposalModel} from "./model-adapter.js";
 import {INPUT_PROPOSAL_SYSTEM_PROMPT} from "./input-proposal-prompt.js";
+import {ACTION_PROPOSAL_JSON_SCHEMA, ACTION_PROPOSAL_SYSTEM_PROMPT, buildActionProposalUserPrompt} from "./action-proposal-prompt.js";
+import type {ActionContext} from "../protocol/action-proposal.js";
 import {ProtocolError} from "../protocol/errors.js";
 
 interface CloudflareEnvelope {
@@ -64,6 +66,14 @@ export class CloudflareQwenModel implements ProposalModel {
   }
 
   async propose(rawInput: string): Promise<ModelResponse> {
+    return this.run(INPUT_PROPOSAL_SYSTEM_PROMPT, rawInput);
+  }
+
+  async proposeAction(rawInput: string, clauseIndex: number, context: ActionContext): Promise<ModelResponse> {
+    return this.run(ACTION_PROPOSAL_SYSTEM_PROMPT, buildActionProposalUserPrompt(rawInput, clauseIndex, context), true, 1800);
+  }
+
+  private async run(systemPrompt: string, userPrompt: string, structured = false, maxCompletionTokens = 2000): Promise<ModelResponse> {
     const startedAt = this.now().toISOString();
     const started = performance.now();
     let attempts = 0;
@@ -74,8 +84,10 @@ export class CloudflareQwenModel implements ProposalModel {
           response = await this.fetchImpl(
             `https://api.cloudflare.com/client/v4/accounts/${encodeURIComponent(this.options.accountId)}/ai/run/${ALLOWED_MODEL}`,
             {method: "POST", headers: {Authorization: `Bearer ${this.options.apiToken}`, "Content-Type": "application/json"},
-              body: JSON.stringify({messages: [{role: "system", content: INPUT_PROPOSAL_SYSTEM_PROMPT},
-                {role: "user", content: rawInput}], temperature: 0, reasoning_effort: "low", max_completion_tokens: 2000}),
+              body: JSON.stringify({messages: [{role: "system", content: systemPrompt},
+                {role: "user", content: userPrompt}], temperature: 0, reasoning_effort: "low", max_completion_tokens: maxCompletionTokens,
+                ...(structured ? {reasoning: {enable_thinking: false},
+                  response_format: {type: "json_schema", json_schema: ACTION_PROPOSAL_JSON_SCHEMA}} : {})}),
               signal: AbortSignal.timeout(this.timeoutMs)}
           );
         } catch (cause) {
@@ -87,7 +99,11 @@ export class CloudflareQwenModel implements ProposalModel {
         const capacity = response.status === 429 || body.errors?.some(error => error.code === 3040 || error.code === 7505) === true;
         if (capacity && attempts < 3) { await this.delay(1000 * (2 ** (attempts - 1))); continue; }
         if (capacity) throw new ProtocolError("MODEL_CAPACITY", "Workers AI capacity retry budget exhausted");
-        if (!response.ok || body.success === false) throw new ProtocolError("INTERNAL_INVARIANT", "Workers AI request was rejected");
+        if (!response.ok || body.success === false) {
+          const summary = body.errors?.map(error => `${error.code ?? "unknown"}:${error.message ?? "unknown"}`).join("; ") ??
+            `HTTP ${response.status}`;
+          throw new ProtocolError("INTERNAL_INVARIANT", `Workers AI request was rejected (${summary})`);
+        }
         const extracted = extract(body);
         this.lastTelemetry = {model: this.model, startedAt, latencyMs: Math.round(performance.now() - started), attempts,
           ...(extracted.finishReason === undefined ? {} : {finishReason: extracted.finishReason}),

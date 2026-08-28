@@ -40,7 +40,13 @@ npm run demo -- --db=/absolute/path/to/demo.sqlite
 npm run demo -- --live-qwen
 ```
 
-真实模型只产生非权威 InputProposal。超时、reasoning-only、非法 JSON、额外字段和错误 source span 都会在世界提交前失败。
+CLI 默认使用 `.world/demo-v2.sqlite`，保留旧 `.world/demo.sqlite` 不覆盖。进入会话会先显示当前房间；环顾、聆听和身体感知使用有来源的本地快路径。
+
+真实模型当前在普通 Demo 中只产生非权威 InputProposal。超时、reasoning-only、非法 JSON、额外字段和错误 source span 都会在世界提交前失败。实验性的 ActionProposal 门禁可单独运行：
+
+```bash
+npm run eval:qwen:action-spike
+```
 
 独立 smoke gate：
 
@@ -52,11 +58,12 @@ npm run eval:qwen:runtime-smoke
 
 ## 当前范围
 
-- 同一世界中的门、水壶和 World Time；
+- 同一世界中的卧室、门、床、毛毯、水壶和 World Time；
+- 初始环境反馈，以及 ambient/hearing/body 感知快路径；
 - append-only World Commit 与独立 Experience Ledger；
 - Observation → Evidence → Acquisition；
 - SQLite 重启恢复、规范 SHA-256 state root；
 - Query、None、模型故障和枪式诱导均不产生虚假 Height；
 - 30 Height 混合会话与 100 Height replay 门禁。
 
-当前不是通用游戏引擎。可用动作仍是闭合的小集合；NPC、容器、纸条、完整空间移动和 Web UI 尚未实现。设计与后续计划见 [`docs/`](docs/)。
+当前仍是开发者纵向切片，不是通用游戏引擎。开放行动原语和 ActionProposal 已完成协议 spike，但尚未接入世界 Commit；NPC、容器、纸条、完整空间移动和 Web UI 尚未实现。设计与后续计划见 [`docs/`](docs/)。

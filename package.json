@@ -11,6 +11,7 @@
     "test": "npm run build && node --test dist/test/*.test.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "eval:qwen:runtime-smoke": "npm run build && node dist/scripts/qwen-runtime-smoke.js",
+    "eval:qwen:action-spike": "npm run build && node dist/scripts/qwen-action-proposal-spike.js",
     "demo": "npm run build && node dist/scripts/demo-cli.js",
     "eval:qwen:smoke": "node experiments/qwen-boundary/run.mjs --smoke",
     "eval:qwen:full": "node experiments/qwen-boundary/run.mjs",

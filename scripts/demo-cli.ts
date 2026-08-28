@@ -10,7 +10,7 @@ import {createDemoFixture} from "../src/world/demo-fixture.js";
 
 const live = process.argv.includes("--live-qwen");
 const databaseArgument = process.argv.find(argument => argument.startsWith("--db="));
-const filename = resolve(databaseArgument?.slice("--db=".length) ?? ".world/demo.sqlite");
+const filename = resolve(databaseArgument?.slice("--db=".length) ?? ".world/demo-v2.sqlite");
 await mkdir(dirname(filename), {recursive: true});
 let model: ProposalModel;
 if (live) {
@@ -23,7 +23,8 @@ const {session, store} = await restoreSqliteSession({filename, sessionId: "cli",
   fixture: createDemoFixture(), model});
 const terminal = createInterface({input: stdin, output: stdout});
 console.log(`文字 VR Demo（${live ? "live Qwen" : "local deterministic"}，当前 H${session.currentSnapshot().height}）`);
-console.log("可尝试：轻轻推门，只开一条缝，别出声 / 门现在开着吗？ / 我等五分钟 / 枪式诱导。输入 /exit 退出。");
+console.log(`[H${session.currentSnapshot().height}] ${session.observe().text}`);
+console.log("你可以直接描述想观察或尝试的事。输入 /exit 退出。");
 try {
   terminal.setPrompt("> ");
   terminal.prompt();

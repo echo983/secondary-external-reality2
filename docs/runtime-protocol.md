@@ -200,12 +200,12 @@ interface ConstitutedClause {
 ```ts
 interface ActionProposal {
   clauseIndex: number;
-  primitiveCandidates: readonly string[];
-  entityMentions: readonly SourceSpan[];
-  bodyOrToolMentions: readonly SourceSpan[];
-  preconditionClaims: readonly ProposedCondition[];
-  localEffects: readonly ProposedEffect[];
-  durationHintSeconds?: number;
+  primitives: readonly ActionPrimitive[];
+  targetSlots: readonly string[];
+  conditions: readonly ProposedCondition[];
+  effects: readonly ProposedEffect[];
+  perceptionScopes: readonly ProposedPerceptionScope[];
+  durationSeconds?: number;
   unresolvedDependencies: readonly ProposedDependency[];
 }
 
@@ -213,26 +213,35 @@ interface ProposedCondition {
   kind: "fact" | "capability" | "relation" | "reachability";
   subjectSlot: string;
   predicate: string;
-  objectSlotOrValue?: string | JsonScalar;
-  source: "world-slice" | "operation-contract";
+  objectSlot?: string;
+  value?: JsonScalar;
+  source: "world_slice" | "operation_contract";
 }
 
 interface ProposedEffect {
-  effectKind: string; // closed effect schema
+  kind: EffectKind;
   subjectSlot: string;
-  relationOrField: string;
-  objectSlotOrValue?: string | JsonScalar;
-  confidence: "required" | "possible";
+  field: string;
+  objectSlot?: string;
+  value?: JsonScalar;
+  certainty: "required" | "possible";
+}
+
+interface ProposedPerceptionScope {
+  modality: "vision" | "hearing" | "touch" | "proprioception" | "interoception";
+  originSlot: string;
+  horizon: "ambient" | "directional" | "object" | "body";
+  targetSlots: readonly string[];
 }
 
 interface ProposedDependency {
   kind: "binding" | "fact" | "capability" | "constraint";
-  slotOrAddress: string;
+  slot?: string;
   reason: string;
 }
 ```
 
-`ActionProposal` 是非权威语义裁决候选。它只能使用运行时提供的实体引用槽、原语词汇和 effect schema；不能创建 Canonical ID、不能提交值、不能把玩家 unsupported claim 当作前置事实。可信 validator 可以接受、缩减或拒绝候选，随后由确定性 builder 生成 Candidate Delta。
+`ActionProposal` 是非权威语义裁决候选。它只能使用运行时提供的实体引用槽、原语词汇和 effect schema；不能创建 Canonical ID、不能提交值、不能把玩家 unsupported claim 当作前置事实。原文 span 和实体绑定由 InputProposal/可信 binder 负责，ActionProposal 不重复生成 span，只引用批准后的 opaque `targetSlots`。可信 validator 可以接受、缩减或拒绝候选，随后由确定性 builder 生成 Candidate Delta。
 
 ### 4.5 AttemptAudit
 

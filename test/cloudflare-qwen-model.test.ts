@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {CloudflareQwenModel} from "../src/ai/cloudflare-qwen-model.js";
 import {requestInputProposal} from "../src/ai/model-adapter.js";
+import type {ActionContext} from "../src/protocol/action-proposal.js";
 import {ProtocolError} from "../src/protocol/errors.js";
 
 const accountId = "account";
@@ -65,4 +66,19 @@ test("exhausted capacity and transport failures preserve boundary codes", async 
     fetchImpl: (async () => { throw new DOMException("aborted", "AbortError"); }) as typeof fetch});
   await assert.rejects(requestInputProposal(timeout, "开门"),
     (error: unknown) => error instanceof ProtocolError && error.code === "MODEL_TIMEOUT");
+});
+
+test("action proposal requests JSON Schema output with thinking disabled", async () => {
+  const context: ActionContext = {actorSlot: "actor", slots: [
+    {slot: "actor", kind: "actor", label: "你", perceivable: true, affordances: ["perceive"]}
+  ], allowedRelations: []};
+  const fetchImpl = (async (_input: string | URL | Request, init?: RequestInit) => {
+    const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
+    assert.deepEqual(body.reasoning, {enable_thinking: false});
+    assert.equal((body.response_format as {type?: string}).type, "json_schema");
+    return jsonResponse({success: true, result: {response: JSON.stringify({clauseIndex: 0, primitives: [], targetSlots: [],
+      conditions: [], effects: [], perceptionScopes: [], unresolvedDependencies: []})}});
+  }) as typeof fetch;
+  const model = new CloudflareQwenModel({accountId, apiToken, fetchImpl});
+  assert.equal((await model.proposeAction("看看", 0, context)).content?.includes("clauseIndex"), true);
 });

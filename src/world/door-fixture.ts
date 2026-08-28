@@ -3,7 +3,7 @@ import {createGenesis} from "./materialized-world.js";
 
 export interface FixtureEntity {
   entityId: EntityId;
-  kind: "actor" | "room" | "door";
+  kind: "actor" | "room" | "door" | "object";
   aliases: readonly string[];
   perceivableBy: readonly EntityId[];
 }

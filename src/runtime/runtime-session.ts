@@ -11,6 +11,8 @@ import type {DemoFixture} from "../world/demo-fixture.js";
 import {randomUUID} from "node:crypto";
 import {settleOpenDoor} from "../world/open-door.js";
 import {materializeWaitExperience, settleWait} from "../world/wait-kettle.js";
+import {projectCurrentScene, type PerceptionMode} from "../perception/current-scene.js";
+import {detectPerceptionRequest} from "../protocol/perception-request.js";
 
 export type SessionResult =
   | {kind: "world"; height: number; text: string}
@@ -52,6 +54,11 @@ export class RuntimeSession {
 
   currentSnapshot(): WorldSnapshot { return structuredClone(this.snapshot); }
 
+  observe(mode: PerceptionMode = "ambient"): SessionResult {
+    const projected = projectCurrentScene(this.snapshot, this.options.fixture, this.options.actorId, mode);
+    return {kind: "query", height: this.snapshot.height, text: projected.text};
+  }
+
   private async audit(rawInput: RawInput, attemptId: string, fields: Omit<AttemptAudit, "rawInput" | "attemptId">): Promise<void> {
     await this.options.auditStore.appendAttempt({attemptId, rawInput, ...fields});
   }
@@ -62,6 +69,12 @@ export class RuntimeSession {
     const rawInput: RawInput = {sessionId: this.options.sessionId, actorId: this.options.actorId, text,
       receivedAt: this.now().toISOString(), language: /[\u3400-\u9fff]/u.test(text) ? "zh" : "unknown"};
     try {
+      const perceptionMode = detectPerceptionRequest(text);
+      if (perceptionMode !== undefined) {
+        const projected = projectCurrentScene(this.snapshot, this.options.fixture, this.options.actorId, perceptionMode);
+        await this.audit(rawInput, attemptId, {status: "constituted"});
+        return {kind: "query", height: this.snapshot.height, text: projected.text};
+      }
       const proposal = await requestInputProposal(this.options.model, text);
       const telemetry = this.options.model.telemetry?.();
       if (proposal.kind === "none") {
