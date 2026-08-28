@@ -4,7 +4,7 @@
 // ADJUDICATE, juror, clerk, and NARRATE prompts are carried over verbatim (or with the
 // one documented fix) from the validated spikes -- not re-authored from scratch.
 
-import {BASE_PROPOSITION_RULES} from "../shared/proposition-language.mjs";
+import {BASE_PROPOSITION_RULES, FACT_SHAPE_RULES, renderPropositionList} from "../shared/proposition-language.mjs";
 
 export const GROUND_SYSTEM_PROMPT = `给定一句话和一份已知实体列表（规范名字+别名），提取这句话实际提到的已知实体（用规范名字）。如果这句话明确指向一个具体物品/地点，但这个物品不在已知列表里，在 unbound 字段里如实写出玩家用的那个词；如果没有这种情况，unbound 为空数组。不要猜测玩家可能想指哪个已知实体——只在别名确实对应得上时才算。只输出 JSON。`;
 
@@ -21,8 +21,13 @@ export function buildGroundUserPrompt(attempt, entityRegistry) {
   return `已知实体：${registryText}\n\n这句话：${attempt}`;
 }
 
-// Carried over from plausibility-judge-spike/prompts.mjs, unchanged.
+// Carried over from plausibility-judge-spike/prompts.mjs, with the shared proposition
+// format (including the [H<n>]/recency-wins rule, added 2026-08-28 after
+// reactive-collapse-findings found ADJUDICATE trusting a stale genesis fact over a
+// newer, contradicting attempt-outcome fact) spliced in.
 export const ADJUDICATE_SYSTEM_PROMPT = `你是这个虚构世界的裁决者。玩家会给你一段场景背景（可能为空）和一件想要发生或已经发生的局部行动/物理过程。你的任务只有一个：判断这件事在给定场景下可信不可信、能不能发生。
+
+${BASE_PROPOSITION_RULES}
 
 规则：
 - 只依据场景里明确给出的信息和最基本的物理常识来判断，不要凭空发明场景里没提到的新事实、新物体或新身份。
@@ -35,8 +40,7 @@ export const ADJUDICATE_SYSTEM_PROMPT = `你是这个虚构世界的裁决者。
 只输出裁决本身，不要加"裁决："这样的前缀，不要用 Markdown。`;
 
 export function buildAdjudicateUserPrompt(propositions, attempt) {
-  const list = propositions.map(p => `- ${p.text}`).join("\n");
-  return `已知场景：\n${list || "（无相关已知信息）"}\n\n待裁决：${attempt}`;
+  return `已知场景：\n${renderPropositionList(propositions)}\n\n待裁决：${attempt}`;
 }
 
 // New: classifies the Adjudicator's free-text verdict into a control signal. Reads
@@ -72,12 +76,14 @@ export const CONTINUITY_RESOLVER_SYSTEM_PROMPT = `你是"编剧"（Continuity Re
 只输出这条新命题本身，不要解释，不要输出其它内容。`;
 
 export function buildContinuityResolverUserPrompt(propositions, attempt, missingAbout) {
-  const list = propositions.map(p => `- ${p.text}`).join("\n");
-  return `已知命题：\n${list}\n\n当前待裁决：${attempt}\n\n缺失的方面：${missingAbout || "（裁决者未明确指出，请根据待裁决内容自行判断需要补全什么）"}`;
+  return `已知命题：\n${renderPropositionList(propositions)}\n\n当前待裁决：${attempt}\n\n缺失的方面：${missingAbout || "（裁决者未明确指出，请根据待裁决内容自行判断需要补全什么）"}`;
 }
 
-// Carried over from juror-clerk-spike/prompts.mjs, unchanged.
+// Carried over from juror-clerk-spike/prompts.mjs, with the shared proposition format
+// (including the recency-wins rule) spliced in -- see ADJUDICATE_SYSTEM_PROMPT's note.
 export const JUROR_SYSTEM_PROMPT = `你是这个虚构世界的裁决者。玩家会给你一段场景背景（可能为空）和一件想要发生或已经发生的局部行动/物理过程。你的任务只有一个：判断这件事在给定场景下可信不可信、能不能发生。
+
+${BASE_PROPOSITION_RULES}
 
 规则：
 - 只依据场景里明确给出的信息和最基本的物理常识来判断，不要凭空发明场景里没提到的新事实、新物体或新身份。
@@ -90,8 +96,7 @@ export const JUROR_SYSTEM_PROMPT = `你是这个虚构世界的裁决者。玩�
 只输出裁决本身，不要加"裁决："这样的前缀，不要用 Markdown。`;
 
 export function buildJurorUserPrompt(propositions, claim) {
-  const list = propositions.map(p => `- ${p.text}`).join("\n");
-  return `场景：\n${list}\n\n待裁决：${claim}`;
+  return `场景：\n${renderPropositionList(propositions)}\n\n待裁决：${claim}`;
 }
 
 // Carried over from juror-clerk-spike/prompts.mjs, unchanged.
@@ -131,9 +136,8 @@ export const CLERK_JSON_SCHEMA = {
 };
 
 export function buildClerkUserPrompt(propositions, claim, verdicts) {
-  const list = propositions.map(p => `- ${p.text}`).join("\n");
   const verdictLines = verdicts.map((v, i) => `判官${i + 1}：${v}`).join("\n");
-  return `场景：\n${list}\n\n待裁决：${claim}\n\n三位判官的裁决：\n${verdictLines}`;
+  return `场景：\n${renderPropositionList(propositions)}\n\n待裁决：${claim}\n\n三位判官的裁决：\n${verdictLines}`;
 }
 
 // NARRATE, carried over from world-feedback-narration-spike, with the fix from
@@ -142,8 +146,10 @@ export function buildClerkUserPrompt(propositions, claim, verdicts) {
 // category/material facts across turns -- this was the one concrete bug found there.
 export const NARRATE_SYSTEM_PROMPT = `你是《世界反馈者手册》定义的"世界反馈者"。你的工作是把这次结算的结果，通过对方这具身体的感官带宽，有损地投影回去，用第二人称、原始感官语言描述。
 
+${BASE_PROPOSITION_RULES}
+
 规则：
-- 一致——不能和已知场景信息矛盾。
+- 一致——不能和已知场景信息矛盾；已知场景信息里如果有冲突，按上面的规则以 Height 更大的为准，不要两边都提、也不要用过时的那条。
 - 不许在乎、不许判对错——只描述发生了什么，不评价、不give建议、不给选项菜单。
 - 默认只用质地/结构（L1-L2）描述，不要抢先给出对方没有观察/命名过的类别词。
 - 因果解释永远不允许，包括伪装形式："你注意到……""奇怪的是……""仿佛……""这说明……"一律删除。
@@ -153,10 +159,9 @@ export const NARRATE_SYSTEM_PROMPT = `你是《世界反馈者手册》定义的
 只输出这次结算对应的原始反馈文本本身，不要输出手册元话语，不要用 Markdown。`;
 
 export function buildNarrateUserPrompt(propositions, attempt, outcomeSummary, avoidClaims) {
-  const list = propositions.map(p => `- ${p.text}`).join("\n");
   const avoidBlock = avoidClaims === undefined || avoidClaims.length === 0 ? "" :
     `\n\n【重写要求】上一版草稿里出现了这些具体断言，但它们没有依据、不能出现——不要重复它们，改用不具体的质感/结构描述，或者干脆不提这个细节：\n${avoidClaims.map(c => `- ${c}`).join("\n")}`;
-  return `已知场景：\n${list}\n\n这次尝试：${attempt}\n\n结算结果（内部信息，不要逐字复述，只用来生成感官反馈）：${outcomeSummary}${avoidBlock}`;
+  return `已知场景：\n${renderPropositionList(propositions)}\n\n这次尝试：${attempt}\n\n结算结果（内部信息，不要逐字复述，只用来生成感官反馈）：${outcomeSummary}${avoidBlock}`;
 }
 
 // New: post-NARRATE audit. Extracts only claims that read as specific, checkable
@@ -196,8 +201,24 @@ export const CLAIM_EXTRACTOR_JSON_SCHEMA = {
 };
 
 export function buildClaimExtractorUserPrompt(propositions, narrationText) {
-  const list = propositions.map(p => `- ${p.text}`).join("\n");
-  return `已知命题：\n${list}\n\n反馈文本：\n${narrationText}`;
+  return `已知命题：\n${renderPropositionList(propositions)}\n\n反馈文本：\n${narrationText}`;
+}
+
+// New: turns an Adjudicator verdict into a clean FACT_SHAPE-compliant settled-state
+// proposition for COMMIT, instead of committing the verdict-log text verbatim. Added
+// 2026-08-28 after reactive-collapse-findings: the old verdict-log phrasing buried a
+// real state change (blanket-1 moved) inside judgment prose, which made it too easy
+// for a later reader to miss that it contradicted a stale genesis fact. This is what
+// makes the recency-wins rule actually usable -- two propositions about the same
+// thing need to be phrased comparably for a conflict to be recognizable at all.
+export const FACT_WRITER_SYSTEM_PROMPT = `你会读到一次 Attempt 和它的裁决结果。你的任务是：如果这次结算真的改变了某个实体的状态（位置、持有关系、外观、可用性等），把这个变化写成一条干净的、已结算语气的命题；如果这次结算没有真正改变任何状态（比如只是一次观察、或者尝试失败了什么都没变），输出空字符串。
+
+${FACT_SHAPE_RULES}
+
+只输出这条命题本身（或空字符串），不要解释，不要输出其它内容。`;
+
+export function buildFactWriterUserPrompt(attempt, verdictText) {
+  return `这次尝试：${attempt}\n\n裁决结果：${verdictText}`;
 }
 
 // New: light binary reader of the reachability-judge's free-text verdict. Classifies

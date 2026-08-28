@@ -17,7 +17,8 @@ export const BASE_PROPOSITION_RULES = `命题格式约定：
 - 一条命题是一句完整、自包含的自然语言陈述，主谓结构，不嵌套。
 - 不能包含依赖上下文才能解析的代词或指代（比如"它""这样""刚才那样"）——命题会被单独检索、脱离原始出现顺序使用，读到这条命题的角色手上可能没有任何相邻命题作为上下文，指代在那种情况下无法解析。
 - 每条命题要点名它谈论的是哪个/哪些已知实体，用实体的规范名字，不用代称。
-- 命题内容本身是纯自然语言，不使用类型、字段或枚举值域。`;
+- 命题内容本身是纯自然语言，不使用类型、字段或枚举值域。
+- 每条命题前面标的 [H数字] 是它被确立时的 Height（越大越晚确立）。**如果两条已知命题谈论同一件事但内容互相冲突，以 Height 更大（更晚确立）的那条为准**，不需要、也不应该去猜测哪条"应该"被删除或修正——旧命题不会被撤销，只是在冲突时不再是权威的，类似连载故事里新一集的设定覆盖旧一集，不代表旧一集从没发生过。`;
 
 export const ATTEMPT_SHAPE_RULES = `Attempt 是命题语言的一个衍生子集，在基础格式约定之上额外要求：
 - 必须表达一个主体正在尝试/意图做的动作或局部行动，不能是对一个已经发生、已经结算的结果的断言。
@@ -35,8 +36,14 @@ export const COLLAPSE_PROPOSAL_RULES = `编剧提出的 Collapse 补全命题是
 
 // Consistent rendering everywhere a proposition list gets shown to a model -- avoids
 // the "场景:"/"已知命题:"/"已知场景:" label drift seen across the earlier spikes.
+// Shows [H<height>] when available -- required for the recency-wins conflict rule
+// above to be usable at all; a model can't prefer "the more recent one" if it can't
+// tell which one that is.
 export function renderPropositionList(propositions) {
-  const texts = propositions.map(p => (typeof p === "string" ? p : p.text));
-  if (texts.length === 0) return "（无相关已知命题）";
-  return texts.map(text => `- ${text}`).join("\n");
+  if (propositions.length === 0) return "（无相关已知命题）";
+  return propositions.map(p => {
+    if (typeof p === "string") return `- ${p}`;
+    const heightTag = typeof p.height === "number" ? `[H${p.height}] ` : "";
+    return `- ${heightTag}${p.text}`;
+  }).join("\n");
 }

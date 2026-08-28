@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-28T15:43:54.720Z",
+  "generatedAt": "2026-08-28T16:07:57.871Z",
   "results": [
     {
       "attempt": "看看毛毯摸起来怎么样。",
@@ -22,35 +22,84 @@
         },
         {
           "stage": "ADJUDICATE",
-          "output": "可信，摸起来柔软，可以压缩。"
+          "output": "摸起来柔软，可以压缩。"
         },
         {
           "stage": "CLASSIFY",
           "output": {
             "missingAbout": "",
-            "outcome": "plausible"
+            "outcome": "insufficient"
+          }
+        },
+        {
+          "stage": "COLLAPSE_PROPOSE",
+          "output": "blanket-1 摸起来温度适中。"
+        },
+        {
+          "stage": "COLLAPSE_JURY",
+          "output": {
+            "verdicts": [
+              "可信，放在床上的毯子在没有额外热源或冷源的情况下，温度适中是自然状态。",
+              "可信，放在床上的毯子没有理由偏离室温。",
+              "可信，放在室内床上的毯子自然处于室温，摸起来温度适中是合理的。"
+            ],
+            "clerk": {
+              "classifications": [
+                "通过",
+                "通过",
+                "通过"
+              ],
+              "finalDecision": "放行",
+              "rule": "majority-pass",
+              "vetoReason": "",
+              "vetoTriggered": false
+            }
+          }
+        },
+        {
+          "stage": "COLLAPSE_COMMIT",
+          "height": 1,
+          "text": "blanket-1 摸起来温度适中。"
+        },
+        {
+          "stage": "RETRIEVE_AFTER_COLLAPSE",
+          "output": [
+            "blanket-1 现在放在 bed-1 上。",
+            "blanket-1 摸起来柔软，可以压缩。",
+            "blanket-1 摸起来温度适中。"
+          ]
+        },
+        {
+          "stage": "ADJUDICATE_AFTER_COLLAPSE",
+          "output": "柔软、可以压缩、温度适中。"
+        },
+        {
+          "stage": "CLASSIFY_AFTER_COLLAPSE",
+          "output": {
+            "missingAbout": "",
+            "outcome": "insufficient"
           }
         },
         {
           "stage": "COMMIT",
-          "height": 1,
-          "outcome": "plausible"
+          "height": 2,
+          "outcome": "insufficient"
         },
         {
           "stage": "NARRATE_AUDIT",
           "output": {
-            "draft": "手指按下去，它陷进去，没有硬的东西顶着。松开手，它慢慢鼓回来。表面是细密的、短的东西，贴着皮肤滑过去的时候没有颗粒感。",
+            "draft": "你的手掌按在毛毯上，它让开了，手指陷进去，没有硬的东西顶着。温度不冷也不热。",
             "extractedClaims": [],
             "checks": [],
             "collapses": [],
             "regenerated": false,
-            "final": "手指按下去，它陷进去，没有硬的东西顶着。松开手，它慢慢鼓回来。表面是细密的、短的东西，贴着皮肤滑过去的时候没有颗粒感。"
+            "final": "你的手掌按在毛毯上，它让开了，手指陷进去，没有硬的东西顶着。温度不冷也不热。"
           }
         }
       ],
-      "height": 1,
-      "kind": "plausible",
-      "narration": "手指按下去，它陷进去，没有硬的东西顶着。松开手，它慢慢鼓回来。表面是细密的、短的东西，贴着皮肤滑过去的时候没有颗粒感。"
+      "height": 2,
+      "kind": "insufficient",
+      "narration": "你的手掌按在毛毯上，它让开了，手指陷进去，没有硬的东西顶着。温度不冷也不热。"
     },
     {
       "attempt": "量一下门缝到底有多宽。",
@@ -73,7 +122,7 @@
         },
         {
           "stage": "ADJUDICATE",
-          "output": "可信，门关着时门与门框之间本就有缝隙，拿尺子一量即可。"
+          "output": "可信，门关着就有缝，量一下没问题。"
         },
         {
           "stage": "CLASSIFY",
@@ -84,52 +133,53 @@
         },
         {
           "stage": "COMMIT",
-          "height": 2,
-          "outcome": "plausible"
+          "height": 3,
+          "outcome": "plausible",
+          "committedFactText": "结果：量一下门缝到底有多宽。 —— 可信，门关着就有缝，量一下没问题。"
         },
         {
           "stage": "NARRATE_AUDIT",
           "output": {
-            "draft": "尺子薄的那一面贴上门板侧边，往门框方向送。门板边缘和门框之间有一段空隙，尺子边缘滑进去，两侧各贴着一个平面，中间是空的。这段空隙不宽，尺子上的刻度从门板边缘起，到门框边缘止，能直接对上。",
+            "draft": "你蹲下来，脸贴近地面，门底那条缝就在你眼前。你把食指伸进去，指尖碰到门板下沿，指腹贴着地面，两指之间夹着那条缝。缝的宽度刚好容得下你食指侧面，指尖再往里推就顶住了门板，推不动。你换用拇指和食指捏住缝的两侧，指腹能同时贴到门板底边和地面，中间留出的空隙大概是你食指侧面那么宽。",
             "extractedClaims": [
-              "门板边缘与门框边缘之间存在空隙",
-              "门板边缘与门框边缘之间的空隙宽度在尺子刻度范围内"
+              "door-1 门底缝隙的宽度大约等于玩家食指侧面的宽度",
+              "door-1 门底缝隙的深度不足以让玩家的食指完全穿过，指尖推入后会顶到门板"
             ],
             "checks": [
               {
-                "claim": "门板边缘与门框边缘之间存在空隙",
+                "claim": "door-1 门底缝隙的宽度大约等于玩家食指侧面的宽度",
                 "reachable": false,
-                "verdictText": "不可达。已知命题只说明了门的位置、关闭状态和未上锁，没有涉及门板与门框之间的物理间隙。要推出\"存在空隙\"需要额外引入关于门的设计或构造的常识（例如\"能正常转动的门在关闭时边缘与门框间必有间隙\"），而这一前提并未包含在已知命题中。"
+                "verdictText": "不可达。已知命题只说明了 door-1 的位置和开关/锁状态，完全没有涉及门底缝隙的宽度，也没有任何关于\"玩家食指\"的信息，无法推出缝隙宽度的具体数值。"
               },
               {
-                "claim": "门板边缘与门框边缘之间的空隙宽度在尺子刻度范围内",
+                "claim": "door-1 门底缝隙的深度不足以让玩家的食指完全穿过，指尖推入后会顶到门板",
                 "reachable": false,
-                "verdictText": "不可达。已知命题只说明了 door-1 的位置和开关/锁状态，完全没有涉及门板与门框之间空隙的具体宽度，也没有任何关于测量工具或刻度范围的信息，无法推出该命题。"
+                "verdictText": "不可达。已知命题只说明了 door-1 的位置（卧室通向走廊）和状态（关着、没上锁），完全没有涉及门底缝隙的具体尺寸或门板与地面之间的间隙深度。目标命题要求判断食指能否完全穿过缝隙，这需要关于缝隙宽度的具体物理信息，已知命题中不存在任何能支撑这一判断的内容。"
               }
             ],
             "collapses": [
               {
-                "claim": "门板边缘与门框边缘之间存在空隙",
-                "proposedFact": "门板边缘与门框边缘之间的空隙为四毫米。",
-                "committed": true,
-                "height": 3,
-                "clerkDecision": "放行"
-              },
-              {
-                "claim": "门板边缘与门框边缘之间的空隙宽度在尺子刻度范围内",
-                "proposedFact": "尺子的最小刻度为一毫米。",
+                "claim": "door-1 门底缝隙的宽度大约等于玩家食指侧面的宽度",
+                "proposedFact": "door-1 门底缝隙的宽度大约等于玩家食指侧面的宽度。",
                 "committed": false,
                 "clerkDecision": "不放行"
+              },
+              {
+                "claim": "door-1 门底缝隙的深度不足以让玩家的食指完全穿过，指尖推入后会顶到门板",
+                "proposedFact": "door-1 门底缝隙宽约一厘米。",
+                "committed": true,
+                "height": 4,
+                "clerkDecision": "放行"
               }
             ],
             "regenerated": true,
-            "final": "尺子薄边塞进门缝，贴住门板边缘。你低头，刻度线停在第四格。"
+            "final": "你蹲下来，把手指伸向 door-1 门底和地面之间的那条缝。缝隙很窄，你的指尖刚能探进去，指腹两侧几乎同时碰到门底边缘和地面，皮肤被夹在中间，能感觉到两边都在压着你。"
           }
         }
       ],
-      "height": 2,
+      "height": 3,
       "kind": "plausible",
-      "narration": "尺子薄边塞进门缝，贴住门板边缘。你低头，刻度线停在第四格。"
+      "narration": "你蹲下来，把手指伸向 door-1 门底和地面之间的那条缝。缝隙很窄，你的指尖刚能探进去，指腹两侧几乎同时碰到门底边缘和地面，皮肤被夹在中间，能感觉到两边都在压着你。"
     },
     {
       "attempt": "把毛毯拿起来，塞到门缝下面。",
@@ -151,14 +201,14 @@
             "door-1 现在是关着的，没有上锁。",
             "blanket-1 现在放在 bed-1 上。",
             "blanket-1 摸起来柔软，可以压缩。",
-            "结果：看看毛毯摸起来怎么样。 —— 可信，摸起来柔软，可以压缩。",
-            "结果：量一下门缝到底有多宽。 —— 可信，门关着时门与门框之间本就有缝隙，拿尺子一量即可。",
-            "门板边缘与门框边缘之间的空隙为四毫米。"
+            "blanket-1 摸起来温度适中。",
+            "结果：量一下门缝到底有多宽。 —— 可信，门关着就有缝，量一下没问题。",
+            "door-1 门底缝隙宽约一厘米。"
           ]
         },
         {
           "stage": "ADJUDICATE",
-          "output": "可信，但四毫米的缝隙很窄，得把毛毯卷紧或压薄才能塞进去。"
+          "output": "可信，毛毯柔软可压缩，塞进一厘米的门缝没问题。"
         },
         {
           "stage": "CLASSIFY",
@@ -169,116 +219,45 @@
         },
         {
           "stage": "COMMIT",
-          "height": 4,
-          "outcome": "plausible"
+          "height": 5,
+          "outcome": "plausible",
+          "committedFactText": "毛毯被塞在门缝下面，堵住了那道一厘米的缝隙。"
         },
         {
           "stage": "NARRATE_AUDIT",
           "output": {
-            "draft": "你拿起毛毯，它在你手里是一团柔软的东西，有厚度，可以压缩。你把它带到门缝下面，手指把毛毯边缘往门板底部和地面之间推。毛毯的厚度超过那道缝隙。你的手指把毛毯压扁、卷紧，纤维被挤在一起，边缘变薄，塞进那道四毫米的空隙里。",
+            "draft": "你从 bed-1 上把 blanket-1 抓起来，它柔软地垂在手里，温度适中。你蹲到 door-1 前面，把 blanket-1 的一角压向门底的缝隙。你的手指把毛毯往缝里推，纤维被挤紧、压扁，塞进那道约一厘米的缝里。缝隙被填满了。",
             "extractedClaims": [
-              "blanket-1 的厚度大于门板边缘与门框边缘之间的空隙（四毫米）",
-              "blanket-1 被压扁后边缘的厚度不超过四毫米，能够塞进那道空隙"
+              "door-1 门底的缝隙被 blanket-1 填满了"
             ],
             "checks": [
               {
-                "claim": "blanket-1 的厚度大于门板边缘与门框边缘之间的空隙（四毫米）",
+                "claim": "door-1 门底的缝隙被 blanket-1 填满了",
                 "reachable": false,
-                "verdictText": "不可达。已知命题只说明 blanket-1 摸起来柔软、可以压缩，但没有给出它的任何厚度数值或范围。\"柔软\"和\"可压缩\"这些性质无法可靠地推出厚度一定大于四毫米——一条很薄的柔软织物同样满足这些描述但厚度可能不足四毫米。缺少关于 blanket-1 厚度的具体信息。"
-              },
-              {
-                "claim": "blanket-1 被压扁后边缘的厚度不超过四毫米，能够塞进那道空隙",
-                "reachable": false,
-                "verdictText": "不可达。已知命题只说明 blanket-1\"可以压缩\"（命题4）以及空隙为四毫米（命题7），但\"可以压缩\"并未给出压缩后的具体厚度数值，无法确定它压扁后是否真的不超过四毫米。缺少的是 blanket-1 压缩后的实际厚度信息。"
+                "verdictText": "不可达。已知命题3明确说 blanket-1 现在放在 bed-1 上，没有任何已知命题表明它被移动到了 door-1 门底。虽然 blanket-1 柔软可压缩、门缝约一厘米，这些条件在物理上可能允许它塞进门缝，但已知命题中没有任何一条说明它实际被放在了门底缝隙处，所以无法得出\"被填满了\"的结论。"
               }
             ],
             "collapses": [
               {
-                "claim": "blanket-1 的厚度大于门板边缘与门框边缘之间的空隙（四毫米）",
-                "proposedFact": "blanket-1 的厚度大于四毫米。",
-                "committed": true,
-                "height": 5,
-                "clerkDecision": "放行"
-              },
-              {
-                "claim": "blanket-1 被压扁后边缘的厚度不超过四毫米，能够塞进那道空隙",
-                "proposedFact": "blanket-1 被压扁后厚度可以小于四毫米。",
+                "claim": "door-1 门底的缝隙被 blanket-1 填满了",
+                "proposedFact": "blanket-1 塞入后填满了 door-1 门底的缝隙。",
                 "committed": true,
                 "height": 6,
                 "clerkDecision": "放行"
               }
             ],
             "regenerated": true,
-            "final": "你拿起毛毯，送到门底边。门板下沿和地面之间那道缝很窄。你把毛毯往缝里推，手指按下去，毛毯在指下压扁，整体还是比缝厚，过不去。你把它卷紧，压薄，压到比缝还薄，它才从缝底下滑过去。"
+            "final": "你从 bed-1 上把 blanket-1 拿起来。它轻，柔软，温度适中。你把它带到 door-1 前面，蹲下来，把 blanket-1 的一边塞进门底的缝隙里。缝隙只有一厘米宽，blanket-1 被压扁，塞进去之后填满了那道缝。"
           }
         }
       ],
-      "height": 4,
+      "height": 5,
       "kind": "plausible",
-      "narration": "你拿起毛毯，送到门底边。门板下沿和地面之间那道缝很窄。你把毛毯往缝里推，手指按下去，毛毯在指下压扁，整体还是比缝厚，过不去。你把它卷紧，压薄，压到比缝还薄，它才从缝底下滑过去。"
+      "narration": "你从 bed-1 上把 blanket-1 拿起来。它轻，柔软，温度适中。你把它带到 door-1 前面，蹲下来，把 blanket-1 的一边塞进门底的缝隙里。缝隙只有一厘米宽，blanket-1 被压扁，塞进去之后填满了那道缝。"
     },
     {
       "attempt": "再检查一下毛毯现在的样子。",
-      "stages": [
-        {
-          "stage": "GROUND",
-          "output": {
-            "entities": [
-              "blanket-1"
-            ],
-            "unbound": []
-          }
-        },
-        {
-          "stage": "RETRIEVE",
-          "output": [
-            "blanket-1 现在放在 bed-1 上。",
-            "blanket-1 摸起来柔软，可以压缩。",
-            "结果：看看毛毯摸起来怎么样。 —— 可信，摸起来柔软，可以压缩。",
-            "结果：把毛毯拿起来，塞到门缝下面。 —— 可信，但四毫米的缝隙很窄，得把毛毯卷紧或压薄才能塞进去。",
-            "blanket-1 的厚度大于四毫米。",
-            "blanket-1 被压扁后厚度可以小于四毫米。"
-          ]
-        },
-        {
-          "stage": "ADJUDICATE",
-          "output": "可信，毛毯在 bed-1 上，柔软，可以压缩。"
-        },
-        {
-          "stage": "CLASSIFY",
-          "output": {
-            "missingAbout": "",
-            "outcome": "plausible"
-          }
-        },
-        {
-          "stage": "COMMIT",
-          "height": 7,
-          "outcome": "plausible"
-        },
-        {
-          "stage": "NARRATE_AUDIT",
-          "output": {
-            "draft": "毛毯摊在床上，表面有起伏，不是平贴的。手指按下去，陷进去，松手后慢慢鼓回来。边缘翻起来能看到厚度，比门缝宽。",
-            "extractedClaims": [
-              "blanket-1 的厚度大于门缝的宽度"
-            ],
-            "checks": [
-              {
-                "claim": "blanket-1 的厚度大于门缝的宽度",
-                "reachable": true,
-                "verdictText": "可达。命题4指出门缝是四毫米的缝隙，命题5指出blanket-1的厚度大于四毫米，两者结合即可得出blanket-1的厚度大于门缝的宽度。"
-              }
-            ],
-            "collapses": [],
-            "regenerated": false,
-            "final": "毛毯摊在床上，表面有起伏，不是平贴的。手指按下去，陷进去，松手后慢慢鼓回来。边缘翻起来能看到厚度，比门缝宽。"
-          }
-        }
-      ],
-      "height": 7,
-      "kind": "plausible",
-      "narration": "毛毯摊在床上，表面有起伏，不是平贴的。手指按下去，陷进去，松手后慢慢鼓回来。边缘翻起来能看到厚度，比门缝宽。"
+      "error": "Error: Workers AI response had no text (finish_reason=length)."
     },
     {
       "attempt": "打开五斗柜，把里面的枪拿出来。",
@@ -382,59 +361,48 @@
     },
     {
       "id": "p8",
-      "text": "结果：看看毛毯摸起来怎么样。 —— 可信，摸起来柔软，可以压缩。",
+      "text": "blanket-1 摸起来温度适中。",
       "entities": [
         "blanket-1"
       ],
       "height": 1,
       "status": "active",
-      "source": "attempt-outcome"
+      "source": "collapse"
     },
     {
       "id": "p9",
-      "text": "结果：量一下门缝到底有多宽。 —— 可信，门关着时门与门框之间本就有缝隙，拿尺子一量即可。",
-      "entities": [
-        "door-1"
-      ],
-      "height": 2,
-      "status": "active",
-      "source": "attempt-outcome"
-    },
-    {
-      "id": "p10",
-      "text": "门板边缘与门框边缘之间的空隙为四毫米。",
+      "text": "结果：量一下门缝到底有多宽。 —— 可信，门关着就有缝，量一下没问题。",
       "entities": [
         "door-1"
       ],
       "height": 3,
       "status": "active",
-      "source": "collapse"
+      "source": "attempt-outcome"
     },
     {
-      "id": "p11",
-      "text": "结果：把毛毯拿起来，塞到门缝下面。 —— 可信，但四毫米的缝隙很窄，得把毛毯卷紧或压薄才能塞进去。",
+      "id": "p10",
+      "text": "door-1 门底缝隙宽约一厘米。",
       "entities": [
-        "blanket-1",
         "door-1"
       ],
       "height": 4,
       "status": "active",
-      "source": "attempt-outcome"
+      "source": "collapse"
     },
     {
-      "id": "p12",
-      "text": "blanket-1 的厚度大于四毫米。",
+      "id": "p11",
+      "text": "毛毯被塞在门缝下面，堵住了那道一厘米的缝隙。",
       "entities": [
         "blanket-1",
         "door-1"
       ],
       "height": 5,
       "status": "active",
-      "source": "collapse"
+      "source": "attempt-outcome"
     },
     {
-      "id": "p13",
-      "text": "blanket-1 被压扁后厚度可以小于四毫米。",
+      "id": "p12",
+      "text": "blanket-1 塞入后填满了 door-1 门底的缝隙。",
       "entities": [
         "blanket-1",
         "door-1"
@@ -444,8 +412,8 @@
       "source": "collapse"
     },
     {
-      "id": "p14",
-      "text": "结果：再检查一下毛毯现在的样子。 —— 可信，毛毯在 bed-1 上，柔软，可以压缩。",
+      "id": "p13",
+      "text": "结果：再检查一下毛毯现在的样子。 —— 毛毯现在是压缩状态，塞在 door-1 门底缝隙里，不再是平铺的样子。",
       "entities": [
         "blanket-1"
       ],

@@ -37,7 +37,8 @@ import {
   CLERK_SYSTEM_PROMPT, CLERK_JSON_SCHEMA, buildClerkUserPrompt,
   NARRATE_SYSTEM_PROMPT, buildNarrateUserPrompt,
   CLAIM_EXTRACTOR_SYSTEM_PROMPT, CLAIM_EXTRACTOR_JSON_SCHEMA, buildClaimExtractorUserPrompt,
-  REACHABILITY_CLASSIFIER_SYSTEM_PROMPT, REACHABILITY_CLASSIFIER_JSON_SCHEMA
+  REACHABILITY_CLASSIFIER_SYSTEM_PROMPT, REACHABILITY_CLASSIFIER_JSON_SCHEMA,
+  FACT_WRITER_SYSTEM_PROMPT, buildFactWriterUserPrompt
 } from "./prompts.mjs";
 import {entityRegistry} from "./world.mjs";
 // Reused verbatim from reachability-inference-spike -- not copied, so there is no risk
@@ -48,20 +49,25 @@ import {REACHABILITY_SYSTEM_PROMPT, buildUserPrompt as buildReachabilityUserProm
 async function ground(attempt) {
   const {raw} = await callModel({
     system: GROUND_SYSTEM_PROMPT, user: buildGroundUserPrompt(attempt, entityRegistry),
-    jsonSchema: GROUND_JSON_SCHEMA, maxTokens: 1200
+    jsonSchema: GROUND_JSON_SCHEMA, maxTokens: 1800
   });
   return JSON.parse(raw);
 }
 
 async function adjudicate(propositions, attempt) {
-  const {raw} = await callModel({system: ADJUDICATE_SYSTEM_PROMPT, user: buildAdjudicateUserPrompt(propositions, attempt), maxTokens: 1500});
+  const {raw} = await callModel({system: ADJUDICATE_SYSTEM_PROMPT, user: buildAdjudicateUserPrompt(propositions, attempt), maxTokens: 1800});
   return raw;
+}
+
+async function writeFact(attempt, verdictText) {
+  const {raw} = await callModel({system: FACT_WRITER_SYSTEM_PROMPT, user: buildFactWriterUserPrompt(attempt, verdictText), maxTokens: 1200});
+  return raw.trim();
 }
 
 async function classifyOutcome(verdictText) {
   const {raw} = await callModel({
     system: OUTCOME_CLASSIFIER_SYSTEM_PROMPT, user: verdictText,
-    jsonSchema: OUTCOME_CLASSIFIER_JSON_SCHEMA, maxTokens: 1000
+    jsonSchema: OUTCOME_CLASSIFIER_JSON_SCHEMA, maxTokens: 1500
   });
   return JSON.parse(raw);
 }
@@ -69,18 +75,18 @@ async function classifyOutcome(verdictText) {
 async function proposeCollapse(propositions, attempt, missingAbout) {
   const {raw} = await callModel({
     system: CONTINUITY_RESOLVER_SYSTEM_PROMPT,
-    user: buildContinuityResolverUserPrompt(propositions, attempt, missingAbout), maxTokens: 1200
+    user: buildContinuityResolverUserPrompt(propositions, attempt, missingAbout), maxTokens: 1800
   });
   return raw;
 }
 
 async function runJurorsAndClerk(propositions, proposedFact) {
   const jurorCalls = await Promise.all([1, 2, 3].map(() =>
-    callModel({system: JUROR_SYSTEM_PROMPT, user: buildJurorUserPrompt(propositions, proposedFact), maxTokens: 1200})));
+    callModel({system: JUROR_SYSTEM_PROMPT, user: buildJurorUserPrompt(propositions, proposedFact), maxTokens: 1800})));
   const verdicts = jurorCalls.map(c => c.raw);
   const clerkCall = await callModel({
     system: CLERK_SYSTEM_PROMPT, user: buildClerkUserPrompt(propositions, proposedFact, verdicts),
-    jsonSchema: CLERK_JSON_SCHEMA, maxTokens: 1200
+    jsonSchema: CLERK_JSON_SCHEMA, maxTokens: 1800
   });
   return {verdicts, clerk: JSON.parse(clerkCall.raw)};
 }
@@ -88,7 +94,7 @@ async function runJurorsAndClerk(propositions, proposedFact) {
 async function narrate(propositions, attempt, outcomeSummary, avoidClaims) {
   const {raw} = await callModel({
     system: NARRATE_SYSTEM_PROMPT, user: buildNarrateUserPrompt(propositions, attempt, outcomeSummary, avoidClaims),
-    maxTokens: 1500, timeoutMs: 150_000
+    maxTokens: 2200, timeoutMs: 150_000
   });
   return raw;
 }
@@ -96,18 +102,18 @@ async function narrate(propositions, attempt, outcomeSummary, avoidClaims) {
 async function extractClaims(propositions, narrationText) {
   const {raw} = await callModel({
     system: CLAIM_EXTRACTOR_SYSTEM_PROMPT, user: buildClaimExtractorUserPrompt(propositions, narrationText),
-    jsonSchema: CLAIM_EXTRACTOR_JSON_SCHEMA, maxTokens: 1200
+    jsonSchema: CLAIM_EXTRACTOR_JSON_SCHEMA, maxTokens: 1800
   });
   return JSON.parse(raw).claims;
 }
 
 async function checkReachable(propositions, claim) {
   const verdict = await callModel({
-    system: REACHABILITY_SYSTEM_PROMPT, user: buildReachabilityUserPrompt(propositions.map(p => p.text), claim), maxTokens: 1200
+    system: REACHABILITY_SYSTEM_PROMPT, user: buildReachabilityUserPrompt(propositions.map(p => p.text), claim), maxTokens: 1800
   });
   const classified = await callModel({
     system: REACHABILITY_CLASSIFIER_SYSTEM_PROMPT, user: verdict.raw,
-    jsonSchema: REACHABILITY_CLASSIFIER_JSON_SCHEMA, maxTokens: 800
+    jsonSchema: REACHABILITY_CLASSIFIER_JSON_SCHEMA, maxTokens: 1200
   });
   return {claim, verdictText: verdict.raw, reachable: JSON.parse(classified.raw).reachable};
 }
@@ -207,10 +213,17 @@ export async function processAttempt(store, attempt) {
   }
 
   const height = store.nextHeight();
+  let committedFactText;
   if (classification.outcome === "plausible") {
-    store.append(`结果：${attempt} —— ${verdictText}`, groundResult.entities, height, "attempt-outcome");
+    // Prefer a clean FACT_SHAPE state proposition (writeFact) over the raw verdict-log
+    // text -- per reactive-collapse-findings, a state change buried in judgment prose
+    // is too easy for a later reader to miss as contradicting a stale fact, which
+    // defeats the recency-wins rule before it can even apply.
+    const cleanFact = await writeFact(attempt, verdictText);
+    committedFactText = cleanFact !== "" ? cleanFact : `结果：${attempt} —— ${verdictText}`;
+    store.append(committedFactText, groundResult.entities, height, "attempt-outcome");
   }
-  log.stages.push({stage: "COMMIT", height, outcome: classification.outcome});
+  log.stages.push({stage: "COMMIT", height, outcome: classification.outcome, committedFactText});
 
   const audited = await narrateWithAudit(store, groundResult, propositions, attempt, verdictText);
   log.stages.push({stage: "NARRATE_AUDIT", output: {
