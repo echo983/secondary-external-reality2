@@ -1,0 +1,164 @@
+{
+  "generatedAt": "2026-08-28T13:31:27.874Z",
+  "accountId": "00f6c85f82f6297c8c0bef9460e013d9",
+  "model": "@cf/qwen/qwen3.8-27b",
+  "knownPropositions": [
+    "门缝距离地面大约1.5厘米高。",
+    "这条毛毯叠起来后大约0.8厘米厚。",
+    "毛毯摸起来柔软、可以压缩。",
+    "房间里唯一的灯泡三天前烧坏了，没有更换。",
+    "窗帘是厚重的遮光布，完全拉上，没有一丝光从缝隙透进来。",
+    "桌子抽屉里放着一把手电筒，电池是三天前新换的。",
+    "门是普通木门，没有锁，虚掩着。",
+    "我的右肩刚刚脱臼，还没有复位，抬起右臂会引发剧痛。",
+    "这扇门很沉，需要较大力气才能推动。",
+    "猫喜欢待在阳光照得到的地方。"
+  ],
+  "count": 8,
+  "results": [
+    {
+      "id": "direct-restatement",
+      "claim": "门缝大约1.5厘米高。",
+      "note": "字面上就是已知命题之一，应判可达——最简单的退化情形，sanity check。",
+      "latencyMs": 4103,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 537,
+        "completion_tokens": 145,
+        "total_tokens": 682,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 64.14999389648438
+      },
+      "raw": "可达。已知命题第1条\"门缝距离地面大约1.5厘米高\"直接确立了目标命题。"
+    },
+    {
+      "id": "single-combo-numeric",
+      "claim": "把这条毛毯塞进门缝下面，从尺寸上说是可行的。",
+      "note": "需要组合三条命题（缝1.5cm、毯0.8cm、柔软可压缩），单跳数值推理，应判可达。",
+      "latencyMs": 4962,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 543,
+        "completion_tokens": 226,
+        "total_tokens": 769,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 87.95909118652344
+      },
+      "raw": "可达。已知命题1给出门缝高度约1.5厘米，命题2给出毛毯叠起来约0.8厘米厚，0.8 < 1.5，尺寸上放得下；命题3进一步说明毛毯柔软可压缩，使可行性更强。"
+    },
+    {
+      "id": "closed-world-darkness",
+      "claim": "现在房间里没有任何光源在起作用，一片漆黑。",
+      "note": "需要组合灯泡坏了+窗帘完全遮光，并且做'没提到的东西默认不存在'这种封闭世界假设，应判可达。",
+      "latencyMs": 10102,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 538,
+        "completion_tokens": 519,
+        "total_tokens": 1057,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 172.99090576171875
+      },
+      "raw": "可达。依据命题4（唯一灯泡已烧坏且未更换）、命题5（窗帘完全遮光，无光透入）和命题6（手电筒放在抽屉里，未提及被打开），可以推出当前房间内所有可能的光源均不在起作用，因此一片漆黑。"
+    },
+    {
+      "id": "two-hop-flashlight",
+      "claim": "打开抽屉里的手电筒之后，房间里就有光可以看清东西了。",
+      "note": "两跳推理：先推出房间黑，再叠加'手电筒存在且电池是好的'这条新局部动作，翻转结论，应判可达。",
+      "latencyMs": 15801,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 544,
+        "completion_tokens": 707,
+        "total_tokens": 1251,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 227.92726135253906
+      },
+      "raw": "可达。依据是第6条（手电筒在抽屉里，电池三天前新换）结合第4、5条（灯泡坏了、窗帘遮光，房间无其他光源）。电池新换意味着手电筒可正常工作，打开后能提供足够光线看清东西。"
+    },
+    {
+      "id": "unreachable-no-info",
+      "claim": "这条毛毯是红色的。",
+      "note": "已知命题里完全没有颜色信息，应判不可达，不能因为'听起来是个合理细节'就放行。",
+      "latencyMs": 7568,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 534,
+        "completion_tokens": 281,
+        "total_tokens": 815,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 103.59090423583984
+      },
+      "raw": "不可达。已知命题中关于毛毯的信息只有厚度（0.8厘米）和质地（柔软、可压缩），没有任何一条提及毛毯的颜色，因此无法推出它是红色的。"
+    },
+    {
+      "id": "unreachable-precision-limb",
+      "claim": "我用脚狠狠踹了一下这扇门，门被踹开了一条缝。",
+      "note": "精度测试：肩伤明确限定在右臂，不该被错误地套用到踢门这个动作上；但门很沉这条命题也不足以确定单脚一踢是否真的踹开了——正确答案大致是'肩伤不构成阻碍，但踹开与否本身不可达/信息不足'，不是简单的可达或不可达。",
+      "latencyMs": 14462,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 545,
+        "completion_tokens": 668,
+        "total_tokens": 1213,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 216.6227264404297
+      },
+      "raw": "不可达。已知命题只描述了门的状态（虚掩、无锁、很沉）和\"我\"的身体状况（右肩脱臼），但没有任何一条命题记录了\"我用脚踹门\"这个动作的发生。环境条件或许使得踹门在物理上可行，但\"我是否真的踹了\"这一事实本身在已知命题中完全没有依据。"
+    },
+    {
+      "id": "false-derivation-trap",
+      "claim": "手电筒的灯泡也是新换的。",
+      "note": "陷阱案例：已知命题只提到电池新换，没提灯泡；换电池不等于换灯泡，应判不可达，测试会不会把两件不同的事混为一谈。",
+      "latencyMs": 7665,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 536,
+        "completion_tokens": 373,
+        "total_tokens": 909,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 130.4363555908203
+      },
+      "raw": "不可达。已知命题6只提到手电筒的\"电池\"是三天前新换的，并未涉及手电筒的灯泡是否被更换。命题4说的是\"房间里唯一的灯泡\"烧坏，指的是房间照明灯泡，与手电筒灯泡无关。没有任何已知命题提供手电筒灯泡状态的信息。"
+    },
+    {
+      "id": "distractor-misuse",
+      "claim": "毛毯很可能是猫最喜欢待的地方，因为猫喜欢待在阳光照得到的地方。",
+      "note": "干扰测试：已知命题里'猫喜欢阳光'和毛毯之间没有建立起任何联系，不应该因为两者都在命题列表里、读起来有点像，就被拼接成一个推导，应判不可达。",
+      "latencyMs": 7376,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 545,
+        "completion_tokens": 366,
+        "total_tokens": 911,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 128.76817321777344
+      },
+      "raw": "不可达。虽然已知命题第10条说猫喜欢待在阳光照得到的地方，但结合第4条（唯一灯泡三天前烧坏未更换）和第5条（厚重遮光窗帘完全拉上，没有一丝光透进来），可以推出房间里根本没有阳光。因此毛毯并不是\"阳光照得到的地方\"，目标命题的推理链条在\"毛毯有阳光\"这一环节断裂，无法得出毛毯是猫最喜欢待的地方。"
+    }
+  ]
+}
