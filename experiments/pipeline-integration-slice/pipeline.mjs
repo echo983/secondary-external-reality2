@@ -1,9 +1,25 @@
-// Orchestrates GROUND -> RETRIEVE -> ADJUDICATE -> (COLLAPSE) -> COMMIT -> NARRATE,
-// per docs/adjudicator-pipeline-design-v0.1-2026-08-28.md section 2. Every LLM-facing
+// Orchestrates GROUND -> RETRIEVE -> ADJUDICATE -> ground(verdict) -> CLASSIFY ->
+// (COLLAPSE) -> COMMIT -> NARRATE -> ground(narration), per
+// docs/adjudicator-pipeline-design-v0.1-2026-08-28.md section 2. Every LLM-facing
 // prompt is carried over unchanged from a validated spike except GROUND and the
 // outcome classifier (new, but light bookkeeping-only, not open-world modeling) and
 // the Continuity Resolver (new, but structurally protected by the already-validated
-// juror+clerk gate before anything it proposes is trusted).
+// juror+clerk gate before anything it proposes is trusted). JUROR/CLERK were rewritten
+// 2026-08-28 (see docs/ai-search-pipeline-wiring-findings-2026-08-28.md) to actually
+// judge Collapse proposals against COLLAPSE_PROPOSAL_RULES, instead of a borrowed
+// Attempt-plausibility prompt that treated "not yet confirmed" as valid grounds for
+// rejection -- which is true of every genuine Collapse candidate by definition.
+//
+// The "ground a piece of free text against known propositions, resolve unreachable
+// claims via reactive Collapse" mechanism (extractClaims + checkReachable +
+// resolveClaimViaCollapse) is applied at TWO checkpoints, not duplicated: right after
+// ADJUDICATE (groundVerdict) and right after NARRATE (narrateWithAudit). This is
+// deliberate, not incidental -- CLASSIFY's "insufficient" self-report only catches a
+// model that flags its own uncertainty; it does not catch a model that confidently
+// asserts an ungrounded specific claim without ever admitting doubt (a real case this
+// pipeline produced). The independent audit catches the latter; self-report still
+// catches the former (a plain "not enough info" with no specific claim to check) --
+// the two are complementary, not redundant, so both stay.
 //
 // Deliberate simplifications, called out honestly rather than silently assumed:
 // - GROUND, RETRIEVE, and Height bookkeeping here are minimal stand-ins for the real
@@ -13,19 +29,11 @@
 // - A collapsed proposition is indexed by the current Attempt's grounded entities,
 //   not by re-grounding the resolver's own proposed text. A fuller design would
 //   re-run GROUND on the resolver's output.
-// - COMMIT phrases the attempt-outcome proposition by directly reusing the
-//   Adjudicator's verdict text rather than a separate "verdict -> settled fact" role;
-//   that would be a new unvalidated prompt, which this slice deliberately avoids
-//   adding beyond what's already necessary (Continuity Resolver).
-// - Collapse is attempted at most once per Attempt in this slice (no retry loop) to
-//   keep the integration test bounded.
-// - The post-NARRATE reachability audit (added after the "三毫米" finding in
-//   pipeline-integration-slice-findings-2026-08-28.md, recalibrated in
-//   claim-extractor-recalibration-findings-2026-08-28.md) now routes each unreachable
-//   claim through its own Collapse attempt (Continuity Resolver + jury/clerk) instead
-//   of just avoiding it -- so a value-lookup Attempt can actually get its value
-//   established, not just safely dodged. There is exactly one final narrate call
-//   regardless of how many claims were processed, to keep this bounded.
+// - COMMIT prefers a clean FACT_SHAPE proposition from the FACT_WRITER role over the
+//   raw verdict-log text (see writeFact below) -- necessary for the Height-based
+//   recency-wins conflict rule to work at all, per recency-wins-findings-2026-08-28.md.
+// - Each unreachable/unresolved claim gets at most one Collapse attempt (no retry
+//   loop) at every checkpoint, to keep this integration test bounded.
 
 import {callModel} from "./client.mjs";
 import {
@@ -91,6 +99,22 @@ async function runJurorsAndClerk(propositions, proposedFact) {
   return {verdicts, clerk: JSON.parse(clerkCall.raw)};
 }
 
+// Shared by both Collapse-trigger paths (CLASSIFY's self-reported "insufficient", and
+// the reachability audit's independently-detected unreachable claims): propose one
+// minimal completion, have it validated by the (now correctly-prompted) jury, commit
+// it if approved. Single source of truth for "propose -> validate -> maybe commit",
+// so both call sites automatically share any future fix to this sequence.
+async function resolveClaimViaCollapse(store, groundResult, propositions, attempt, missingDescription) {
+  const proposedFact = await proposeCollapse(propositions, attempt, missingDescription);
+  const {verdicts, clerk} = await runJurorsAndClerk(propositions, proposedFact);
+  if (clerk.finalDecision !== "放行") {
+    return {committed: false, proposedFact, verdicts, clerk};
+  }
+  const height = store.nextHeight();
+  const committedRecord = await store.append(proposedFact, groundResult.entities, height, "collapse");
+  return {committed: true, proposedFact, verdicts, clerk, height, committedRecord};
+}
+
 async function narrate(propositions, attempt, outcomeSummary, avoidClaims) {
   const {raw} = await callModel({
     system: NARRATE_SYSTEM_PROMPT, user: buildNarrateUserPrompt(propositions, attempt, outcomeSummary, avoidClaims),
@@ -147,21 +171,57 @@ async function narrateWithAudit(store, groundResult, propositions, attempt, outc
   const stillAvoid = [];
   const collapses = [];
   for (const check of unreachableChecks) {
-    const proposedFact = await proposeCollapse(workingPropositions, attempt, check.claim);
-    const {verdicts, clerk} = await runJurorsAndClerk(workingPropositions, proposedFact);
-    if (clerk.finalDecision === "放行") {
-      const height = store.nextHeight();
-      const committed = await store.append(proposedFact, groundResult.entities, height, "collapse");
-      workingPropositions = [...workingPropositions, committed];
-      collapses.push({claim: check.claim, proposedFact, verdicts, clerk, committed: true, height});
+    const outcome = await resolveClaimViaCollapse(store, groundResult, workingPropositions, attempt, check.claim);
+    if (outcome.committed) {
+      workingPropositions = [...workingPropositions, outcome.committedRecord];
+      collapses.push({claim: check.claim, ...outcome});
     } else {
       stillAvoid.push(check.claim);
-      collapses.push({claim: check.claim, proposedFact, verdicts, clerk, committed: false});
+      collapses.push({claim: check.claim, ...outcome});
     }
   }
 
   const revised = await narrate(workingPropositions, attempt, outcomeSummary, stillAvoid);
   return {text: revised, draft, claims, checks, collapses, regenerated: true, finalPropositions: workingPropositions};
+}
+
+// New (see docs/ai-search-pipeline-wiring-findings-2026-08-28.md "发现二"): audits
+// ADJUDICATE's own verdict the same way narrateWithAudit audits NARRATE's draft --
+// CLASSIFY's "insufficient" self-report is not reliable (a model can assert an
+// ungrounded specific claim confidently, without ever flagging its own uncertainty;
+// this pipeline's "门缝足以容纳它" run is a real example). This is an independent,
+// non-self-report check for the same underlying condition: does the verdict assert
+// anything not actually derivable from the given propositions. Bounded the same way
+// as narrateWithAudit: each unreachable claim gets at most one Collapse attempt, and
+// if any claim can't be resolved, the whole verdict is treated as ungroundable (not
+// silently trusted) rather than proceeding on a claim we know is unsupported.
+async function groundVerdict(store, groundResult, propositions, attempt, verdictText) {
+  const claims = await extractClaims(propositions, verdictText);
+  if (claims.length === 0) return {propositions, allResolved: true, anyCommitted: false, unresolvedClaims: [], claims: [], collapses: []};
+
+  const checks = await Promise.all(claims.map(claim => checkReachable(propositions, claim)));
+  const unreachableChecks = checks.filter(c => !c.reachable);
+  if (unreachableChecks.length === 0) return {propositions, allResolved: true, anyCommitted: false, unresolvedClaims: [], claims, collapses: []};
+
+  let workingPropositions = propositions;
+  const unresolvedClaims = [];
+  const collapses = [];
+  let anyCommitted = false;
+  for (const check of unreachableChecks) {
+    const outcome = await resolveClaimViaCollapse(store, groundResult, workingPropositions, attempt, check.claim);
+    if (outcome.committed) {
+      workingPropositions = [...workingPropositions, outcome.committedRecord];
+      anyCommitted = true;
+    } else {
+      unresolvedClaims.push(check.claim);
+    }
+    collapses.push({claim: check.claim, ...outcome});
+  }
+
+  return {
+    propositions: workingPropositions, allResolved: unresolvedClaims.length === 0,
+    anyCommitted, unresolvedClaims, claims, collapses
+  };
 }
 
 export async function processAttempt(store, attempt) {
@@ -182,21 +242,39 @@ export async function processAttempt(store, attempt) {
   let verdictText = await adjudicate(propositions, attempt);
   log.stages.push({stage: "ADJUDICATE", output: verdictText});
 
+  // Ground ADJUDICATE's own verdict before trusting it for anything downstream -- this
+  // is an independent check (extract+reachability, not model self-report) for the same
+  // "did this assert something ungrounded" condition CLASSIFY's "insufficient" tries to
+  // self-detect, added because self-report alone missed a real case (see
+  // docs/ai-search-pipeline-wiring-findings-2026-08-28.md "发现二"): ADJUDICATE can
+  // confidently assert an ungrounded specific claim without ever flagging uncertainty.
+  const grounding = await groundVerdict(store, groundResult, propositions, attempt, verdictText);
+  log.stages.push({stage: "ADJUDICATE_GROUNDING", output: {
+    claims: grounding.claims, unresolvedClaims: grounding.unresolvedClaims,
+    collapses: grounding.collapses.map(c => ({claim: c.claim, proposedFact: c.proposedFact, committed: c.committed, clerkDecision: c.clerk.finalDecision}))
+  }});
+  if (!grounding.allResolved) {
+    const height = store.nextHeight();
+    const text = `边界：这次裁决依赖无法确定的事实（${grounding.unresolvedClaims.join("；")}），陪审团没有放行相应的补全。`;
+    log.stages.push({stage: "BOUNDARY", height, text});
+    return {...log, height, kind: "boundary", narration: text};
+  }
+  if (grounding.anyCommitted) {
+    propositions = grounding.propositions;
+    verdictText = await adjudicate(propositions, attempt);
+    log.stages.push({stage: "ADJUDICATE_AFTER_GROUNDING", output: verdictText});
+  }
+
   let classification = await classifyOutcome(verdictText);
   log.stages.push({stage: "CLASSIFY", output: classification});
 
   if (classification.outcome === "insufficient") {
-    const proposedFact = await proposeCollapse(propositions, attempt, classification.missingAbout);
-    log.stages.push({stage: "COLLAPSE_PROPOSE", output: proposedFact});
+    const outcome = await resolveClaimViaCollapse(store, groundResult, propositions, attempt, classification.missingAbout);
+    log.stages.push({stage: "COLLAPSE", output: {
+      proposedFact: outcome.proposedFact, verdicts: outcome.verdicts, clerk: outcome.clerk
+    }});
 
-    const {verdicts, clerk} = await runJurorsAndClerk(propositions, proposedFact);
-    log.stages.push({stage: "COLLAPSE_JURY", output: {verdicts, clerk}});
-
-    if (clerk.finalDecision === "放行") {
-      const height = store.nextHeight();
-      await store.append(proposedFact, groundResult.entities, height, "collapse");
-      log.stages.push({stage: "COLLAPSE_COMMIT", height, text: proposedFact});
-
+    if (outcome.committed) {
       // Deliberately not awaiting indexing latency here -- this immediate re-retrieve
       // is exactly what tests whether a just-committed fact is searchable in time for
       // the same Attempt's settlement to use it.

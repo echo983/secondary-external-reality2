@@ -4,7 +4,7 @@
 // ADJUDICATE, juror, clerk, and NARRATE prompts are carried over verbatim (or with the
 // one documented fix) from the validated spikes -- not re-authored from scratch.
 
-import {BASE_PROPOSITION_RULES, FACT_SHAPE_RULES, renderPropositionList} from "../shared/proposition-language.mjs";
+import {BASE_PROPOSITION_RULES, FACT_SHAPE_RULES, COLLAPSE_PROPOSAL_RULES, renderPropositionList} from "../shared/proposition-language.mjs";
 
 export const GROUND_SYSTEM_PROMPT = `给定一句话和一份已知实体列表（规范名字+别名），提取这句话实际提到的已知实体（用规范名字）。如果这句话明确指向一个具体物品/地点，但这个物品不在已知列表里，在 unbound 字段里如实写出玩家用的那个词；如果没有这种情况，unbound 为空数组。不要猜测玩家可能想指哪个已知实体——只在别名确实对应得上时才算。只输出 JSON。`;
 
@@ -79,35 +79,45 @@ export function buildContinuityResolverUserPrompt(propositions, attempt, missing
   return `已知命题：\n${renderPropositionList(propositions)}\n\n当前待裁决：${attempt}\n\n缺失的方面：${missingAbout || "（裁决者未明确指出，请根据待裁决内容自行判断需要补全什么）"}`;
 }
 
-// Carried over from juror-clerk-spike/prompts.mjs, with the shared proposition format
-// (including the recency-wins rule) spliced in -- see ADJUDICATE_SYSTEM_PROMPT's note.
-export const JUROR_SYSTEM_PROMPT = `你是这个虚构世界的裁决者。玩家会给你一段场景背景（可能为空）和一件想要发生或已经发生的局部行动/物理过程。你的任务只有一个：判断这件事在给定场景下可信不可信、能不能发生。
+// Rewritten 2026-08-28 (see docs/ai-search-pipeline-wiring-findings-2026-08-28.md
+// "发现一"). Jurors in this pipeline only ever validate Continuity Resolver Collapse
+// proposals -- runJurorsAndClerk is never called on a raw Attempt. The previous
+// version of this prompt was ADJUDICATE_SYSTEM_PROMPT copied verbatim and never
+// adapted, so jurors judged "is this plausible/can it happen" -- which meant
+// "not yet confirmed by the scene" read as valid grounds for rejection, when
+// non-confirmation is true of essentially every genuine Collapse candidate by
+// definition (that's why it needed Collapse). This version asks the question jurors
+// are actually supposed to answer, using COLLAPSE_PROPOSAL_RULES directly instead of
+// a borrowed prompt.
+export const JUROR_SYSTEM_PROMPT = `你是这个虚构世界里负责校验"编剧补全提案"的判官。世界结算因为缺一个从未被确定过的事实而无法继续，编剧提出了一条新命题来补全它。你的任务只有一个：判断这条新命题能不能被接受、写进真相文档库。
 
 ${BASE_PROPOSITION_RULES}
 
-规则：
-- 只依据场景里明确给出的信息和最基本的物理常识来判断，不要凭空发明场景里没提到的新事实、新物体或新身份。
-- 如果场景信息不足以做出判断，直接说信息不足，不要替空白编一个听起来合理的答案。
-- 不要给选项菜单，不要教玩家应该怎么做，不要主动展开没被问到的剧情。
-- 回答必须简短——一到两句话，像一句世界给出的裁决，不要写长篇论证、不要用"因为...所以..."的完整说理结构。
-- 结果不是非黑即白：可以是"可信，但有代价/需要方式"，也可以是"不可信，除非满足什么条件"，如实反映即可，不要为了给出干脆的答案而抹掉这种中间状态。
-- 如果场景里已经给出的某个事实会让这件事变得不可信，必须以这个事实为准，不能因为玩家这样描述就顺着承认它发生了。
+${COLLAPSE_PROPOSAL_RULES}
 
-只输出裁决本身，不要加"裁决："这样的前缀，不要用 Markdown。`;
+判断依据只有上面这些，**不是"这条命题有没有被已知命题证实"——它当然没有被证实，这正是需要编剧补全的原因，"还没被证实"本身不能作为拒绝理由**。具体检查：
+- 这条新命题会不会和任何一条已知命题矛盾？矛盾就该拒绝。
+- 这条新命题是不是编造了一个从未被确立过的实体，或者断言了一个根本不存在的东西的存在（不是"数值/程度未定"，是"这个东西本身是否存在"这个层面的无中生有）？是就该拒绝。
+- 这条新命题是不是明显超出了"刚好够让结算继续"这个最小范围，多编了不必要的细节？过度具体也该拒绝。
+- 除此之外——只要不矛盾、不是无中生有、没有超出最小范围，即使这个具体数值或程度是编剧"选"出来的、不是从已知命题直接推出来的，也应该接受，这正是 Collapse 该做的事。
 
-export function buildJurorUserPrompt(propositions, claim) {
-  return `场景：\n${renderPropositionList(propositions)}\n\n待裁决：${claim}`;
+回答必须简短——一到两句话，明确说"可以接受"或"不能接受"，并说明依据是上面哪一条。不要用"信息不足，无法判断"这类话来拒绝，除非这条新命题真的和已知命题矛盾、或者是无中生有、或者明显不是最小补全。不要用 Markdown。`;
+
+export function buildJurorUserPrompt(propositions, proposedFact) {
+  return `已知命题：\n${renderPropositionList(propositions)}\n\n编剧提出的补全命题：${proposedFact}`;
 }
 
-// Carried over from juror-clerk-spike/prompts.mjs, unchanged.
-export const CLERK_SYSTEM_PROMPT = `你是"书记员"。三位独立的裁决者（判官）各自对同一件待裁决的事给出了一句话裁决，你的工作是把这三句话变成一个是否放行的最终决定。
+// Wording adjusted 2026-08-28 alongside the JUROR_SYSTEM_PROMPT rewrite -- the
+// classification logic and veto rule are unchanged, only the language is updated to
+// match "can this proposed completion be accepted" instead of "is this plausible".
+export const CLERK_SYSTEM_PROMPT = `你是"书记员"。三位独立的判官各自对编剧提出的同一条补全命题给出了一句话裁决，你的工作是把这三句话变成一个是否放行的最终决定。
 
 处理步骤：
 
 第一步，把每一位判官的裁决分类成以下三种之一：
-- "明确通过"：判官认为这件事可信/能发生，即使带了条件或代价（比如"可信，但有明显阻力"），只要方向明确是"认可"，就算明确通过。
-- "明确拒绝"：判官认为这件事不可信/不能发生，方向明确是"否定"。
-- "含糊"：判官的话真正说不清楚倾向，比如"也对也不对，因为……"这种两边都不占、没有明确方向的回答。信息不足（判官说"信息不足，无法判断"）也算含糊，不算明确通过也不算明确拒绝。
+- "明确通过"：判官认为这条补全命题可以被接受，即使带了限定或条件（比如"可以接受，但仅限于……"），只要方向明确是"认可"，就算明确通过。
+- "明确拒绝"：判官认为这条补全命题不能被接受，方向明确是"否定"。
+- "含糊"：判官的话真正说不清楚倾向，比如"也对也不对，因为……"这种两边都不占、没有明确方向的回答。不算明确通过也不算明确拒绝。
 
 第二步，检查是否触发否决：如果任何一位判官的"明确拒绝"，其依据是"这件事依赖的实体/事实在给定场景里完全没有依据"（即场景里从未出现过这个东西，判官指出这是凭空编造/无中生有），这一票单独否决，最终决定直接是"不放行"，不需要再看其他两票。
 
@@ -135,9 +145,9 @@ export const CLERK_JSON_SCHEMA = {
   }
 };
 
-export function buildClerkUserPrompt(propositions, claim, verdicts) {
+export function buildClerkUserPrompt(propositions, proposedFact, verdicts) {
   const verdictLines = verdicts.map((v, i) => `判官${i + 1}：${v}`).join("\n");
-  return `场景：\n${renderPropositionList(propositions)}\n\n待裁决：${claim}\n\n三位判官的裁决：\n${verdictLines}`;
+  return `已知命题：\n${renderPropositionList(propositions)}\n\n编剧提出的补全命题：${proposedFact}\n\n三位判官的裁决：\n${verdictLines}`;
 }
 
 // NARRATE, carried over from world-feedback-narration-spike, with the fix from
