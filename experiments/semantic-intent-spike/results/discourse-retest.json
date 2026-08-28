@@ -1,0 +1,955 @@
+{
+  "generatedAt": "2026-08-28T12:01:20.069Z",
+  "accountId": "00f6c85f82f6297c8c0bef9460e013d9",
+  "model": "@cf/qwen/qwen3.8-27b",
+  "count": 6,
+  "results": [
+    {
+      "id": "A-heuristic-agreement-turn1",
+      "arm": "new",
+      "rawInput": "看看手里有什么",
+      "latencyMs": 8858,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 1219,
+        "completion_tokens": 390,
+        "total_tokens": 1609,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 163.32272338867188
+      },
+      "raw": "{\"intent\":\"observe\",\"kind\":\"query\",\"perceptionFocus\":{\"horizon\":\"self\",\"modality\":\"vision\"},\"referenceExpressions\":[{\"resolvedSlot\":\"actor\",\"text\":\"手里\"}],\"roles\":{\"agent\":\"actor\"},\"unresolvedDependencies\":[]}",
+      "parsed": {
+        "intent": "observe",
+        "kind": "query",
+        "perceptionFocus": {
+          "horizon": "self",
+          "modality": "vision"
+        },
+        "referenceExpressions": [
+          {
+            "resolvedSlot": "actor",
+            "text": "手里"
+          }
+        ],
+        "roles": {
+          "agent": "actor"
+        },
+        "unresolvedDependencies": []
+      },
+      "parseError": null,
+      "context": {
+        "actorSlot": "actor",
+        "entities": [
+          {
+            "slot": "actor",
+            "kind": "actor",
+            "labels": [
+              "我",
+              "自己"
+            ],
+            "placement": "bedroom",
+            "holding": [
+              "blanket-1"
+            ],
+            "affordances": [
+              "perceive",
+              "orient",
+              "move",
+              "communicate"
+            ]
+          },
+          {
+            "slot": "door-1",
+            "kind": "door",
+            "labels": [
+              "门",
+              "房门",
+              "门缝"
+            ],
+            "placement": "bedroom",
+            "properties": {
+              "open": false,
+              "aperture_cm": 0,
+              "locked": false
+            },
+            "spatial": {
+              "otherSide": "hallway"
+            },
+            "affordances": [
+              "contact",
+              "apply_force",
+              "occludes"
+            ]
+          },
+          {
+            "slot": "bed-1",
+            "kind": "object",
+            "labels": [
+              "床"
+            ],
+            "placement": "bedroom",
+            "properties": {
+              "movable": "unresolved"
+            },
+            "affordances": [
+              "contact",
+              "support"
+            ]
+          },
+          {
+            "slot": "floor-1",
+            "kind": "object",
+            "labels": [
+              "地面",
+              "地板"
+            ],
+            "placement": "bedroom",
+            "affordances": [
+              "contact",
+              "support"
+            ]
+          },
+          {
+            "slot": "blanket-1",
+            "kind": "object",
+            "labels": [
+              "毛毯",
+              "毯子"
+            ],
+            "placement": "held_by:actor",
+            "properties": {
+              "fits_under_door_gap": "unresolved"
+            },
+            "affordances": [
+              "hold",
+              "release",
+              "place",
+              "move",
+              "deformable"
+            ]
+          },
+          {
+            "slot": "hallway",
+            "kind": "space",
+            "labels": [
+              "走廊"
+            ],
+            "placement": null,
+            "affordances": [
+              "contains"
+            ]
+          },
+          {
+            "slot": "rug-1",
+            "kind": "object",
+            "labels": [
+              "地毯"
+            ],
+            "placement": "bedroom",
+            "properties": {
+              "rolled": true
+            },
+            "affordances": [
+              "contact",
+              "place",
+              "move",
+              "deformable"
+            ]
+          }
+        ],
+        "allowedRelations": [
+          "open",
+          "aperture_cm",
+          "held_by",
+          "placed_at",
+          "occludes"
+        ]
+      }
+    },
+    {
+      "id": "A-heuristic-agreement-turn2",
+      "arm": "new",
+      "rawInput": "把它铺开",
+      "expectedResolvedSlot": "blanket-1",
+      "latencyMs": 24360,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 1235,
+        "completion_tokens": 754,
+        "total_tokens": 1989,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 269.8681640625
+      },
+      "raw": "{\"intent\":\"object_place\",\"kind\":\"attempt\",\"method\":\"铺开\",\"referenceExpressions\":[{\"resolvedSlot\":\"blanket-1\",\"text\":\"它\"}],\"roles\":{\"agent\":\"actor\",\"theme\":\"blanket-1\"},\"unresolvedDependencies\":[{\"reason\":\"玩家未指定铺开的目标位置（地面、床上或其他表面）\",\"role\":\"destination\"}]}",
+      "parsed": {
+        "intent": "object_place",
+        "kind": "attempt",
+        "method": "铺开",
+        "referenceExpressions": [
+          {
+            "resolvedSlot": "blanket-1",
+            "text": "它"
+          }
+        ],
+        "roles": {
+          "agent": "actor",
+          "theme": "blanket-1"
+        },
+        "unresolvedDependencies": [
+          {
+            "reason": "玩家未指定铺开的目标位置（地面、床上或其他表面）",
+            "role": "destination"
+          }
+        ]
+      },
+      "parseError": null,
+      "context": {
+        "actorSlot": "actor",
+        "entities": [
+          {
+            "slot": "actor",
+            "kind": "actor",
+            "labels": [
+              "我",
+              "自己"
+            ],
+            "placement": "bedroom",
+            "holding": [
+              "blanket-1"
+            ],
+            "affordances": [
+              "perceive",
+              "orient",
+              "move",
+              "communicate"
+            ]
+          },
+          {
+            "slot": "door-1",
+            "kind": "door",
+            "labels": [
+              "门",
+              "房门",
+              "门缝"
+            ],
+            "placement": "bedroom",
+            "properties": {
+              "open": false,
+              "aperture_cm": 0,
+              "locked": false
+            },
+            "spatial": {
+              "otherSide": "hallway"
+            },
+            "affordances": [
+              "contact",
+              "apply_force",
+              "occludes"
+            ]
+          },
+          {
+            "slot": "bed-1",
+            "kind": "object",
+            "labels": [
+              "床"
+            ],
+            "placement": "bedroom",
+            "properties": {
+              "movable": "unresolved"
+            },
+            "affordances": [
+              "contact",
+              "support"
+            ]
+          },
+          {
+            "slot": "floor-1",
+            "kind": "object",
+            "labels": [
+              "地面",
+              "地板"
+            ],
+            "placement": "bedroom",
+            "affordances": [
+              "contact",
+              "support"
+            ]
+          },
+          {
+            "slot": "blanket-1",
+            "kind": "object",
+            "labels": [
+              "毛毯",
+              "毯子"
+            ],
+            "placement": "held_by:actor",
+            "properties": {
+              "fits_under_door_gap": "unresolved"
+            },
+            "affordances": [
+              "hold",
+              "release",
+              "place",
+              "move",
+              "deformable"
+            ]
+          },
+          {
+            "slot": "hallway",
+            "kind": "space",
+            "labels": [
+              "走廊"
+            ],
+            "placement": null,
+            "affordances": [
+              "contains"
+            ]
+          },
+          {
+            "slot": "rug-1",
+            "kind": "object",
+            "labels": [
+              "地毯"
+            ],
+            "placement": "bedroom",
+            "properties": {
+              "rolled": true
+            },
+            "affordances": [
+              "contact",
+              "place",
+              "move",
+              "deformable"
+            ]
+          }
+        ],
+        "allowedRelations": [
+          "open",
+          "aperture_cm",
+          "held_by",
+          "placed_at",
+          "occludes"
+        ],
+        "discourse": {
+          "recentFocus": null,
+          "recentUtterance": "看看手里有什么"
+        }
+      }
+    },
+    {
+      "id": "A-heuristic-agreement-turn2",
+      "arm": "old",
+      "rawInput": "把它铺开",
+      "expectedResolvedSlot": "blanket-1",
+      "latencyMs": 14928,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 1195,
+        "completion_tokens": 769,
+        "total_tokens": 1964,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 272.595458984375
+      },
+      "raw": "{\"clauseIndex\":0,\"conditions\":[],\"durationSeconds\":2,\"effects\":[{\"certainty\":\"possible\",\"field\":\"posture\",\"kind\":\"placement\",\"subjectSlot\":\"blanket-1\"}],\"kind\":\"attempt\",\"perceptionScopes\":[],\"primitives\":[\"move\",\"place\"],\"targetSlots\":[\"blanket-1\"],\"unresolvedDependencies\":[]}",
+      "parsed": {
+        "clauseIndex": 0,
+        "conditions": [],
+        "durationSeconds": 2,
+        "effects": [
+          {
+            "certainty": "possible",
+            "field": "posture",
+            "kind": "placement",
+            "subjectSlot": "blanket-1"
+          }
+        ],
+        "kind": "attempt",
+        "perceptionScopes": [],
+        "primitives": [
+          "move",
+          "place"
+        ],
+        "targetSlots": [
+          "blanket-1"
+        ],
+        "unresolvedDependencies": []
+      },
+      "parseError": null,
+      "context": {
+        "actorSlot": "actor",
+        "slots": [
+          {
+            "slot": "actor",
+            "kind": "actor",
+            "label": "我/自己",
+            "perceivable": true,
+            "affordances": [
+              "perceive",
+              "orient",
+              "move",
+              "communicate"
+            ]
+          },
+          {
+            "slot": "door-1",
+            "kind": "object",
+            "label": "门/房门/门缝",
+            "perceivable": true,
+            "affordances": [
+              "contact",
+              "apply_force",
+              "occludes"
+            ]
+          },
+          {
+            "slot": "bed-1",
+            "kind": "object",
+            "label": "床",
+            "perceivable": true,
+            "affordances": [
+              "contact",
+              "support"
+            ]
+          },
+          {
+            "slot": "floor-1",
+            "kind": "object",
+            "label": "地面/地板",
+            "perceivable": true,
+            "affordances": [
+              "contact",
+              "support"
+            ]
+          },
+          {
+            "slot": "blanket-1",
+            "kind": "object",
+            "label": "毛毯/毯子",
+            "perceivable": true,
+            "affordances": [
+              "hold",
+              "release",
+              "place",
+              "move",
+              "deformable"
+            ]
+          },
+          {
+            "slot": "hallway",
+            "kind": "space",
+            "label": "走廊",
+            "perceivable": true,
+            "affordances": [
+              "contains"
+            ]
+          },
+          {
+            "slot": "rug-1",
+            "kind": "object",
+            "label": "地毯",
+            "perceivable": true,
+            "affordances": [
+              "contact",
+              "place",
+              "move",
+              "deformable"
+            ]
+          }
+        ],
+        "allowedRelations": [
+          "open",
+          "aperture_cm",
+          "held_by",
+          "placed_at",
+          "occludes"
+        ]
+      },
+      "validation": "valid"
+    },
+    {
+      "id": "B-recency-override-turn1",
+      "arm": "new",
+      "rawInput": "看看那块卷起来的地毯",
+      "latencyMs": 5389,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 1222,
+        "completion_tokens": 243,
+        "total_tokens": 1465,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 120.68181610107422
+      },
+      "raw": "{\"intent\":\"observe\",\"kind\":\"attempt\",\"perceptionFocus\":{\"horizon\":\"object\",\"modality\":\"vision\",\"targetSlot\":\"rug-1\"},\"referenceExpressions\":[{\"resolvedSlot\":\"rug-1\",\"text\":\"那块卷起来的地毯\"}],\"roles\":{\"agent\":\"actor\",\"theme\":\"rug-1\"},\"unresolvedDependencies\":[]}",
+      "parsed": {
+        "intent": "observe",
+        "kind": "attempt",
+        "perceptionFocus": {
+          "horizon": "object",
+          "modality": "vision",
+          "targetSlot": "rug-1"
+        },
+        "referenceExpressions": [
+          {
+            "resolvedSlot": "rug-1",
+            "text": "那块卷起来的地毯"
+          }
+        ],
+        "roles": {
+          "agent": "actor",
+          "theme": "rug-1"
+        },
+        "unresolvedDependencies": []
+      },
+      "parseError": null,
+      "context": {
+        "actorSlot": "actor",
+        "entities": [
+          {
+            "slot": "actor",
+            "kind": "actor",
+            "labels": [
+              "我",
+              "自己"
+            ],
+            "placement": "bedroom",
+            "holding": [
+              "blanket-1"
+            ],
+            "affordances": [
+              "perceive",
+              "orient",
+              "move",
+              "communicate"
+            ]
+          },
+          {
+            "slot": "door-1",
+            "kind": "door",
+            "labels": [
+              "门",
+              "房门",
+              "门缝"
+            ],
+            "placement": "bedroom",
+            "properties": {
+              "open": false,
+              "aperture_cm": 0,
+              "locked": false
+            },
+            "spatial": {
+              "otherSide": "hallway"
+            },
+            "affordances": [
+              "contact",
+              "apply_force",
+              "occludes"
+            ]
+          },
+          {
+            "slot": "bed-1",
+            "kind": "object",
+            "labels": [
+              "床"
+            ],
+            "placement": "bedroom",
+            "properties": {
+              "movable": "unresolved"
+            },
+            "affordances": [
+              "contact",
+              "support"
+            ]
+          },
+          {
+            "slot": "floor-1",
+            "kind": "object",
+            "labels": [
+              "地面",
+              "地板"
+            ],
+            "placement": "bedroom",
+            "affordances": [
+              "contact",
+              "support"
+            ]
+          },
+          {
+            "slot": "blanket-1",
+            "kind": "object",
+            "labels": [
+              "毛毯",
+              "毯子"
+            ],
+            "placement": "held_by:actor",
+            "properties": {
+              "fits_under_door_gap": "unresolved"
+            },
+            "affordances": [
+              "hold",
+              "release",
+              "place",
+              "move",
+              "deformable"
+            ]
+          },
+          {
+            "slot": "hallway",
+            "kind": "space",
+            "labels": [
+              "走廊"
+            ],
+            "placement": null,
+            "affordances": [
+              "contains"
+            ]
+          },
+          {
+            "slot": "rug-1",
+            "kind": "object",
+            "labels": [
+              "地毯"
+            ],
+            "placement": "bedroom",
+            "properties": {
+              "rolled": true
+            },
+            "affordances": [
+              "contact",
+              "place",
+              "move",
+              "deformable"
+            ]
+          }
+        ],
+        "allowedRelations": [
+          "open",
+          "aperture_cm",
+          "held_by",
+          "placed_at",
+          "occludes"
+        ]
+      }
+    },
+    {
+      "id": "B-recency-override-turn2",
+      "arm": "new",
+      "rawInput": "把它铺开",
+      "expectedResolvedSlot": "rug-1",
+      "latencyMs": 25306,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 1240,
+        "completion_tokens": 1372,
+        "total_tokens": 2612,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 449.8545227050781
+      },
+      "raw": "{\"intent\":\"object_place\",\"kind\":\"attempt\",\"method\":\"铺开\",\"referenceExpressions\":[{\"resolvedSlot\":\"rug-1\",\"text\":\"它\"}],\"roles\":{\"agent\":\"actor\",\"theme\":\"rug-1\"},\"unresolvedDependencies\":[{\"reason\":\"玩家未指定铺开到哪个位置（地面、床上或其他）\",\"role\":\"destination\"},{\"reason\":\"actor 当前持有 blanket-1，未持有 rug-1，需先获取才能铺开\",\"role\":\"access\"}]}",
+      "parsed": {
+        "intent": "object_place",
+        "kind": "attempt",
+        "method": "铺开",
+        "referenceExpressions": [
+          {
+            "resolvedSlot": "rug-1",
+            "text": "它"
+          }
+        ],
+        "roles": {
+          "agent": "actor",
+          "theme": "rug-1"
+        },
+        "unresolvedDependencies": [
+          {
+            "reason": "玩家未指定铺开到哪个位置（地面、床上或其他）",
+            "role": "destination"
+          },
+          {
+            "reason": "actor 当前持有 blanket-1，未持有 rug-1，需先获取才能铺开",
+            "role": "access"
+          }
+        ]
+      },
+      "parseError": null,
+      "context": {
+        "actorSlot": "actor",
+        "entities": [
+          {
+            "slot": "actor",
+            "kind": "actor",
+            "labels": [
+              "我",
+              "自己"
+            ],
+            "placement": "bedroom",
+            "holding": [
+              "blanket-1"
+            ],
+            "affordances": [
+              "perceive",
+              "orient",
+              "move",
+              "communicate"
+            ]
+          },
+          {
+            "slot": "door-1",
+            "kind": "door",
+            "labels": [
+              "门",
+              "房门",
+              "门缝"
+            ],
+            "placement": "bedroom",
+            "properties": {
+              "open": false,
+              "aperture_cm": 0,
+              "locked": false
+            },
+            "spatial": {
+              "otherSide": "hallway"
+            },
+            "affordances": [
+              "contact",
+              "apply_force",
+              "occludes"
+            ]
+          },
+          {
+            "slot": "bed-1",
+            "kind": "object",
+            "labels": [
+              "床"
+            ],
+            "placement": "bedroom",
+            "properties": {
+              "movable": "unresolved"
+            },
+            "affordances": [
+              "contact",
+              "support"
+            ]
+          },
+          {
+            "slot": "floor-1",
+            "kind": "object",
+            "labels": [
+              "地面",
+              "地板"
+            ],
+            "placement": "bedroom",
+            "affordances": [
+              "contact",
+              "support"
+            ]
+          },
+          {
+            "slot": "blanket-1",
+            "kind": "object",
+            "labels": [
+              "毛毯",
+              "毯子"
+            ],
+            "placement": "held_by:actor",
+            "properties": {
+              "fits_under_door_gap": "unresolved"
+            },
+            "affordances": [
+              "hold",
+              "release",
+              "place",
+              "move",
+              "deformable"
+            ]
+          },
+          {
+            "slot": "hallway",
+            "kind": "space",
+            "labels": [
+              "走廊"
+            ],
+            "placement": null,
+            "affordances": [
+              "contains"
+            ]
+          },
+          {
+            "slot": "rug-1",
+            "kind": "object",
+            "labels": [
+              "地毯"
+            ],
+            "placement": "bedroom",
+            "properties": {
+              "rolled": true
+            },
+            "affordances": [
+              "contact",
+              "place",
+              "move",
+              "deformable"
+            ]
+          }
+        ],
+        "allowedRelations": [
+          "open",
+          "aperture_cm",
+          "held_by",
+          "placed_at",
+          "occludes"
+        ],
+        "discourse": {
+          "recentFocus": "rug-1",
+          "recentUtterance": "看看那块卷起来的地毯"
+        }
+      }
+    },
+    {
+      "id": "B-recency-override-turn2",
+      "arm": "old",
+      "rawInput": "把它铺开",
+      "expectedResolvedSlot": "rug-1",
+      "latencyMs": 9445,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 1195,
+        "completion_tokens": 484,
+        "total_tokens": 1679,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 189.68637084960938
+      },
+      "raw": "{\"clauseIndex\":0,\"conditions\":[],\"durationSeconds\":0,\"effects\":[{\"certainty\":\"possible\",\"field\":\"posture\",\"kind\":\"placement\",\"subjectSlot\":\"blanket-1\"}],\"kind\":\"attempt\",\"perceptionScopes\":[],\"primitives\":[\"place\"],\"targetSlots\":[\"blanket-1\"],\"unresolvedDependencies\":[]}",
+      "parsed": {
+        "clauseIndex": 0,
+        "conditions": [],
+        "durationSeconds": 0,
+        "effects": [
+          {
+            "certainty": "possible",
+            "field": "posture",
+            "kind": "placement",
+            "subjectSlot": "blanket-1"
+          }
+        ],
+        "kind": "attempt",
+        "perceptionScopes": [],
+        "primitives": [
+          "place"
+        ],
+        "targetSlots": [
+          "blanket-1"
+        ],
+        "unresolvedDependencies": []
+      },
+      "parseError": null,
+      "context": {
+        "actorSlot": "actor",
+        "slots": [
+          {
+            "slot": "actor",
+            "kind": "actor",
+            "label": "我/自己",
+            "perceivable": true,
+            "affordances": [
+              "perceive",
+              "orient",
+              "move",
+              "communicate"
+            ]
+          },
+          {
+            "slot": "door-1",
+            "kind": "object",
+            "label": "门/房门/门缝",
+            "perceivable": true,
+            "affordances": [
+              "contact",
+              "apply_force",
+              "occludes"
+            ]
+          },
+          {
+            "slot": "bed-1",
+            "kind": "object",
+            "label": "床",
+            "perceivable": true,
+            "affordances": [
+              "contact",
+              "support"
+            ]
+          },
+          {
+            "slot": "floor-1",
+            "kind": "object",
+            "label": "地面/地板",
+            "perceivable": true,
+            "affordances": [
+              "contact",
+              "support"
+            ]
+          },
+          {
+            "slot": "blanket-1",
+            "kind": "object",
+            "label": "毛毯/毯子",
+            "perceivable": true,
+            "affordances": [
+              "hold",
+              "release",
+              "place",
+              "move",
+              "deformable"
+            ]
+          },
+          {
+            "slot": "hallway",
+            "kind": "space",
+            "label": "走廊",
+            "perceivable": true,
+            "affordances": [
+              "contains"
+            ]
+          },
+          {
+            "slot": "rug-1",
+            "kind": "object",
+            "label": "地毯",
+            "perceivable": true,
+            "affordances": [
+              "contact",
+              "place",
+              "move",
+              "deformable"
+            ]
+          }
+        ],
+        "allowedRelations": [
+          "open",
+          "aperture_cm",
+          "held_by",
+          "placed_at",
+          "occludes"
+        ]
+      },
+      "validation": "valid"
+    }
+  ]
+}
