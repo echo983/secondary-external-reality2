@@ -14,6 +14,7 @@ import {settleOpenDoor} from "../src/world/open-door.js";
 import {replayStrict} from "../src/world/replay.js";
 import {createDemoFixture} from "../src/world/demo-fixture.js";
 import {settleActivePerception} from "../src/world/active-perception.js";
+import {settlePrimitiveWorld} from "../src/world/primitive-world.js";
 
 async function doorSettlement() {
   const fixture = createDoorFixture();
@@ -103,6 +104,30 @@ test("SQLite restore deterministically repairs a pending active-perception exper
     assert.deepEqual(store.pending("self"), []);
     assert.match(store.exportJsonl(), /"visibleBeyond":"none"/u);
     assert.equal(restored.session.currentSnapshot().height, 1);
+    store.close();
+  } finally {
+    await rm(directory, {recursive: true, force: true});
+  }
+});
+
+test("SQLite restore repairs a pending generic primitive experience", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "ser-primitive-restore-"));
+  const filename = join(directory, "runtime.sqlite");
+  try {
+    const fixture = createDemoFixture();
+    const input = {kind: "attempt", actorId: "self", unsupportedClaims: [], clauses: [{clauseIndex: 0,
+      operation: "primitive:hold", goal: "hold", method: "hold", targetIds: ["blanket-1"], modifiers: {}}]} as const;
+    const result = await settlePrimitiveWorld(fixture.genesis, input, "attempt-hold", new InMemoryCommitStore(),
+      new InMemoryExperienceStore(), "2026-08-28T12:00:02.000Z");
+    let store = new SqliteRuntimeStore(filename);
+    store.appendWorld(result.commit);
+    store.close();
+    const restored = await restoreSqliteSession({filename, sessionId: "primitive-restored", actorId: "self", fixture,
+      model: new FakeProposalModel(new Error("model must not run during restore")),
+      now: () => new Date("2026-08-28T12:00:03.000Z")});
+    store = restored.store;
+    assert.deepEqual(store.pending("self"), []);
+    assert.match(store.exportJsonl(), /"kind":"object_held"/u);
     store.close();
   } finally {
     await rm(directory, {recursive: true, force: true});

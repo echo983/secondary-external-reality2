@@ -67,6 +67,11 @@ export function projectCurrentScene(
   }
 
   const light = activeFact(snapshot, `room:${room.entityId}:light`);
+  if (room.entityId === "hallway" && request.horizon === "ambient") {
+    const lightText = light.value === "lit" ? "有光" : String(light.value);
+    return {mode, observations: [observation(snapshot, mode, {room: "走廊", light: lightText},
+      [placement.factId, light.factId], room.entityId, "vision")], text: `你站在${lightText}的走廊里。卧室在身后的门那边。`};
+  }
   const doorOpen = activeFact(snapshot, "door:door-1:open");
   const aperture = activeFact(snapshot, "door:door-1:aperture_cm");
   if ((request.horizon === "directional" || request.horizon === "object") && request.targetId === "door-1") {

@@ -1,5 +1,6 @@
 import {ProtocolError} from "../protocol/errors.js";
 import {parseInputProposal, type InputProposal} from "../protocol/input.js";
+import type {ActionContext} from "../protocol/action-proposal.js";
 
 export const ALLOWED_MODEL = "@cf/qwen/qwen3.8-27b" as const;
 
@@ -22,6 +23,7 @@ export interface ModelTelemetry {
 export interface ProposalModel {
   readonly model: typeof ALLOWED_MODEL;
   propose(rawInput: string): Promise<ModelResponse>;
+  proposeAction?(rawInput: string, clauseIndex: number, context: ActionContext): Promise<ModelResponse>;
   telemetry?(): ModelTelemetry | undefined;
 }
 

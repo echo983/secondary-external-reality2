@@ -10,7 +10,7 @@ import {createDemoFixture} from "../src/world/demo-fixture.js";
 
 const live = process.argv.includes("--live-qwen");
 const databaseArgument = process.argv.find(argument => argument.startsWith("--db="));
-const filename = resolve(databaseArgument?.slice("--db=".length) ?? ".world/demo-v2.sqlite");
+const filename = resolve(databaseArgument?.slice("--db=".length) ?? ".world/demo-v3.sqlite");
 await mkdir(dirname(filename), {recursive: true});
 let model: ProposalModel;
 if (live) {
@@ -22,6 +22,8 @@ if (live) {
 const {session, store} = await restoreSqliteSession({filename, sessionId: "cli", actorId: "self",
   fixture: createDemoFixture(), model});
 const terminal = createInterface({input: stdin, output: stdout});
+let terminalClosed = false;
+terminal.once("close", () => { terminalClosed = true; });
 console.log(`文字 VR Demo（${live ? "live Qwen" : "local deterministic"}，当前 H${session.currentSnapshot().height}）`);
 console.log(`[H${session.currentSnapshot().height}] ${session.observe().text}`);
 console.log("你可以直接描述想观察或尝试的事。输入 /exit 退出。");
@@ -31,8 +33,8 @@ try {
   for await (const input of terminal) {
     if (input.trim() === "/exit") break;
     const result = await session.handle(input);
-    console.log(`[H${result.height}] ${result.text}${result.kind === "boundary" ? ` (${result.code})` : ""}`);
-    terminal.prompt();
+    console.log(`[H${result.height}] ${result.text}${result.kind === "boundary" || result.kind === "partial" ? ` (${result.code})` : ""}`);
+    if (!terminalClosed) terminal.prompt();
   }
 } finally {
   terminal.close();

@@ -74,7 +74,7 @@ export async function settleOpenDoor(
   committedAt = new Date().toISOString()
 ): Promise<DoorSettlement> {
   const clause = input.clauses[0];
-  if (input.kind !== "attempt" || clause?.operation !== "open" || clause.targetIds.length !== 1) {
+  if (input.kind !== "attempt" || (clause?.operation !== "open" && clause?.operation !== "primitive:door-open") || clause.targetIds.length !== 1) {
     throw new ProtocolError("CAPABILITY_UNSUPPORTED", "open contract requires one grounded target");
   }
   const doorId = clause.targetIds[0] as string;

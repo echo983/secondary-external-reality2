@@ -6,6 +6,8 @@ export interface DemoFixture {
   worldBasis: WorldBasis;
   entities: readonly FixtureEntity[];
   genesis: WorldSnapshot;
+  affordances: Readonly<Record<string, readonly string[]>>;
+  allowedRelations: readonly string[];
 }
 
 function fact(factId: string, address: string, value: string | number): CanonicalFact {
@@ -14,7 +16,7 @@ function fact(factId: string, address: string, value: string | number): Canonica
 }
 
 export function createDemoFixture(): DemoFixture {
-  const worldBasis = {worldId: "text-vr-demo", schemaVersion: "1", fixtureVersion: "demo-v2", genesisHash: "demo-genesis-v2"};
+  const worldBasis = {worldId: "text-vr-demo", schemaVersion: "1", fixtureVersion: "demo-v3", genesisHash: "demo-genesis-v3"};
   const entities: FixtureEntity[] = [
     {entityId: "self", kind: "actor", aliases: ["我", "自己"], perceivableBy: ["self"]},
     {entityId: "bedroom", kind: "room", aliases: ["卧室"], perceivableBy: ["self"]},
@@ -37,11 +39,18 @@ export function createDemoFixture(): DemoFixture {
     fact("g-hallway-light", "room:hallway:light", "lit"),
     fact("g-hallway-sound", "room:hallway:ambient_sound", "quiet"),
     fact("g-self-posture", "body:self:posture", "standing"),
+    fact("g-self-orientation", "body:self:orientation", "room"),
     fact("g-self-pain", "body:self:pain", "none"),
     fact("g-kettle-state", "kettle:kettle-1:state", "heating")
   ];
   const processes: ProcessState[] = [{processId: "process:kettle-1", kind: "kettle_heating", ownerRef: "kettle-1",
     state: {phase: "heating"}, lastEvaluatedAt: "2026-08-27T18:24:00.000Z",
     nextSemanticTransitionAt: "2026-08-27T18:27:00.000Z", revision: 1}];
-  return {worldBasis, entities, genesis: createGenesis(worldBasis, "2026-08-27T18:24:00.000Z", {facts, processes})};
+  const affordances = {
+    self: ["perceive", "orient", "move", "communicate"], bedroom: ["contains"], hallway: ["contains"],
+    "door-1": ["contact", "apply_force", "relation:open", "relation:aperture_cm", "occludes"],
+    "bed-1": ["contact", "support", "contains"], "blanket-1": ["contact", "hold", "release", "place", "move", "relation:held_by", "relation:placed_at", "deformable"]
+  } as const;
+  return {worldBasis, entities, genesis: createGenesis(worldBasis, "2026-08-27T18:24:00.000Z", {facts, processes}),
+    affordances, allowedRelations: ["open", "aperture_cm", "held_by", "placed_at", "occludes"]};
 }

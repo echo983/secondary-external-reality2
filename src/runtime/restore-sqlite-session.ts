@@ -7,6 +7,7 @@ import {materializeWaitExperience} from "../world/wait-kettle.js";
 import {ProtocolError} from "../protocol/errors.js";
 import {RuntimeSession} from "./runtime-session.js";
 import {materializeActivePerceptionExperience} from "../world/active-perception.js";
+import {materializePrimitiveExperience} from "../world/primitive-world.js";
 
 export async function restoreSqliteSession(options: {
   filename: string;
@@ -26,6 +27,8 @@ export async function restoreSqliteSession(options: {
         await materializeDoorExperience(commit, experiencePort, options.now?.().toISOString());
       } else if (commit.delta.events.some(event => event.kind === "active_perception")) {
         await materializeActivePerceptionExperience(commit, experiencePort, options.now?.().toISOString());
+      } else if (commit.delta.events.some(event => ["object_held", "object_released", "object_placed", "actor_moved", "actor_oriented", "speech"].includes(event.kind))) {
+        await materializePrimitiveExperience(commit, experiencePort, options.now?.().toISOString());
       } else if (commit.delta.events.some(event => ["kettle_whistle", "danger_interrupt", "wait_elapsed"].includes(event.kind))) {
         await materializeWaitExperience(commit, experiencePort, options.now?.().toISOString());
       } else {

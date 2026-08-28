@@ -10,7 +10,7 @@ const context: ActionContext = {actorSlot: "actor", slots: [
 
 test("strict action model response accepts targetless ambient perception", async () => {
   const model: ActionProposalModel = {model: ALLOWED_MODEL, proposeAction: async () => ({content: JSON.stringify({
-    clauseIndex: 0, primitives: ["perceive"], targetSlots: [], conditions: [],
+    kind: "query", clauseIndex: 0, primitives: ["perceive"], targetSlots: [], conditions: [],
     effects: [{kind: "observation_scope", subjectSlot: "actor", field: "vision", certainty: "required"}],
     perceptionScopes: [{modality: "vision", originSlot: "actor", horizon: "ambient", targetSlots: []}],
     unresolvedDependencies: []

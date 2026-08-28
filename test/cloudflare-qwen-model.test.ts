@@ -77,7 +77,7 @@ test("action proposal requests JSON Schema output with thinking disabled", async
     assert.deepEqual(body.reasoning, {enable_thinking: false});
     assert.equal((body.response_format as {type?: string}).type, "json_schema");
     return jsonResponse({success: true, result: {response: JSON.stringify({clauseIndex: 0, primitives: [], targetSlots: [],
-      conditions: [], effects: [], perceptionScopes: [], unresolvedDependencies: []})}});
+      kind: "none", conditions: [], effects: [], perceptionScopes: [], unresolvedDependencies: []})}});
   }) as typeof fetch;
   const model = new CloudflareQwenModel({accountId, apiToken, fetchImpl});
   assert.equal((await model.proposeAction("看看", 0, context)).content?.includes("clauseIndex"), true);

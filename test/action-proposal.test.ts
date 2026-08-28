@@ -19,7 +19,7 @@ const context: ActionContext = {
 
 function base(rawInput: string): Record<string, unknown> {
   void rawInput;
-  return {clauseIndex: 0, primitives: [], targetSlots: [], conditions: [], effects: [], perceptionScopes: [],
+  return {kind: "attempt", clauseIndex: 0, primitives: [], targetSlots: [], conditions: [], effects: [], perceptionScopes: [],
     unresolvedDependencies: []};
 }
 

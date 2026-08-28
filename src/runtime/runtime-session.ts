@@ -15,9 +15,14 @@ import {projectCurrentScene, type PerceptionMode} from "../perception/current-sc
 import {detectPerceptionRequest} from "../protocol/perception-request.js";
 import {detectActivePerceptionIntent} from "../protocol/active-perception-intent.js";
 import {renderActivePerceptionPacket, settleActivePerception} from "../world/active-perception.js";
+import {requestActionProposal} from "../ai/action-proposal-model.js";
+import {buildActionScene} from "../world/action-scene.js";
+import {constitutePrimitiveAction} from "../protocol/primitive-action.js";
+import {renderPrimitivePacket, settlePrimitiveWorld} from "../world/primitive-world.js";
 
 export type SessionResult =
   | {kind: "world"; height: number; text: string}
+  | {kind: "partial"; height: number; code: ProtocolErrorCode; text: string}
   | {kind: "query"; height: number; text: string}
   | {kind: "none"; height: number; text: string}
   | {kind: "boundary"; height: number; code: ProtocolErrorCode; text: string};
@@ -41,7 +46,8 @@ const boundaryText: Partial<Record<ProtocolErrorCode, string>> = {
   MODEL_NO_CONTENT: "语言解析没有产生可用结果，世界没有变化。",
   MODEL_INVALID_SCHEMA: "语言解析结果不符合协议，世界没有变化。",
   MODEL_CAPACITY: "语言解析服务暂时繁忙，世界没有变化。",
-  INPUT_INVALID: "这次输入没有形成可执行的行动。"
+  INPUT_INVALID: "这次输入没有形成可执行的行动。",
+  PRECONDITION_FAILED: "这个行动被当前世界状态阻止了。"
 };
 
 export class RuntimeSession {
@@ -84,6 +90,64 @@ export class RuntimeSession {
         const projected = projectCurrentScene(this.snapshot, this.options.fixture, this.options.actorId, perceptionMode);
         await this.audit(rawInput, attemptId, {status: "constituted", observations: projected.observations});
         return {kind: "query", height: this.snapshot.height, text: projected.text};
+      }
+      if (this.options.model.proposeAction !== undefined) {
+        const scene = buildActionScene(this.snapshot, this.options.fixture, this.options.actorId);
+        const proposal = await requestActionProposal({...this.options.model,
+          proposeAction: this.options.model.proposeAction.bind(this.options.model)}, text, 0, scene.context);
+        const telemetry = this.options.model.telemetry?.();
+        if (proposal.kind === "none") {
+          await this.audit(rawInput, attemptId, {proposal, status: "boundary", ...(telemetry === undefined ? {} : {modelTelemetry: telemetry})});
+          return {kind: "none", height: this.snapshot.height, text: "没有发生新的世界行动。"};
+        }
+        if (proposal.kind === "invalid") {
+          const code = proposal.unresolvedDependencies.length === 0 ? "CAPABILITY_UNSUPPORTED" : "TARGET_UNGROUNDED";
+          await this.audit(rawInput, attemptId, {proposal, status: "boundary", failureCode: code,
+            ...(telemetry === undefined ? {} : {modelTelemetry: telemetry})});
+          return {kind: "boundary", height: this.snapshot.height, code, text: boundaryText[code] as string};
+        }
+        if (proposal.kind === "query") {
+          const scope = proposal.perceptionScopes[0];
+          const targetId = scope?.targetSlots[0] === undefined ? undefined : scene.entityBySlot.get(scope.targetSlots[0]);
+          const projected = projectCurrentScene(this.snapshot, this.options.fixture, this.options.actorId,
+            {mode: scope?.modality === "hearing" ? "hearing" : scope?.horizon === "body" ? "body" : "ambient",
+              horizon: scope?.horizon ?? "ambient", ...(targetId === undefined ? {} : {targetId})});
+          await this.audit(rawInput, attemptId, {proposal, status: "constituted", observations: projected.observations,
+            ...(telemetry === undefined ? {} : {modelTelemetry: telemetry})});
+          return {kind: "query", height: this.snapshot.height, text: projected.text};
+        }
+        const constituted = constitutePrimitiveAction(proposal, this.options.actorId, scene.context.slots, scene.entityBySlot);
+        const texts: string[] = [];
+        for (const clause of constituted.clauses) {
+          const single = {...constituted, kind: clause.operation === "wait" ? "wait" as const :
+            clause.operation === "primitive:speech" ? "speech" as const : "attempt" as const, clauses: [clause]};
+          try {
+            if (clause.operation === "primitive:door-open") {
+              const settled = await settleOpenDoor(this.snapshot, single, attemptId, this.options.worldStore,
+                this.options.experienceStore, this.now().toISOString());
+              this.snapshot = settled.snapshot; texts.push(renderApprovedPacket(settled.packet));
+            } else if (clause.operation === "wait") {
+              const settled = await settleWait(this.snapshot, single, attemptId, this.options.worldStore, {}, this.now().toISOString());
+              this.snapshot = settled.snapshot;
+              const projected = await materializeWaitExperience(settled.commit, this.options.experienceStore, this.now().toISOString());
+              texts.push(renderWaitPacket(projected.packet));
+            } else if (["primitive:hold", "primitive:release", "primitive:place", "primitive:move", "primitive:orient", "primitive:speech"].includes(clause.operation ?? "")) {
+              const settled = await settlePrimitiveWorld(this.snapshot, single, attemptId, this.options.worldStore,
+                this.options.experienceStore, this.now().toISOString());
+              this.snapshot = settled.snapshot; texts.push(renderPrimitivePacket(settled.packet));
+            } else throw new ProtocolError("CAPABILITY_UNSUPPORTED", "no trusted primitive rule for action proposal");
+          } catch (cause) {
+            const error = cause instanceof ProtocolError ? cause : new ProtocolError("INTERNAL_INVARIANT", "primitive sequence failed", {cause});
+            if (texts.length === 0) throw error;
+            await this.audit(rawInput, attemptId, {proposal, status: "committed", committedHeight: this.snapshot.height,
+              failureCode: error.code, ...(telemetry === undefined ? {} : {modelTelemetry: telemetry})});
+            return {kind: "partial", height: this.snapshot.height, code: error.code,
+              text: `${texts.join(" ")} 后续动作没有完成：${boundaryText[error.code] ?? "世界状态阻止了它。"}`};
+          }
+        }
+        await this.audit(rawInput, attemptId, {proposal, status: "committed", committedHeight: this.snapshot.height,
+          ...(telemetry === undefined ? {} : {modelTelemetry: telemetry})});
+        return {kind: "world", height: this.snapshot.height, text: texts.join(" ")};
       }
       const proposal = await requestInputProposal(this.options.model, text);
       const telemetry = this.options.model.telemetry?.();

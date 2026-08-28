@@ -88,7 +88,7 @@ Phase 0–7 已完成可信运行时、门/水壶纵向案例、真实 Qwen adap
 
 ## 5. Phase 8C：通用行动原语
 
-状态：next
+状态：completed（2026-08-28）
 
 优先实现可组合的最小集合：
 
@@ -110,9 +110,13 @@ Phase 0–7 已完成可信运行时、门/水壶纵向案例、真实 Qwen adap
 
 物理失败、部分结果与产品不支持必须使用不同边界。
 
+完成记录：运行时已接入一次调用的统一 ActionProposal envelope；场景以 opaque slots 暴露，并由 fixture affordance、本地关系白名单、当前事实和 revision 进行可信验证。计划中的十类原语全部拥有最小世界规则；旧推门路径已作为 contact/apply-force/change-relation 迁移案例，同一输入的 hold → place 可产生共享 AttemptRef 的顺序提交，部分完成有独立结果类型。通用原语的 Observation/Experience 与 SQLite 补写沿用同一提交协议。当前回归门禁 72 项。详见 `unified-action-runtime-review-2026-08-28.md`。
+
+范围说明：对象种类和物理规则仍很小；Phase 8C 完成表示通用扩展机制成立，不表示任意自然语言行动都已覆盖。真实 Qwen 全量小样本仅 3/7 结构接受且尾延迟达到 45 秒，因此产品可行性必须由 Phase 8D 判定。
+
 ## 6. Phase 8D：盲测自由会话
 
-状态：pending
+状态：next
 
 从 `fc1.txt`、`fc2.txt` 和 `世界反馈者手册.md` 抽取动作形态，但不把最终测试句交给逐句实现。另由测试者自由输入 15–30 分钟。
 

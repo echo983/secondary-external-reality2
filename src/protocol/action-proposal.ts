@@ -63,6 +63,7 @@ export interface ProposedDependency {
 }
 
 export interface ActionProposal {
+  kind: "attempt" | "query" | "wait" | "speech" | "none" | "invalid";
   clauseIndex: number;
   primitives: readonly ActionPrimitive[];
   targetSlots: readonly string[];
@@ -94,8 +95,9 @@ function assertSlot(slot: unknown, allowedSlots: ReadonlySet<string>, path: stri
 }
 
 export function parseActionProposal(value: unknown, _rawInput: string, context: ActionContext): ActionProposal {
-  const required = ["clauseIndex", "primitives", "targetSlots", "conditions", "effects", "perceptionScopes", "unresolvedDependencies"];
+  const required = ["kind", "clauseIndex", "primitives", "targetSlots", "conditions", "effects", "perceptionScopes", "unresolvedDependencies"];
   if (!isObject(value) || !exactKeys(value, required, ["durationSeconds"]) || !Number.isSafeInteger(value.clauseIndex) ||
+    typeof value.kind !== "string" || !["attempt", "query", "wait", "speech", "none", "invalid"].includes(value.kind) ||
     !Array.isArray(value.primitives) || !Array.isArray(value.targetSlots) || !Array.isArray(value.conditions) ||
     !Array.isArray(value.effects) || !Array.isArray(value.perceptionScopes) || !Array.isArray(value.unresolvedDependencies)) {
     invalid("action proposal has an invalid shape");
@@ -188,7 +190,7 @@ export function parseActionProposal(value: unknown, _rawInput: string, context: 
       invalid("a model cannot require a world-changing effect");
     }
   }
-  const result: ActionProposal = {clauseIndex: value.clauseIndex as number, primitives, targetSlots, conditions, effects,
+  const result: ActionProposal = {kind: value.kind as ActionProposal["kind"], clauseIndex: value.clauseIndex as number, primitives, targetSlots, conditions, effects,
     perceptionScopes, unresolvedDependencies: dependencies};
   if (value.durationSeconds !== undefined) {
     if (typeof value.durationSeconds !== "number" || !Number.isFinite(value.durationSeconds) || value.durationSeconds < 0 ||
@@ -197,6 +199,12 @@ export function parseActionProposal(value: unknown, _rawInput: string, context: 
   }
   if (primitives.includes("wait") && (result.durationSeconds === undefined || result.durationSeconds <= 0)) {
     invalid("wait requires a positive duration");
+  }
+  if (result.kind === "wait" && !primitives.includes("wait")) invalid("wait kind requires wait primitive");
+  if (result.kind === "query" && !primitives.includes("perceive")) invalid("query kind requires perceive primitive");
+  if ((result.kind === "none" || result.kind === "invalid") &&
+      (primitives.length !== 0 || targetSlots.length !== 0 || effects.length !== 0 || perceptionScopes.length !== 0)) {
+    invalid("none and invalid kinds must not contain executable candidates");
   }
   return result;
 }
