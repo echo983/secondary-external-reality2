@@ -132,12 +132,12 @@ export function parseActionProposal(value: unknown, _rawInput: string, context: 
     }
     return condition;
   });
+  if (conditions.length !== 0) invalid("model conditions are disabled; trusted rules read world prerequisites");
 
   const effects = value.effects.map((item, index): ProposedEffect => {
     if (!isObject(item) || !exactKeys(item, ["kind", "subjectSlot", "field", "certainty"], ["objectSlot", "value"]) ||
       typeof item.kind !== "string" || !effectKinds.includes(item.kind as EffectKind) || typeof item.field !== "string" ||
       item.field === "" || (item.certainty !== "required" && item.certainty !== "possible")) invalid(`effects[${index}] is invalid`);
-    if (item.objectSlot !== undefined && item.value !== undefined) invalid(`effects[${index}] has two objects`);
     const effect: ProposedEffect = {kind: item.kind as EffectKind,
       subjectSlot: assertSlot(item.subjectSlot, allowedSlots, `effects[${index}].subjectSlot`), field: item.field,
       certainty: item.certainty};

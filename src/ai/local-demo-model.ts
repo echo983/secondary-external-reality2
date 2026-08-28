@@ -22,9 +22,9 @@ export class LocalDemoProposalModel implements ProposalModel {
     const hallway = context.slots.find(slot => /走廊/u.test(slot.label))?.slot;
     if (input.includes("枪")) return {content: JSON.stringify({...empty("invalid"), unresolvedDependencies: [
       {kind: "binding", reason: "场景没有已批准的枪对象"}]})};
-    const minutes = input.match(/等(?:五|(\d+))分钟/u);
+    const minutes = input.match(/等(?:一|五|(\d+))分钟/u);
     if (minutes !== null) {
-      const durationSeconds = minutes[1] === undefined ? 300 : Number(minutes[1]) * 60;
+      const durationSeconds = minutes[1] !== undefined ? Number(minutes[1]) * 60 : input.includes("一") ? 60 : 300;
       return {content: JSON.stringify({kind: "wait", clauseIndex, primitives: ["wait"], targetSlots: [], conditions: [],
         effects: [{kind: "time", subjectSlot: "actor", field: "elapsed", value: durationSeconds, certainty: "possible"}],
         perceptionScopes: [], durationSeconds, unresolvedDependencies: []})};

@@ -60,6 +60,13 @@ npm run eval:qwen:action-spike
 npm run eval:qwen:runtime-smoke
 ```
 
+15 轮持续世界评测（默认本地；显式参数才访问真实 Qwen）：
+
+```bash
+npm run eval:free-session
+npm run eval:free-session -- --live-qwen
+```
+
 普通 `npm test` 永远不读取 secret 或访问网络。
 
 ## 当前范围

@@ -14,7 +14,7 @@ export const ACTION_PROPOSAL_JSON_SCHEMA = {
       "change_relation", "communicate", "wait"
     ]}},
     targetSlots: {type: "array", items: {type: "string"}},
-    conditions: {type: "array", items: {type: "object", additionalProperties: false,
+    conditions: {type: "array", maxItems: 0, items: {type: "object", additionalProperties: false,
       required: ["kind", "subjectSlot", "predicate", "source"], properties: {
         kind: {type: "string", enum: ["fact", "capability", "relation", "reachability"]}, subjectSlot: {type: "string"},
         predicate: {type: "string"}, source: {type: "string", enum: ["world_slice", "operation_contract"]}, ...slotValueProperties
@@ -45,7 +45,7 @@ kind 只能是 attempt、query、wait、speech、none、invalid。询问当前�
 允许 primitives：perceive, orient, move, contact, apply_force, hold, release, place, change_relation, communicate, wait。
 允许 effect kind：observation_scope, orientation, placement, contact, force, holding, relation, signal, time。
 targetSlots 只能引用上下文中已经由上一阶段绑定并批准的 slot；未提供的对象不能猜测或创建，只能写入 unresolvedDependencies。
-conditions 字段：kind, subjectSlot, predicate, source，可选 objectSlot 或 value；source 只能是 world_slice 或 operation_contract。
+conditions 当前必须是 []。世界前置条件只由可信规则读取，模型不得重复或猜测。
 effects 字段：kind, subjectSlot, field, certainty，可选 objectSlot 或 value；certainty 只能是 required 或 possible。效果只是待验证候选。
 perceptionScopes 字段：modality, originSlot, horizon, targetSlots。环顾使用 actor 的 ambient scope 和空 targetSlots，不得虚构“四周”实体。
 unresolvedDependencies 字段：kind, reason，可选 slot。不确定时写依赖，不要猜世界值。
@@ -57,6 +57,9 @@ ambient 只用于无目标环顾，targetSlots 必须为 []；朝门外听或看
 例2 输入“听听门外”：primitives=["perceive"], targetSlots=["door"]，perceptionScopes 使用 hearing/directional/["door"]。
 例3 输入“用手推门”：primitives=["contact","apply_force","change_relation"], targetSlots=["door"]，世界变化 effects 全部 possible，perceptionScopes=[]。
 身体姿态变化属于 move + placement；如果输出 placement effect，primitives 必须包含 move 或 place。
+“松开某物”使用 kind=attempt、primitives=["release"]，holding effect 的 subjectSlot 是该物体、field="held_by"、value=false、certainty="possible"。
+发声使用 kind="speech"、primitives=["communicate"]，signal effect 必须包含 field="speech" 和 value=玩家实际说出的文字。
+同一输入先拿再放时，同时输出 hold/place 原语，并按执行顺序先列 holding effect、再列 placement effect；不要省略目的地 objectSlot。
 所有数组即使为空也必须输出。禁止 Markdown、解释和额外字段。`;
 
 export function buildActionProposalUserPrompt(rawInput: string, clauseIndex: number, context: ActionContext): string {

@@ -98,6 +98,12 @@ test("O01-O10 and Phase 8A offline action proposal corpus", async t => {
     ], effects: [{kind: "holding", subjectSlot: "blanket", field: "held_by", objectSlot: "actor", certainty: "possible"}]});
     assert.equal(proposal.unresolvedDependencies[0]?.kind, "capability");
   });
+  await t.test("release may identify the prior holder and request a false relation value", () => {
+    const proposal = parse("松开毛毯", {primitives: ["release"], targetSlots: ["blanket"], effects: [
+      {kind: "holding", subjectSlot: "blanket", field: "held_by", objectSlot: "actor", value: false, certainty: "possible"}
+    ]});
+    assert.equal(proposal.effects[0]?.value, false);
+  });
   await t.test("11 unknown top-level fields fail closed", () => expectInvalid("看看", {success: true}));
   await t.test("12 target slots must be an array", () => expectInvalid("推门", {targetSlots: "door"}));
   await t.test("13 canonical or invented slots fail closed", () => expectInvalid("拿胶带", {
