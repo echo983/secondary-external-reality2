@@ -20,9 +20,12 @@
 // - Collapse is attempted at most once per Attempt in this slice (no retry loop) to
 //   keep the integration test bounded.
 // - The post-NARRATE reachability audit (added after the "三毫米" finding in
-//   pipeline-integration-slice-findings-2026-08-28.md) regenerates at most once per
-//   Attempt if an unreachable claim is found; it does not loop to re-audit the
-//   regenerated draft, to keep this bounded the same way collapse is.
+//   pipeline-integration-slice-findings-2026-08-28.md, recalibrated in
+//   claim-extractor-recalibration-findings-2026-08-28.md) now routes each unreachable
+//   claim through its own Collapse attempt (Continuity Resolver + jury/clerk) instead
+//   of just avoiding it -- so a value-lookup Attempt can actually get its value
+//   established, not just safely dodged. There is exactly one final narrate call
+//   regardless of how many claims were processed, to keep this bounded.
 
 import {callModel} from "./client.mjs";
 import {
@@ -110,21 +113,49 @@ async function checkReachable(propositions, claim) {
 }
 
 // Audits a NARRATE draft: extracts specific/checkable claims, checks each for
-// reachability against the propositions NARRATE was given, and regenerates once
-// (with the offending claims listed to avoid) if any claim is unreachable. Does not
-// re-audit the regenerated draft -- bounded the same way COLLAPSE is capped at one
-// attempt per Attempt.
-async function narrateWithAudit(propositions, attempt, outcomeSummary) {
+// reachability against the propositions NARRATE was given.
+//
+// This used to just avoid unreachable claims in a regenerated draft -- safe, but it
+// left value-lookup Attempts (e.g. "量一下门缝到底有多宽") permanently unanswered,
+// because nothing ever actually established the missing value; the audit only
+// suppressed the fabrication without resolving it. This version instead routes each
+// unreachable claim through the SAME Continuity Resolver + jury/clerk Collapse
+// mechanism already validated (juror-clerk-spike, and the upstream COLLAPSE branch in
+// this pipeline) -- reactive Collapse discovery, triggered by what NARRATE actually
+// tried to assert, rather than trying to classify Attempt intent upfront. A claim the
+// jury approves becomes a committed fact and is available for the final narration
+// pass; a claim the jury rejects still just gets avoided (falls back to the old
+// behavior for that one claim only). Bounded: each unreachable claim gets at most one
+// Collapse attempt, and there is one final narrate call regardless of how many claims
+// were processed.
+async function narrateWithAudit(store, groundResult, propositions, attempt, outcomeSummary) {
   const draft = await narrate(propositions, attempt, outcomeSummary);
   const claims = await extractClaims(propositions, draft);
-  if (claims.length === 0) return {text: draft, draft, claims: [], checks: [], regenerated: false};
+  if (claims.length === 0) return {text: draft, draft, claims: [], checks: [], collapses: [], regenerated: false};
 
   const checks = await Promise.all(claims.map(claim => checkReachable(propositions, claim)));
-  const unreachable = checks.filter(c => !c.reachable).map(c => c.claim);
-  if (unreachable.length === 0) return {text: draft, draft, claims, checks, regenerated: false};
+  const unreachableChecks = checks.filter(c => !c.reachable);
+  if (unreachableChecks.length === 0) return {text: draft, draft, claims, checks, collapses: [], regenerated: false};
 
-  const revised = await narrate(propositions, attempt, outcomeSummary, unreachable);
-  return {text: revised, draft, claims, checks, regenerated: true};
+  let workingPropositions = propositions;
+  const stillAvoid = [];
+  const collapses = [];
+  for (const check of unreachableChecks) {
+    const proposedFact = await proposeCollapse(workingPropositions, attempt, check.claim);
+    const {verdicts, clerk} = await runJurorsAndClerk(workingPropositions, proposedFact);
+    if (clerk.finalDecision === "放行") {
+      const height = store.nextHeight();
+      const committed = store.append(proposedFact, groundResult.entities, height, "collapse");
+      workingPropositions = [...workingPropositions, committed];
+      collapses.push({claim: check.claim, proposedFact, verdicts, clerk, committed: true, height});
+    } else {
+      stillAvoid.push(check.claim);
+      collapses.push({claim: check.claim, proposedFact, verdicts, clerk, committed: false});
+    }
+  }
+
+  const revised = await narrate(workingPropositions, attempt, outcomeSummary, stillAvoid);
+  return {text: revised, draft, claims, checks, collapses, regenerated: true, finalPropositions: workingPropositions};
 }
 
 export async function processAttempt(store, attempt) {
@@ -181,10 +212,11 @@ export async function processAttempt(store, attempt) {
   }
   log.stages.push({stage: "COMMIT", height, outcome: classification.outcome});
 
-  const audited = await narrateWithAudit(propositions, attempt, verdictText);
+  const audited = await narrateWithAudit(store, groundResult, propositions, attempt, verdictText);
   log.stages.push({stage: "NARRATE_AUDIT", output: {
     draft: audited.draft, extractedClaims: audited.claims,
     checks: audited.checks.map(c => ({claim: c.claim, reachable: c.reachable, verdictText: c.verdictText})),
+    collapses: (audited.collapses ?? []).map(c => ({claim: c.claim, proposedFact: c.proposedFact, committed: c.committed, height: c.height, clerkDecision: c.clerk.finalDecision})),
     regenerated: audited.regenerated, final: audited.text
   }});
 
