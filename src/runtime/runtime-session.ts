@@ -13,6 +13,8 @@ import {settleOpenDoor} from "../world/open-door.js";
 import {materializeWaitExperience, settleWait} from "../world/wait-kettle.js";
 import {projectCurrentScene, type PerceptionMode} from "../perception/current-scene.js";
 import {detectPerceptionRequest} from "../protocol/perception-request.js";
+import {detectActivePerceptionIntent} from "../protocol/active-perception-intent.js";
+import {renderActivePerceptionPacket, settleActivePerception} from "../world/active-perception.js";
 
 export type SessionResult =
   | {kind: "world"; height: number; text: string}
@@ -69,6 +71,14 @@ export class RuntimeSession {
     const rawInput: RawInput = {sessionId: this.options.sessionId, actorId: this.options.actorId, text,
       receivedAt: this.now().toISOString(), language: /[\u3400-\u9fff]/u.test(text) ? "zh" : "unknown"};
     try {
+      const activePerception = detectActivePerceptionIntent(text);
+      if (activePerception !== undefined) {
+        const settled = await settleActivePerception(this.snapshot, this.options.actorId, activePerception, attemptId,
+          this.options.worldStore, this.options.experienceStore, this.now().toISOString());
+        this.snapshot = settled.snapshot;
+        await this.audit(rawInput, attemptId, {status: "committed", committedHeight: settled.commit.height});
+        return {kind: "world", height: settled.commit.height, text: renderActivePerceptionPacket(settled.packet)};
+      }
       const perceptionMode = detectPerceptionRequest(text);
       if (perceptionMode !== undefined) {
         const projected = projectCurrentScene(this.snapshot, this.options.fixture, this.options.actorId, perceptionMode);

@@ -64,7 +64,7 @@ Phase 0–7 已完成可信运行时、门/水壶纵向案例、真实 Qwen adap
 
 ## 4. Phase 8B：最小感知场
 
-状态：in progress
+状态：completed（2026-08-28）
 
 建立足以被观察的单房间世界：
 
@@ -82,11 +82,13 @@ Phase 0–7 已完成可信运行时、门/水壶纵向案例、真实 Qwen adap
 - 关门或容器遮挡的内容不泄漏；
 - 纯读取不修改 Canon；改变姿态、位置或耗时搜索按真实结果结算。
 
-当前已完成：v2 单房间 Genesis、初始第一屏、ambient/hearing/body 当前场景投影、常见无目标观察的零模型零 Height 快路径、门外定向声学/视觉投影、基于 placement 链的通用同空间可见实体选择，以及关门遮挡和开门后走廊暴露。每次玩家触发的只读 Observation 都随 Attempt Audit 持久化其来源；包含趴下、移动等身体动作的观察不会被错误降级为纯读取。尚未完成：会改变姿态、耗时并产生 Experience Acquisition 的主动搜索/观察结算。
+完成记录：v2 单房间 Genesis、初始第一屏、ambient/hearing/body 当前场景投影、常见无目标观察的零模型零 Height 快路径、门外定向声学/视觉投影、基于 placement 链的通用同空间可见实体选择，以及关门遮挡和开门后走廊暴露。玩家触发的只读 Observation 随 Attempt Audit 持久化来源。姿态变化与定向观察被组合为主动 Perception Attempt：它推进 3 秒世界时间、更新身体姿态、创建 Height，并由提交内 seed 确定性物化 Experience/Evidence/Acquisition；SQLite 重启可补写中断的体验提交。关门时不泄漏走廊，开门后才暴露有光走廊的局部视野。66 项回归门禁通过。
+
+范围说明：Phase 8B 证明了只读与主动感知的协议分流及完整提交链；任意目标搜索、移动观察和更多姿态/感官组合仍由 Phase 8C 的通用原语扩展，不把当前有限中文适配层宣称为开放行动完成。
 
 ## 5. Phase 8C：通用行动原语
 
-状态：pending
+状态：next
 
 优先实现可组合的最小集合：
 

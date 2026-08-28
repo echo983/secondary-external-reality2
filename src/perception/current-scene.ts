@@ -56,7 +56,10 @@ export function projectCurrentScene(
   if (mode === "body") {
     const posture = activeFact(snapshot, `body:${actorId}:posture`);
     const pain = activeFact(snapshot, `body:${actorId}:pain`);
-    const postureText = posture.value === "standing" ? "你正站着" : `你的姿态是${String(posture.value)}`;
+    const postureText = posture.value === "standing" ? "你正站着"
+      : posture.value === "prone" ? "你正趴低身体"
+      : posture.value === "crouching" ? "你正蹲着"
+      : `你的姿态是${String(posture.value)}`;
     const painText = pain.value === "none" ? "，没有感觉到疼痛。" : `，你感觉到${String(pain.value)}。`;
     return {mode, observations: [observation(snapshot, mode,
       {posture: String(posture.value), pain: String(pain.value)}, [placement.factId, posture.factId, pain.factId], actorId,

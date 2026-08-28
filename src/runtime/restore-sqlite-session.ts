@@ -6,6 +6,7 @@ import {replayStrict} from "../world/replay.js";
 import {materializeWaitExperience} from "../world/wait-kettle.js";
 import {ProtocolError} from "../protocol/errors.js";
 import {RuntimeSession} from "./runtime-session.js";
+import {materializeActivePerceptionExperience} from "../world/active-perception.js";
 
 export async function restoreSqliteSession(options: {
   filename: string;
@@ -23,6 +24,8 @@ export async function restoreSqliteSession(options: {
     for (const commit of store.pending(options.actorId)) {
       if (commit.delta.events.some(event => event.kind === "door_opened")) {
         await materializeDoorExperience(commit, experiencePort, options.now?.().toISOString());
+      } else if (commit.delta.events.some(event => event.kind === "active_perception")) {
+        await materializeActivePerceptionExperience(commit, experiencePort, options.now?.().toISOString());
       } else if (commit.delta.events.some(event => ["kettle_whistle", "danger_interrupt", "wait_elapsed"].includes(event.kind))) {
         await materializeWaitExperience(commit, experiencePort, options.now?.().toISOString());
       } else {

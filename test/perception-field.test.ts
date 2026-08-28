@@ -19,11 +19,14 @@ class CountingModel implements ProposalModel {
   }
 }
 
-function sessionWith(model: ProposalModel): {session: RuntimeSession; audit: InMemoryAuditStore} {
+function sessionWith(model: ProposalModel): {session: RuntimeSession; audit: InMemoryAuditStore;
+  world: InMemoryCommitStore; experience: InMemoryExperienceStore} {
   const audit = new InMemoryAuditStore();
+  const world = new InMemoryCommitStore();
+  const experience = new InMemoryExperienceStore();
   return {session: new RuntimeSession({sessionId: "perception", actorId: "self", fixture: createDemoFixture(), model,
-    worldStore: new InMemoryCommitStore(), experienceStore: new InMemoryExperienceStore(), auditStore: audit,
-    now: () => new Date("2026-08-27T18:24:00.000Z")}), audit};
+    worldStore: world, experienceStore: experience, auditStore: audit,
+    now: () => new Date("2026-08-27T18:24:00.000Z")}), audit, world, experience};
 }
 
 test("O01 initial scene is sourced from the current H0 world", () => {
@@ -70,12 +73,37 @@ test("directional hearing and closed-door vision use explicit scopes", async () 
   assert.equal(model.calls, 0);
 });
 
-test("a posture-changing look is not collapsed into a pure read", async () => {
+test("a posture-changing look settles time, posture, and acquired experience without a model", async () => {
   const model = new CountingModel();
-  const {session} = sessionWith(model);
+  const {session, world, experience, audit} = sessionWith(model);
   const result = await session.handle("趴下来从门缝往外看");
-  assert.equal(result.kind, "boundary");
-  assert.equal(result.height, 0);
+  assert.equal(result.kind, "world");
+  assert.equal(result.height, 1);
+  assert.match(result.text, /趴低身体.*门仍关着/u);
+  assert.equal(model.calls, 0);
+  assert.equal(session.currentSnapshot().worldTime, "2026-08-27T18:24:03.000Z");
+  assert.equal(session.currentSnapshot().facts.find(item => item.address === "body:self:posture" && item.status === "active")?.value, "prone");
+  assert.match((await session.handle("感觉一下自己的身体")).text, /正趴低身体/u);
+  assert.equal(world.commits.length, 1);
+  assert.equal(experience.commits.length, 1);
+  assert.equal(experience.commits[0]?.acquisitions[0]?.mode, "perception");
+  assert.equal(experience.commits[0]?.observations[0]?.content.visibleBeyond, "none");
+  assert.deepEqual(audit.attempts.map(item => item.status), ["committed", "constituted"]);
+});
+
+test("active door-gap perception exposes the hallway only after the door opens", async () => {
+  const raw = "轻轻推门，只开一条缝";
+  const proposal = {kind: "attempt", clauses: [{clauseIndex: 0,
+    goalSpan: {text: "推门", start: 2, end: 4}, methodSpan: {text: "轻轻", start: 0, end: 2},
+    targetMentions: [{text: "门", start: 3, end: 4}], modifierSpans: [{text: "一条缝", start: 7, end: 10}]}],
+    unsupportedClaims: []};
+  const model = new CountingModel({content: JSON.stringify(proposal)});
+  const {session, experience} = sessionWith(model);
+  assert.equal((await session.handle(raw)).height, 1);
+  const result = await session.handle("蹲下来朝门缝外面看");
+  assert.equal(result.height, 2);
+  assert.match(result.text, /蹲下身体.*有光的走廊/u);
+  assert.equal(experience.commits[1]?.observations[0]?.content.visibleBeyond, "hallway");
   assert.equal(model.calls, 1);
 });
 

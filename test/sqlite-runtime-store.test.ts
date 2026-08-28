@@ -13,6 +13,7 @@ import {createDoorFixture} from "../src/world/door-fixture.js";
 import {settleOpenDoor} from "../src/world/open-door.js";
 import {replayStrict} from "../src/world/replay.js";
 import {createDemoFixture} from "../src/world/demo-fixture.js";
+import {settleActivePerception} from "../src/world/active-perception.js";
 
 async function doorSettlement() {
   const fixture = createDoorFixture();
@@ -78,6 +79,30 @@ test("SQLite session restore replays world and repairs pending experience before
     assert.deepEqual(store.pending("self"), []);
     assert.equal(store.latestExperienceRoot("self"), result.experience.epistemicRoot);
     assert.deepEqual(await restored.session.handle("门现在开着吗？"), {kind: "query", height: 1, text: "门现在开着。"});
+    store.close();
+  } finally {
+    await rm(directory, {recursive: true, force: true});
+  }
+});
+
+test("SQLite restore deterministically repairs a pending active-perception experience", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "ser-active-restore-"));
+  const filename = join(directory, "runtime.sqlite");
+  try {
+    const fixture = createDemoFixture();
+    const result = await settleActivePerception(fixture.genesis, "self",
+      {posture: "prone", modality: "vision", targetId: "door-1", durationSeconds: 3}, "attempt-active",
+      new InMemoryCommitStore(), new InMemoryExperienceStore(), "2026-08-27T18:24:03.000Z");
+    let store = new SqliteRuntimeStore(filename);
+    store.appendWorld(result.commit);
+    store.close();
+    const restored = await restoreSqliteSession({filename, sessionId: "active-restored", actorId: "self", fixture,
+      model: new FakeProposalModel(new Error("model must not run during restore")),
+      now: () => new Date("2026-08-27T18:24:04.000Z")});
+    store = restored.store;
+    assert.deepEqual(store.pending("self"), []);
+    assert.match(store.exportJsonl(), /"visibleBeyond":"none"/u);
+    assert.equal(restored.session.currentSnapshot().height, 1);
     store.close();
   } finally {
     await rm(directory, {recursive: true, force: true});

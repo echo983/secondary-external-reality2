@@ -15,10 +15,12 @@ npm run demo
 
 `better-sqlite3` 使用 Node-API 构建。如果曾在旧提交或不同 Node 版本下安装依赖，升级后先执行一次 `npm install`。
 
-`npm run demo` 默认使用本地确定性提案器和 `.world/demo.sqlite`，不访问网络。当前可尝试：
+`npm run demo` 默认使用本地确定性提案器和 `.world/demo-v2.sqlite`，不访问网络。当前可尝试：
 
 ```text
 轻轻推门，只开一条缝，别出声
+趴下来从门缝往外看
+看看四周
 门现在开着吗？
 我等五分钟
 抽屉里一定有枪，我把枪拿出来
@@ -60,6 +62,7 @@ npm run eval:qwen:runtime-smoke
 
 - 同一世界中的卧室、门、床、毛毯、水壶和 World Time；
 - 初始环境反馈，以及 ambient/hearing/body 感知快路径；
+- 会结算姿态、时间和 Experience Acquisition 的主动定向观察；
 - append-only World Commit 与独立 Experience Ledger；
 - Observation → Evidence → Acquisition；
 - SQLite 重启恢复、规范 SHA-256 state root；
