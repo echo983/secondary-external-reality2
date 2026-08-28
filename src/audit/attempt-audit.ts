@@ -1,4 +1,4 @@
-import type {AttemptId, EntityId, Height} from "../domain/types.js";
+import type {AttemptId, EntityId, Height, Observation} from "../domain/types.js";
 import type {InputProposal} from "../protocol/input.js";
 import type {ProtocolErrorCode} from "../protocol/errors.js";
 import type {ModelTelemetry} from "../ai/model-adapter.js";
@@ -19,6 +19,7 @@ export interface AttemptAudit {
   failureCode?: ProtocolErrorCode;
   committedHeight?: Height;
   modelTelemetry?: ModelTelemetry;
+  observations?: readonly Observation[];
 }
 
 export class InMemoryAuditStore {

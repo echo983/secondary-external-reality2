@@ -1,6 +1,7 @@
 import type {CanonicalFact, Observation, WorldSnapshot} from "../domain/types.js";
 import type {DemoFixture} from "../world/demo-fixture.js";
 import {ProtocolError} from "../protocol/errors.js";
+import {visibleEntitiesInActorSpace} from "./visibility.js";
 
 export type PerceptionMode = "ambient" | "hearing" | "body";
 export interface PerceptionRequest {
@@ -85,15 +86,24 @@ export function projectCurrentScene(
       [placement.factId, doorOpen.factId, aperture.factId, otherSide.factId, hallwayLight.factId], "hallway", "vision")],
       text: "透过门缝，你能看见有光的走廊的一小部分。"};
   }
-  const bedPlacement = activeFact(snapshot, "placement:bed-1");
-  const blanketPlacement = activeFact(snapshot, "placement:blanket-1");
+  const visible = visibleEntitiesInActorSpace(snapshot, fixture.entities, actorId);
   const doorText = doorOpen.value === "true"
     ? `一扇门开着${typeof aperture.value === "number" ? `，留下约 ${aperture.value} 厘米的缝` : ""}`
     : "一扇门关着";
   const lightText = light.value === "lit" ? "有光" : String(light.value);
-  const text = `你站在一间${lightText}的卧室里。你能看见${doorText}、一张床和床上的毛毯。`;
-  const sources = [placement.factId, light.factId, doorOpen.factId, aperture.factId, bedPlacement.factId, blanketPlacement.factId];
+  const visibleById = new Map(visible.map(item => [item.entity.entityId, item]));
+  const names = visible.filter(item => item.entity.entityId !== "door-1").map(item => {
+    const ownName = item.entity.aliases[0];
+    if (ownName === undefined) return undefined;
+    const parent = typeof item.placementFact.value === "string" ? visibleById.get(item.placementFact.value) : undefined;
+    const parentName = parent?.entity.aliases[0];
+    return parentName === undefined ? ownName : `${parentName}上的${ownName}`;
+  }).filter((name): name is string => name !== undefined);
+  const objectText = names.length === 0 ? doorText : `${doorText}、${names.join("和")}`;
+  const text = `你站在一间${lightText}的卧室里。你能看见${objectText}。`;
+  const sources = [placement.factId, light.factId, doorOpen.factId, aperture.factId,
+    ...visible.map(item => item.placementFact.factId)];
   return {mode, observations: [observation(snapshot, mode,
     {room: "卧室", light: lightText, doorOpen: String(doorOpen.value), apertureCm: Number(aperture.value),
-      visibleObjects: "门、床、毛毯"}, sources, room.entityId, "vision")], text};
+      visibleObjects: ["门", ...names].join("、")}, sources, room.entityId, "vision")], text};
 }

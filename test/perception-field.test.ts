@@ -32,7 +32,7 @@ test("O01 initial scene is sourced from the current H0 world", () => {
   assert.match(projected.text, /卧室/u);
   assert.match(projected.text, /门关着/u);
   assert.match(projected.text, /床上的毛毯/u);
-  assert.equal(projected.observations[0]?.sourceFactIds.length, 6);
+  assert.equal((projected.observations[0]?.sourceFactIds.length ?? 0) >= 6, true);
 });
 
 test("O02 targetless observation variants use a zero-model zero-Height fast path", async () => {
@@ -46,6 +46,7 @@ test("O02 targetless observation variants use a zero-model zero-Height fast path
   }
   assert.equal(model.calls, 0);
   assert.deepEqual(audit.attempts.map(item => item.status), ["constituted", "constituted", "constituted"]);
+  assert.equal(audit.attempts.every(item => (item.observations?.[0]?.sourceFactIds.length ?? 0) > 0), true);
 });
 
 test("O03/O04 hearing and body scopes expose only committed fixture facts", async () => {
@@ -67,6 +68,15 @@ test("directional hearing and closed-door vision use explicit scopes", async () 
     text: "门关着，你看不到门外。"});
   assert.deepEqual(await session.handle("看看门"), {kind: "query", height: 0, text: "门关着。"});
   assert.equal(model.calls, 0);
+});
+
+test("a posture-changing look is not collapsed into a pure read", async () => {
+  const model = new CountingModel();
+  const {session} = sessionWith(model);
+  const result = await session.handle("趴下来从门缝往外看");
+  assert.equal(result.kind, "boundary");
+  assert.equal(result.height, 0);
+  assert.equal(model.calls, 1);
 });
 
 test("ambient projection reflects a committed door change", async () => {

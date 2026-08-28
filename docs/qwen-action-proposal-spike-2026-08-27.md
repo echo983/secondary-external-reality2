@@ -27,7 +27,7 @@
 - perception scope 越权；
 - 无界 Wait。
 
-本地 Validator 全部通过正反例。加入 Phase 8B 感知回归后，最终全仓门禁为 63 项通过。
+本地 Validator 全部通过正反例。加入 Phase 8B 感知回归后，当前全仓门禁为 64 项通过。
 
 ## 3. 真实模型迭代
 

@@ -72,7 +72,7 @@ export class RuntimeSession {
       const perceptionMode = detectPerceptionRequest(text);
       if (perceptionMode !== undefined) {
         const projected = projectCurrentScene(this.snapshot, this.options.fixture, this.options.actorId, perceptionMode);
-        await this.audit(rawInput, attemptId, {status: "constituted"});
+        await this.audit(rawInput, attemptId, {status: "constituted", observations: projected.observations});
         return {kind: "query", height: this.snapshot.height, text: projected.text};
       }
       const proposal = await requestInputProposal(this.options.model, text);
