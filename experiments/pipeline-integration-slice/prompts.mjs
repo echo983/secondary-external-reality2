@@ -4,6 +4,8 @@
 // ADJUDICATE, juror, clerk, and NARRATE prompts are carried over verbatim (or with the
 // one documented fix) from the validated spikes -- not re-authored from scratch.
 
+import {BASE_PROPOSITION_RULES} from "../shared/proposition-language.mjs";
+
 export const GROUND_SYSTEM_PROMPT = `给定一句话和一份已知实体列表（规范名字+别名），提取这句话实际提到的已知实体（用规范名字）。如果这句话明确指向一个具体物品/地点，但这个物品不在已知列表里，在 unbound 字段里如实写出玩家用的那个词；如果没有这种情况，unbound 为空数组。不要猜测玩家可能想指哪个已知实体——只在别名确实对应得上时才算。只输出 JSON。`;
 
 export const GROUND_JSON_SCHEMA = {
@@ -163,9 +165,28 @@ export function buildNarrateUserPrompt(propositions, attempt, outcomeSummary, av
 // extracted claim then gets checked with the *unmodified* reachability-judge prompt
 // from reachability-inference-spike (imported directly, not copied) against the same
 // propositions NARRATE was given.
-export const CLAIM_EXTRACTOR_SYSTEM_PROMPT = `你会读到一段世界反馈者写给玩家的感官反馈文本，以及这段文本生成时依据的已知命题列表。你的任务是：从这段反馈文本里，挑出所有"具体、可核查的断言"——也就是那种如果被记录下来，以后可以被拿来对照、被违反或被引用的具体事实（比如精确数字、明确的存在性声明、明确的状态归属）。
+// Recalibrated 2026-08-28 after narrate-audit-retrofit-findings found 4/4 over-
+// triggering, including a plain texture description ("表面是细密的、短的东西")
+// getting flagged as if it were a checkable structural claim. The fix is sharper
+// negative examples plus an explicit distinguishing heuristic (texture/impression vs.
+// a determinate size/quantity/existence relationship), not a vaguer rule.
+export const CLAIM_EXTRACTOR_SYSTEM_PROMPT = `你会读到一段世界反馈者写给玩家的感官反馈文本，以及这段文本生成时依据的已知命题列表（遵守下面这份格式约定）：
 
-不要挑出单纯的质感/结构描述（硬、软、粗糙、有棱角、反光、明暗、起伏这类）——这些是允许即兴发挥的感官细节，不是需要核查的断言。只挑出可能违反"不能凭空具体化一个从未确定的世界属性"这条规则的那种断言。
+${BASE_PROPOSITION_RULES}
+
+你的任务是：从这段反馈文本里，挑出所有"具体、可核查的断言"——特指涉及尺寸/数量的具体比较或数值、明确的存在性声明、或明确的状态归属这类事实，如果被记录下来，以后可以被拿来对照、被违反或被引用。
+
+明确不要挑的（即使读起来"有点具体"，只要没有断言一个可核查的尺寸/数量/存在性事实，就不算，是允许自由发挥的感官细节）：
+- 触感/质地描述：软、硬、粗糙、光滑、有颗粒感、细密、蓬松、有弹性——即使写成"表面是细密的短纤维"这种程度的具体描述，只要是在描述摸/看起来的印象，不算。
+- 视觉印象：明暗、色调、反光、模糊、轮廓大致形状——不算。
+- 单纯的动作描述：手怎么动、身体怎么移动、力气用了多大——不算。
+
+明确要挑的：
+- 尺寸/数量的具体比较或数值（比如"缝比指尖宽""填满了整条缝""三毫米"）。
+- 明确的存在性声明（断言一个从未被提及的东西存在）。
+- 隐含"两个具体的量之间有确定大小关系"的表述，而这个关系在已知命题里没有被给出（比如"边缘从两侧露出来"暗示了"宽度大于缝隙宽度"这个未经确认的比较结论）。
+
+区分的关键问题只有一个：这句话是在描述"摸/看起来是什么质感或印象"，还是在断言"两个具体的量之间有一个确定的大小/数量关系，或者某个具体尺寸是多少"。前者不挑，后者挑。
 
 只输出 JSON：{"claims": string[]}——每条是从文本里提取出的、可以独立拿去核查的简短陈述句（不需要逐字引用原文，改写成清楚的独立陈述句即可）；如果这段反馈里没有这类断言，claims 是空数组。`;
 

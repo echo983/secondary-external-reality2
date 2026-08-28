@@ -1,0 +1,115 @@
+{
+  "generatedAt": "2026-08-28T15:27:39.862Z",
+  "repeats": 3,
+  "results": [
+    {
+      "id": "turn1-texture-should-NOT-flag",
+      "expectFlags": false,
+      "note": "纯触感/质地描述，不该被挑出——这是上一版审计误伤的那条。",
+      "runs": [
+        {
+          "flagged": false,
+          "correct": true,
+          "claims": []
+        },
+        {
+          "flagged": false,
+          "correct": true,
+          "claims": []
+        },
+        {
+          "flagged": false,
+          "correct": true,
+          "claims": []
+        }
+      ]
+    },
+    {
+      "id": "turn2-gap-size-SHOULD-flag",
+      "expectFlags": true,
+      "note": "隐含具体尺寸区间的比较，且门缝宽度从未被确立——这是原本三毫米问题的同类案例，必须继续被挑出。",
+      "runs": [
+        {
+          "flagged": true,
+          "correct": true,
+          "claims": [
+            "door-1 门底缝隙的宽度大于指尖宽度，小于指节宽度"
+          ]
+        },
+        {
+          "flagged": true,
+          "correct": true,
+          "claims": [
+            "door-1 门底缝隙的宽度大于指尖宽度，小于指节宽度"
+          ]
+        },
+        {
+          "flagged": true,
+          "correct": true,
+          "claims": [
+            "door-1 门底缝隙的宽度大于指尖宽度，小于指节宽度"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "turn3-filled-gap-SHOULD-flag",
+      "expectFlags": true,
+      "note": "'填满了那条缝'隐含毛毯压扁后厚度恰好等于缝宽，这个具体尺寸关系从未确立，应该被挑出。",
+      "runs": [
+        {
+          "flagged": true,
+          "correct": true,
+          "claims": [
+            "毛毯被压薄后塞进门和地面之间的缝隙，填满了整条缝"
+          ]
+        },
+        {
+          "flagged": true,
+          "correct": true,
+          "claims": [
+            "毛毯被压薄后塞进门和地面之间的缝隙，填满了整条缝"
+          ]
+        },
+        {
+          "flagged": true,
+          "correct": true,
+          "claims": [
+            "毛毯被压薄后塞进门和地面之间的缝隙，填满了整条缝"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "turn4-edge-shows-SHOULD-flag",
+      "expectFlags": true,
+      "note": "'边缘从两侧露出来'隐含毛毯宽度大于门缝宽度，这个比较关系从未确立，应该被挑出。",
+      "runs": [
+        {
+          "flagged": true,
+          "correct": true,
+          "claims": [
+            "blanket-1 被塞进门缝后，厚度比塞入前薄很多",
+            "blanket-1 的宽度大于门缝的宽度，边缘从门缝两侧露出来"
+          ]
+        },
+        {
+          "flagged": true,
+          "correct": true,
+          "claims": [
+            "blanket-1 被塞进门缝后，厚度比塞入前薄很多",
+            "blanket-1 的宽度大于门缝的宽度，边缘从门缝两侧露出"
+          ]
+        },
+        {
+          "flagged": true,
+          "correct": true,
+          "claims": [
+            "blanket-1 被塞入门缝后的厚度比塞入前薄很多",
+            "blanket-1 的宽度大于门缝的宽度"
+          ]
+        }
+      ]
+    }
+  ]
+}
