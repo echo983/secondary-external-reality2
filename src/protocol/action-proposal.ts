@@ -189,6 +189,13 @@ export function parseActionProposal(value: unknown, _rawInput: string, context: 
     if (effect.kind !== "observation_scope" && effect.certainty === "required") {
       invalid("a model cannot require a world-changing effect");
     }
+    const allowedFields: Readonly<Record<EffectKind, readonly string[]>> = {
+      observation_scope: ["vision", "hearing", "touch", "proprioception", "interoception"],
+      orientation: ["toward"], placement: ["at", "under_gap", "posture"], contact: ["touches"],
+      force: ["toward", "magnitude"], holding: ["held_by"], relation: context.allowedRelations,
+      signal: ["speech"], time: ["elapsed"]
+    };
+    if (!allowedFields[effect.kind].includes(effect.field)) invalid(`${effect.kind} effect field is outside the closed vocabulary`);
   }
   const result: ActionProposal = {kind: value.kind as ActionProposal["kind"], clauseIndex: value.clauseIndex as number, primitives, targetSlots, conditions, effects,
     perceptionScopes, unresolvedDependencies: dependencies};

@@ -17,6 +17,7 @@ Phase 8C 的协议和可信结算门禁成立：普通非快路径输入可以�
 - orient、move、contact、apply_force、hold、release、place、change_relation、communicate、wait 均进入可信世界规则；
 - “推门”运行时由 `contact + apply_force + change_relation` 候选进入门规则，旧 InputProposal 只保留兼容回退；
 - 同一输入可按同一 AttemptRef 顺序结算多个 clause；前缀已提交而后缀失败时返回 `partial`，不伪装原子回滚；
+- 拖动与遮挡复用 placement/relation：拖到门边不自动等于遮挡，明确塞住门缝才建立 occludes 事实并改变视觉投影；
 - 世界内前置条件失败、产品能力边界和目标未落地使用不同错误码；
 - 通用原语 Experience 可从 SQLite 中断点确定性补写。
 
@@ -41,3 +42,5 @@ Phase 8C 的协议和可信结算门禁成立：普通非快路径输入可以�
 4. 当前模型的尾延迟是否构成首版实时文字 VR 的严重障碍。
 
 不得因提高表面成功率而接受未知 slot、猜测实体、非法 schema 或模型直接决定世界结果。
+
+补充门禁（2026-08-28）：完成度审计发现最初实现没有覆盖计划示例中的拖动/遮挡。现已加入 contact+move+place 拖动与 hold+place+change-relation 遮挡；placement field 改为闭合词汇，`at` 与 `under_gap` 分离。真实 Qwen 对“把毛毯塞到门缝下面”构成为 hold→place，可信 constitution 得到 `occludes=true`；本地视觉投影仅在该限定存在时阻断门外视野。回归门禁更新为 74 项。

@@ -60,6 +60,20 @@ export class LocalDemoProposalModel implements ProposalModel {
         conditions: [], effects: [{kind: "holding", subjectSlot: blanket, field: "held_by", value: false, certainty: "possible"}],
         perceptionScopes: [], unresolvedDependencies: []})};
     }
+    if (blanket !== undefined && door !== undefined && /拖|拉/u.test(input) && /毛毯|毯子/u.test(input) && /门/u.test(input)) {
+      return {content: JSON.stringify({kind: "attempt", clauseIndex, primitives: ["contact", "move", "place"],
+        targetSlots: [blanket, door], conditions: [], effects: [
+          {kind: "placement", subjectSlot: blanket, field: "at", objectSlot: door, certainty: "possible"}],
+        perceptionScopes: [], unresolvedDependencies: []})};
+    }
+    if (blanket !== undefined && door !== undefined && /塞|挡|堵/u.test(input) && /毛毯|毯子/u.test(input) && /门|门缝/u.test(input)) {
+      return {content: JSON.stringify({kind: "attempt", clauseIndex, primitives: ["contact", "hold", "place", "change_relation"],
+        targetSlots: [blanket, door], conditions: [], effects: [
+          {kind: "holding", subjectSlot: blanket, field: "held_by", objectSlot: "actor", certainty: "possible"},
+          {kind: "placement", subjectSlot: blanket, field: "under_gap", objectSlot: door, certainty: "possible"},
+          {kind: "relation", subjectSlot: blanket, field: "occludes", objectSlot: door, value: true, certainty: "possible"}],
+        perceptionScopes: [], unresolvedDependencies: []})};
+    }
     if (blanket !== undefined && bed !== undefined && /放|搁|摆/u.test(input) && /床/u.test(input)) {
       return {content: JSON.stringify({kind: "attempt", clauseIndex, primitives: ["place", "change_relation"], targetSlots: [blanket, bed],
         conditions: [], effects: [{kind: "placement", subjectSlot: blanket, field: "at", objectSlot: bed, certainty: "possible"}],

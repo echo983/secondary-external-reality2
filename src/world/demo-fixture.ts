@@ -48,8 +48,8 @@ export function createDemoFixture(): DemoFixture {
     nextSemanticTransitionAt: "2026-08-27T18:27:00.000Z", revision: 1}];
   const affordances = {
     self: ["perceive", "orient", "move", "communicate"], bedroom: ["contains"], hallway: ["contains"],
-    "door-1": ["contact", "apply_force", "relation:open", "relation:aperture_cm", "occludes"],
-    "bed-1": ["contact", "support", "contains"], "blanket-1": ["contact", "hold", "release", "place", "move", "relation:held_by", "relation:placed_at", "deformable"]
+    "door-1": ["contact", "apply_force", "contains", "relation:open", "relation:aperture_cm", "occludes"],
+    "bed-1": ["contact", "support", "contains"], "blanket-1": ["contact", "hold", "release", "place", "move", "relation:held_by", "relation:placed_at", "relation:occludes", "deformable"]
   } as const;
   return {worldBasis, entities, genesis: createGenesis(worldBasis, "2026-08-27T18:24:00.000Z", {facts, processes}),
     affordances, allowedRelations: ["open", "aperture_cm", "held_by", "placed_at", "occludes"]};

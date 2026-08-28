@@ -37,7 +37,8 @@ export function constitutePrimitiveAction(proposal: ActionProposal, actorId: str
       {clauseIndex: proposal.clauseIndex, operation: "primitive:hold", goal: "hold", method: "hold",
         targetIds: [entity(heldSlot)], modifiers: {}},
       {clauseIndex: proposal.clauseIndex + 1, operation: "primitive:place", goal: "place", method: "place",
-        targetIds: [entity(heldSlot), entity(destinationSlot)], modifiers: {}}
+        targetIds: [entity(heldSlot), entity(destinationSlot)], modifiers: {occludes: placement?.field === "under_gap" ||
+          proposal.effects.some(effect => effect.kind === "relation" && effect.field === "occludes" && effect.value === true)}}
     ]};
   }
   const relation = proposal.effects.find(effect => effect.kind === "relation" && effect.field === "open" && effect.value === true);
@@ -66,6 +67,18 @@ export function constitutePrimitiveAction(proposal: ActionProposal, actorId: str
     return {kind: "attempt", actorId, unsupportedClaims: [], clauses: [{clauseIndex: proposal.clauseIndex,
       operation: "primitive:release", goal: "release", method: "release", targetIds: [entity(heldSlot)], modifiers: {}}]};
   }
+  if (proposal.kind === "attempt" && proposal.primitives.includes("move") && proposal.primitives.includes("place") &&
+      !proposal.primitives.includes("hold")) {
+    const placement = proposal.effects.find(effect => effect.kind === "placement");
+    const subjectSlot = placement?.subjectSlot ?? proposal.targetSlots[0];
+    const destinationSlot = placement?.objectSlot ?? proposal.targetSlots.find(slot => slot !== subjectSlot);
+    if (subjectSlot === undefined || destinationSlot === undefined) throw new ProtocolError("TARGET_UNGROUNDED", "drag targets are absent");
+    requireAffordance(subjectSlot, "move"); requireAffordance(subjectSlot, "place"); requireAffordance(destinationSlot, "contains");
+    return {kind: "attempt", actorId, unsupportedClaims: [], clauses: [{clauseIndex: proposal.clauseIndex,
+      operation: "primitive:drag", goal: "move object", method: "contact+move", targetIds: [entity(subjectSlot), entity(destinationSlot)],
+      modifiers: {occludes: placement?.field === "under_gap" || proposal.effects.some(effect =>
+        effect.kind === "relation" && effect.field === "occludes" && effect.value === true)}}]};
+  }
   if (proposal.kind === "attempt" && proposal.primitives.includes("place")) {
     const subjectSlot = proposal.effects.find(effect => effect.kind === "placement" || effect.kind === "relation")?.subjectSlot ?? proposal.targetSlots[0];
     const destinationSlot = proposal.effects.find(effect => effect.kind === "placement")?.objectSlot ?? proposal.targetSlots.find(slot => slot !== subjectSlot);
@@ -73,7 +86,9 @@ export function constitutePrimitiveAction(proposal: ActionProposal, actorId: str
     requireAffordance(subjectSlot, "place");
     requireAffordance(destinationSlot, "contains");
     return {kind: "attempt", actorId, unsupportedClaims: [], clauses: [{clauseIndex: proposal.clauseIndex,
-      operation: "primitive:place", goal: "place", method: "place", targetIds: [entity(subjectSlot), entity(destinationSlot)], modifiers: {}}]};
+      operation: "primitive:place", goal: "place", method: "place", targetIds: [entity(subjectSlot), entity(destinationSlot)],
+      modifiers: {occludes: proposal.effects.find(effect => effect.kind === "placement")?.field === "under_gap" ||
+        proposal.effects.some(effect => effect.kind === "relation" && effect.field === "occludes" && effect.value === true)}}]};
   }
   if (proposal.kind === "attempt" && proposal.primitives.includes("move")) {
     const destinationSlot = proposal.effects.find(effect => effect.kind === "placement" && effect.objectSlot !== undefined)?.objectSlot ??

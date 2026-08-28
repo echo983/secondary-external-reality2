@@ -131,7 +131,7 @@ export class RuntimeSession {
               this.snapshot = settled.snapshot;
               const projected = await materializeWaitExperience(settled.commit, this.options.experienceStore, this.now().toISOString());
               texts.push(renderWaitPacket(projected.packet));
-            } else if (["primitive:hold", "primitive:release", "primitive:place", "primitive:move", "primitive:orient", "primitive:speech"].includes(clause.operation ?? "")) {
+            } else if (["primitive:hold", "primitive:release", "primitive:place", "primitive:drag", "primitive:move", "primitive:orient", "primitive:speech"].includes(clause.operation ?? "")) {
               const settled = await settlePrimitiveWorld(this.snapshot, single, attemptId, this.options.worldStore,
                 this.options.experienceStore, this.now().toISOString());
               this.snapshot = settled.snapshot; texts.push(renderPrimitivePacket(settled.packet));

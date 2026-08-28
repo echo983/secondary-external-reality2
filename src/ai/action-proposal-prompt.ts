@@ -47,6 +47,7 @@ kind 只能是 attempt、query、wait、speech、none、invalid。询问当前�
 targetSlots 只能引用上下文中已经由上一阶段绑定并批准的 slot；未提供的对象不能猜测或创建，只能写入 unresolvedDependencies。
 conditions 当前必须是 []。世界前置条件只由可信规则读取，模型不得重复或猜测。
 effects 字段：kind, subjectSlot, field, certainty，可选 objectSlot 或 value；certainty 只能是 required 或 possible。效果只是待验证候选。
+effect field 使用闭合词汇：observation_scope=vision/hearing/touch/proprioception/interoception；orientation=toward；placement=at/under_gap/posture；contact=touches；force=toward/magnitude；holding=held_by；relation 只能用上下文 allowedRelations；signal=speech；time=elapsed。把物体明确塞到门缝下使用 placement field="under_gap"，普通放在门边只能用 at，二者不得混淆。
 perceptionScopes 字段：modality, originSlot, horizon, targetSlots。环顾使用 actor 的 ambient scope 和空 targetSlots，不得虚构“四周”实体。
 unresolvedDependencies 字段：kind, reason，可选 slot。不确定时写依赖，不要猜世界值。
 只输出最小候选：通常 1–4 个 primitives、0–2 个 effects。conditions 只写当前世界切片或操作契约明确提供的前置条件；不要自行列举常识条件。

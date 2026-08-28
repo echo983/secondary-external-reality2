@@ -22,6 +22,8 @@ npm run demo
 趴下来从门缝往外看
 看看四周
 拿起毛毯再放到床上
+把毛毯拖到门边
+把毛毯塞到门缝下面
 转身面向门
 穿过门去走廊
 喊一声有人吗
@@ -82,4 +84,4 @@ npm run eval:free-session -- --live-qwen
 - Query、None、模型故障和枪式诱导均不产生虚假 Height；
 - 30 Height 混合会话与 100 Height replay 门禁。
 
-当前仍是开发者纵向切片，不是通用游戏引擎。开放行动原语和 ActionProposal 已完成协议 spike，但尚未接入世界 Commit；NPC、容器、纸条、完整空间移动和 Web UI 尚未实现。设计与后续计划见 [`docs/`](docs/)。
+当前仍是开发者纵向切片，不是通用游戏引擎。ActionProposal 已接入受 affordance 和当前事实约束的世界 Commit，但对象与空间规则仍小；NPC、关闭容器、纸条、完整空间移动和 Web UI 尚未实现。设计与后续计划见 [`docs/`](docs/)。

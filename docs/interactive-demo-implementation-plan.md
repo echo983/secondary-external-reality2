@@ -110,7 +110,7 @@ Phase 0–7 已完成可信运行时、门/水壶纵向案例、真实 Qwen adap
 
 物理失败、部分结果与产品不支持必须使用不同边界。
 
-完成记录：运行时已接入一次调用的统一 ActionProposal envelope；场景以 opaque slots 暴露，并由 fixture affordance、本地关系白名单、当前事实和 revision 进行可信验证。计划中的十类原语全部拥有最小世界规则；旧推门路径已作为 contact/apply-force/change-relation 迁移案例，同一输入的 hold → place 可产生共享 AttemptRef 的顺序提交，部分完成有独立结果类型。通用原语的 Observation/Experience 与 SQLite 补写沿用同一提交协议。当前回归门禁 73 项。详见 `unified-action-runtime-review-2026-08-28.md`。
+完成记录：运行时已接入一次调用的统一 ActionProposal envelope；场景以 opaque slots 暴露，并由 fixture affordance、本地关系白名单、当前事实和 revision 进行可信验证。计划中的十类原语全部拥有最小世界规则；旧推门路径已作为 contact/apply-force/change-relation 迁移案例，同一输入的 hold → place 可产生共享 AttemptRef 的顺序提交，部分完成有独立结果类型。毛毯可通过 contact/move/place 拖到门边，也可通过 hold/place/change-relation 塞住门缝；遮挡事实会实际改变门外视觉投影，移走毛毯后结束。通用原语的 Observation/Experience 与 SQLite 补写沿用同一提交协议。当前回归门禁 74 项。详见 `unified-action-runtime-review-2026-08-28.md`。
 
 范围说明：对象种类和物理规则仍很小；Phase 8C 完成表示通用扩展机制成立，不表示任意自然语言行动都已覆盖。真实 Qwen 全量小样本仅 3/7 结构接受且尾延迟达到 45 秒，因此产品可行性必须由 Phase 8D 判定。
 

@@ -17,6 +17,7 @@ export function renderPrimitivePacket(packet: ApprovedPresentationPacket): strin
   if (kind === "object_held") return `你拿起了${subject === "blanket-1" ? "毛毯" : "那个物体"}。`;
   if (kind === "object_released") return `你松开了${subject === "blanket-1" ? "毛毯" : "那个物体"}。`;
   if (kind === "object_placed") return `你把${subject === "blanket-1" ? "毛毯" : "那个物体"}放到了${second === "bed-1" ? "床上" : "那里"}。`;
+  if (kind === "object_dragged") return second === "door-1" ? "你把毛毯拖到了门边。" : "你拖动了那个物体。";
   if (kind === "actor_moved") return first === "hallway" ? "你穿过门，来到走廊。" : "你移动到了新的位置。";
   if (kind === "actor_oriented") return first === "door-1" ? "你转身面向门。" : "你改变了朝向。";
   if (kind === "speech") return `你说：“${String(first)}”`;
@@ -27,7 +28,7 @@ export async function materializePrimitiveExperience(commit: SettlementCommit, s
   committedAt = new Date().toISOString()): Promise<{experience: ExperienceCommit; packet: ApprovedPresentationPacket}> {
   const seed = commit.observationSeeds[0];
   const event = commit.delta.events.find(item => seed?.sourceEventIds.includes(item.eventId));
-  if (seed === undefined || event === undefined || !["object_held", "object_released", "object_placed", "actor_moved", "actor_oriented", "speech"].includes(event.kind)) {
+  if (seed === undefined || event === undefined || !["object_held", "object_released", "object_placed", "object_dragged", "actor_moved", "actor_oriented", "speech"].includes(event.kind)) {
     throw new ProtocolError("REPLAY_INVALID", "primitive experience lacks a committed event");
   }
   const content = Object.fromEntries(seed.perceivableFields.flatMap(field =>
@@ -61,7 +62,7 @@ export async function settlePrimitiveWorld(snapshot: WorldSnapshot, input: Const
   const height = snapshot.height + 1;
   const duration = operation === "primitive:move" ? 4 : operation === "primitive:speech" ? 1 : 2;
   const worldTimeEnd = new Date(Date.parse(snapshot.worldTime) + duration * 1000).toISOString();
-  let kind: "object_held" | "object_released" | "object_placed" | "actor_moved" | "actor_oriented" | "speech";
+  let kind: "object_held" | "object_released" | "object_placed" | "object_dragged" | "actor_moved" | "actor_oriented" | "speech";
   let participants: string[];
   let payload: Record<string, string | number>;
   let addFacts: CanonicalFact[] = [];
@@ -77,6 +78,13 @@ export async function settlePrimitiveWorld(snapshot: WorldSnapshot, input: Const
     addFacts = [{factId: `fact:${height}:placement:${objectId}`, address: placement.address, value: input.actorId,
       status: "active", canonicalHeight: height, validFromWorldTime: worldTimeEnd, sourceRef: `event:${height}:primitive`, revision: placement.revision + 1}];
     endFactIds = [placement.factId];
+    if (objectId === "blanket-1") {
+      const occlusion = snapshot.facts.find(fact => fact.address === "relation:blanket-1:occludes:door-1" && fact.status === "active");
+      if (occlusion !== undefined) {
+        dependencyRevisions[occlusion.address] = occlusion.revision;
+        endFactIds.push(occlusion.factId);
+      }
+    }
   } else if (operation === "primitive:release") {
     const objectId = clause.targetIds[0];
     if (objectId === undefined) throw new ProtocolError("TARGET_UNGROUNDED", "release target is absent");
@@ -91,16 +99,33 @@ export async function settlePrimitiveWorld(snapshot: WorldSnapshot, input: Const
     addFacts = [{factId: `fact:${height}:placement:${objectId}`, address: placement.address, value: actorPlacement.value,
       status: "active", canonicalHeight: height, validFromWorldTime: worldTimeEnd, sourceRef: `event:${height}:primitive`, revision: placement.revision + 1}];
     endFactIds = [placement.factId];
-  } else if (operation === "primitive:place") {
+  } else if (operation === "primitive:place" || operation === "primitive:drag") {
     const [objectId, destinationId] = clause.targetIds;
     if (objectId === undefined || destinationId === undefined) throw new ProtocolError("TARGET_UNGROUNDED", "place targets are absent");
     const placement = activeFact(snapshot, `placement:${objectId}`);
-    if (placement.value !== input.actorId) throw new ProtocolError("PRECONDITION_FAILED", "actor is not holding the object");
-    kind = "object_placed"; participants = [input.actorId, objectId, destinationId]; payload = {subject: objectId, destination: destinationId};
+    if (operation === "primitive:place" && placement.value !== input.actorId) {
+      throw new ProtocolError("PRECONDITION_FAILED", "actor is not holding the object");
+    }
+    if (operation === "primitive:drag" && placement.value === input.actorId) {
+      throw new ProtocolError("PRECONDITION_FAILED", "held object should be placed rather than dragged");
+    }
+    kind = operation === "primitive:drag" ? "object_dragged" : "object_placed";
+    participants = [input.actorId, objectId, destinationId]; payload = {subject: objectId, destination: destinationId};
     dependencyRevisions[placement.address] = placement.revision;
     addFacts = [{factId: `fact:${height}:placement:${objectId}`, address: placement.address, value: destinationId,
       status: "active", canonicalHeight: height, validFromWorldTime: worldTimeEnd, sourceRef: `event:${height}:primitive`, revision: placement.revision + 1}];
     endFactIds = [placement.factId];
+    if (objectId === "blanket-1") {
+      const relationAddress = "relation:blanket-1:occludes:door-1";
+      const priorRelation = snapshot.facts.find(fact => fact.address === relationAddress && fact.status === "active");
+      if (priorRelation !== undefined) {
+        dependencyRevisions[relationAddress] = priorRelation.revision;
+        endFactIds.push(priorRelation.factId);
+      }
+      if (destinationId === "door-1" && clause.modifiers.occludes === true) addFacts.push({factId: `fact:${height}:blanket-occludes-door`, address: relationAddress,
+        value: "true", status: "active", canonicalHeight: height, validFromWorldTime: worldTimeEnd,
+        sourceRef: `event:${height}:primitive`, revision: (priorRelation?.revision ?? 0) + 1});
+    }
   } else if (operation === "primitive:move") {
     const destinationId = clause.targetIds[0];
     if (destinationId === undefined) throw new ProtocolError("TARGET_UNGROUNDED", "move destination is absent");
@@ -130,7 +155,7 @@ export async function settlePrimitiveWorld(snapshot: WorldSnapshot, input: Const
   const eventId = `event:${height}:primitive`;
   addFacts = addFacts.map(fact => ({...fact, sourceRef: eventId}));
   const fields = kind === "object_held" ? ["subject"] : kind === "object_released" ? ["subject", "destination"]
-    : kind === "object_placed" ? ["subject", "destination"] : kind === "actor_moved" ? ["destination"]
+    : kind === "object_placed" || kind === "object_dragged" ? ["subject", "destination"] : kind === "actor_moved" ? ["destination"]
     : kind === "actor_oriented" ? ["target"] : ["speech"];
   const draft: SettlementCommit = {worldBasis: snapshot.worldBasis, height, parentHeight: snapshot.height,
     parentStateRoot: snapshot.stateRoot, worldTimeStart: snapshot.worldTime, worldTimeEnd, dependencyRevisions,

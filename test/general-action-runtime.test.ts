@@ -106,3 +106,18 @@ test("one input can settle an ordered hold then place sequence", async () => {
   assert.deepEqual(world.commits.map(commit => commit.delta.events[0]?.kind), ["object_held", "object_placed"]);
   assert.equal(world.commits[0]?.attemptRefs[0], world.commits[1]?.attemptRefs[0]);
 });
+
+test("drag and occluding placement are distinct generic object relations", async () => {
+  const fixture = createDemoFixture();
+  const session = new RuntimeSession({sessionId: "occlusion", actorId: "self", fixture,
+    model: new LocalDemoProposalModel(), worldStore: new InMemoryCommitStore(), experienceStore: new InMemoryExperienceStore(),
+    auditStore: new InMemoryAuditStore(), now: () => new Date("2026-08-28T12:00:00.000Z")});
+  assert.match((await session.handle("把毛毯拖到门边")).text, /拖到了门边/u);
+  assert.equal(session.currentSnapshot().facts.some(fact => fact.address === "relation:blanket-1:occludes:door-1" && fact.status === "active"), false);
+  assert.match((await session.handle("把毛毯塞到门缝下面")).text, /拿起了毛毯.*放到/u);
+  assert.equal(session.currentSnapshot().facts.some(fact => fact.address === "relation:blanket-1:occludes:door-1" && fact.status === "active"), true);
+  await session.handle("推开门");
+  assert.match((await session.handle("从门缝往外看")).text, /毛毯挡在门缝处/u);
+  await session.handle("拿起毛毯");
+  assert.match((await session.handle("从门缝往外看")).text, /有光的走廊/u);
+});

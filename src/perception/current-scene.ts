@@ -87,6 +87,12 @@ export function projectCurrentScene(
       return {mode, observations: [observation(snapshot, mode, {doorOpen: "false", visibleBeyond: "none"},
         [placement.factId, doorOpen.factId, aperture.factId], "door-1", "vision")], text: "门关着，你看不到门外。"};
     }
+    const occlusion = snapshot.facts.find(fact => fact.address === "relation:blanket-1:occludes:door-1" && fact.status === "active");
+    if (occlusion?.value === "true") {
+      return {mode, observations: [observation(snapshot, mode, {doorOpen: "true", visibleBeyond: "occluded"},
+        [placement.factId, doorOpen.factId, aperture.factId, occlusion.factId], "door-1", "vision")],
+        text: "毛毯挡在门缝处，你看不到门外。"};
+    }
     const otherSide = activeFact(snapshot, "door:door-1:other_side");
     const hallwayLight = activeFact(snapshot, "room:hallway:light");
     return {mode, observations: [observation(snapshot, mode,
