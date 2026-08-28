@@ -1,9 +1,10 @@
 # 文字虚拟现实架构重设计计划 v0.1
 
 日期：2026-08-28
-状态：planned，等待设计执行
-触发证据：两轮真人自由测试、`human-test-direction-review-2026-08-28.md`、最新 `.world/demo-v4.sqlite` 会话记录
+状态：**superseded** —— 被 `architecture-direction-consensus-2026-08-28.md` 取代，不再是待执行计划，仅作历史记录保留
 上位目标：`demo-goals.md`、`world-constitution.md`
+
+> **2026-08-28 后续更新：** 本文档第 2/4 节设想的 D2/D3 路线（声明式 `EntitySchema`/`Component`/`OperationContract`，把 Canon 从平铺 address 升级为类型化组件系统）已经被同一天稍晚的讨论和四轮真实 Qwen 实验推翻。核心判断：把开放现实翻译成类型化 schema、并且现场为新对象/新情况现造 schema，这件事本身才是高风险、低 ROI 的活，不是保留结构、只是不追求形式化（类型/字段/枚举值域）——详见 `architecture-direction-consensus-2026-08-28.md` 第 9 节。新方向、以及 `plausibility-judge-spike`/`reachability-inference-spike`/`world-feedback-narration-spike`/`juror-clerk-spike` 四份实验证据，都在该文档里。继续把本文档当成待执行计划会造成两份互相矛盾的设计文档同时存在，请以 `architecture-direction-consensus-2026-08-28.md` 为准；本文档保留仅供追溯"为什么最初认为需要重设计"（第 1–3 节的问题诊断部分仍然成立，只是第 4 节给出的具体解法方向已被取代）。
 
 ## 1. 决议
 
