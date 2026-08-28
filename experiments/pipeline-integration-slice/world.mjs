@@ -21,16 +21,21 @@ export const entityRegistry = [
 let nextId = 1;
 function makeId() { return `p${nextId++}`; }
 
+// Exported separately (not just inline in createStore) so alternative store
+// implementations -- e.g. ai-search-store.mjs's seedGenesis -- can reuse the exact
+// same Genesis facts instead of duplicating them.
+export const genesisPropositions = [
+  {text: "self 在卧室里，站着。", entities: ["self", "bedroom"], height: 0, source: "genesis"},
+  {text: "door-1 在卧室里，通向走廊。", entities: ["door-1", "bedroom"], height: 0, source: "genesis"},
+  {text: "door-1 现在是关着的，没有上锁。", entities: ["door-1"], height: 0, source: "genesis"},
+  {text: "bed-1 在卧室里。", entities: ["bed-1", "bedroom"], height: 0, source: "genesis"},
+  {text: "floor-1 是卧室的地面。", entities: ["floor-1", "bedroom"], height: 0, source: "genesis"},
+  {text: "blanket-1 现在放在 bed-1 上。", entities: ["blanket-1", "bed-1"], height: 0, source: "genesis"},
+  {text: "blanket-1 摸起来柔软，可以压缩。", entities: ["blanket-1"], height: 0, source: "genesis"}
+];
+
 export function createStore() {
-  const propositions = [
-    {id: makeId(), text: "self 在卧室里，站着。", entities: ["self", "bedroom"], height: 0, status: "active", source: "genesis"},
-    {id: makeId(), text: "door-1 在卧室里，通向走廊。", entities: ["door-1", "bedroom"], height: 0, status: "active", source: "genesis"},
-    {id: makeId(), text: "door-1 现在是关着的，没有上锁。", entities: ["door-1"], height: 0, status: "active", source: "genesis"},
-    {id: makeId(), text: "bed-1 在卧室里。", entities: ["bed-1", "bedroom"], height: 0, status: "active", source: "genesis"},
-    {id: makeId(), text: "floor-1 是卧室的地面。", entities: ["floor-1", "bedroom"], height: 0, status: "active", source: "genesis"},
-    {id: makeId(), text: "blanket-1 现在放在 bed-1 上。", entities: ["blanket-1", "bed-1"], height: 0, status: "active", source: "genesis"},
-    {id: makeId(), text: "blanket-1 摸起来柔软，可以压缩。", entities: ["blanket-1"], height: 0, status: "active", source: "genesis"}
-  ];
+  const propositions = genesisPropositions.map(p => ({id: makeId(), status: "active", ...p}));
   let height = 0;
 
   return {

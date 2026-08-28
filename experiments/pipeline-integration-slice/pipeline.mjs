@@ -151,7 +151,7 @@ async function narrateWithAudit(store, groundResult, propositions, attempt, outc
     const {verdicts, clerk} = await runJurorsAndClerk(workingPropositions, proposedFact);
     if (clerk.finalDecision === "放行") {
       const height = store.nextHeight();
-      const committed = store.append(proposedFact, groundResult.entities, height, "collapse");
+      const committed = await store.append(proposedFact, groundResult.entities, height, "collapse");
       workingPropositions = [...workingPropositions, committed];
       collapses.push({claim: check.claim, proposedFact, verdicts, clerk, committed: true, height});
     } else {
@@ -176,7 +176,7 @@ export async function processAttempt(store, attempt) {
     return {...log, height, kind: "boundary", narration: text};
   }
 
-  let propositions = store.retrieve(groundResult.entities);
+  let propositions = await store.retrieve(groundResult.entities, attempt);
   log.stages.push({stage: "RETRIEVE", output: propositions.map(p => p.text)});
 
   let verdictText = await adjudicate(propositions, attempt);
@@ -194,10 +194,13 @@ export async function processAttempt(store, attempt) {
 
     if (clerk.finalDecision === "放行") {
       const height = store.nextHeight();
-      store.append(proposedFact, groundResult.entities, height, "collapse");
+      await store.append(proposedFact, groundResult.entities, height, "collapse");
       log.stages.push({stage: "COLLAPSE_COMMIT", height, text: proposedFact});
 
-      propositions = store.retrieve(groundResult.entities);
+      // Deliberately not awaiting indexing latency here -- this immediate re-retrieve
+      // is exactly what tests whether a just-committed fact is searchable in time for
+      // the same Attempt's settlement to use it.
+      propositions = await store.retrieve(groundResult.entities, attempt);
       log.stages.push({stage: "RETRIEVE_AFTER_COLLAPSE", output: propositions.map(p => p.text)});
 
       verdictText = await adjudicate(propositions, attempt);
@@ -221,7 +224,7 @@ export async function processAttempt(store, attempt) {
     // defeats the recency-wins rule before it can even apply.
     const cleanFact = await writeFact(attempt, verdictText);
     committedFactText = cleanFact !== "" ? cleanFact : `结果：${attempt} —— ${verdictText}`;
-    store.append(committedFactText, groundResult.entities, height, "attempt-outcome");
+    await store.append(committedFactText, groundResult.entities, height, "attempt-outcome");
   }
   log.stages.push({stage: "COMMIT", height, outcome: classification.outcome, committedFactText});
 

@@ -1,0 +1,437 @@
+{
+  "generatedAt": "2026-08-28T17:37:50.923Z",
+  "results": [
+    {
+      "attempt": "看看毛毯摸起来怎么样。",
+      "stages": [
+        {
+          "stage": "GROUND",
+          "output": {
+            "entities": [
+              "blanket-1"
+            ],
+            "unbound": []
+          }
+        },
+        {
+          "stage": "RETRIEVE",
+          "output": [
+            "blanket-1 摸起来柔软，可以压缩。",
+            "blanket-1 现在放在 bed-1 上。"
+          ]
+        },
+        {
+          "stage": "ADJUDICATE",
+          "output": "看不能告诉你摸起来怎么样，但场景里已经确立了：blanket-1 摸起来柔软，可以压缩。"
+        },
+        {
+          "stage": "CLASSIFY",
+          "output": {
+            "missingAbout": "",
+            "outcome": "plausible"
+          }
+        },
+        {
+          "stage": "COMMIT",
+          "height": 1,
+          "outcome": "plausible",
+          "committedFactText": "结果：看看毛毯摸起来怎么样。 —— 看不能告诉你摸起来怎么样，但场景里已经确立了：blanket-1 摸起来柔软，可以压缩。"
+        },
+        {
+          "stage": "NARRATE_AUDIT",
+          "output": {
+            "draft": "你看着 bed-1 上的 blanket-1。你看到它铺在床面上，看到它的表面和褶皱。柔软和可以压缩没有从你的眼睛里进来。",
+            "extractedClaims": [],
+            "checks": [],
+            "collapses": [],
+            "regenerated": false,
+            "final": "你看着 bed-1 上的 blanket-1。你看到它铺在床面上，看到它的表面和褶皱。柔软和可以压缩没有从你的眼睛里进来。"
+          }
+        }
+      ],
+      "height": 1,
+      "kind": "plausible",
+      "narration": "你看着 bed-1 上的 blanket-1。你看到它铺在床面上，看到它的表面和褶皱。柔软和可以压缩没有从你的眼睛里进来。"
+    },
+    {
+      "attempt": "量一下门缝到底有多宽。",
+      "stages": [
+        {
+          "stage": "GROUND",
+          "output": {
+            "entities": [
+              "door-1"
+            ],
+            "unbound": []
+          }
+        },
+        {
+          "stage": "RETRIEVE",
+          "output": [
+            "door-1 现在是关着的，没有上锁。",
+            "door-1 在卧室里，通向走廊。",
+            "bed-1 在卧室里。",
+            "blanket-1 摸起来柔软，可以压缩。",
+            "结果：看看毛毯摸起来怎么样。 —— 看不能告诉你摸起来怎么样，但场景里已经确立了：blanket-1 摸起来柔软，可以压缩。"
+          ]
+        },
+        {
+          "stage": "ADJUDICATE",
+          "output": "动作本身可信，但场景没有给出 door-1 门缝的具体宽度，量出来的数值无从确定。"
+        },
+        {
+          "stage": "CLASSIFY",
+          "output": {
+            "missingAbout": "door-1 门缝的具体宽度",
+            "outcome": "insufficient"
+          }
+        },
+        {
+          "stage": "COLLAPSE_PROPOSE",
+          "output": "door-1 的门缝宽度约为两厘米。"
+        },
+        {
+          "stage": "COLLAPSE_JURY",
+          "output": {
+            "verdicts": [
+              "信息不足，场景只确立了 door-1 是关着的，没有给出任何关于门缝宽度的信息。",
+              "信息不足。场景只确立了 door-1 是关着的，没有给出任何关于门缝宽度的信息。",
+              "信息不足。场景只确立了 door-1 是关着的，没有给出任何关于门缝宽度的信息。"
+            ],
+            "clerk": {
+              "classifications": [
+                "含糊",
+                "含糊",
+                "含糊"
+              ],
+              "finalDecision": "不放行",
+              "rule": "majority-reject",
+              "vetoReason": "",
+              "vetoTriggered": false
+            }
+          }
+        },
+        {
+          "stage": "BOUNDARY",
+          "height": 2,
+          "text": "边界：这件事依赖一个无法确定的事实（door-1 门缝的具体宽度），陪审团没有放行编剧提出的补全。"
+        }
+      ],
+      "height": 2,
+      "kind": "boundary",
+      "narration": "边界：这件事依赖一个无法确定的事实（door-1 门缝的具体宽度），陪审团没有放行编剧提出的补全。"
+    },
+    {
+      "attempt": "把毛毯拿起来，塞到门缝下面。",
+      "stages": [
+        {
+          "stage": "GROUND",
+          "output": {
+            "entities": [
+              "blanket-1",
+              "door-1"
+            ],
+            "unbound": []
+          }
+        },
+        {
+          "stage": "RETRIEVE",
+          "output": [
+            "blanket-1 现在放在 bed-1 上。",
+            "blanket-1 摸起来柔软，可以压缩。",
+            "bed-1 在卧室里。",
+            "door-1 现在是关着的，没有上锁。",
+            "door-1 在卧室里，通向走廊。",
+            "self 在卧室里，站着。",
+            "结果：看看毛毯摸起来怎么样。 —— 看不能告诉你摸起来怎么样，但场景里已经确立了：blanket-1 摸起来柔软，可以压缩。"
+          ]
+        },
+        {
+          "stage": "ADJUDICATE",
+          "output": "可信。毛毯柔软且可压缩，门缝足以容纳它。"
+        },
+        {
+          "stage": "CLASSIFY",
+          "output": {
+            "missingAbout": "",
+            "outcome": "plausible"
+          }
+        },
+        {
+          "stage": "COMMIT",
+          "height": 3,
+          "outcome": "plausible",
+          "committedFactText": "毛毯被塞在门缝下面，堵住了门缝。"
+        },
+        {
+          "stage": "NARRATE_AUDIT",
+          "output": {
+            "draft": "你弯腰，手抓住毛毯，从床面上提起来。毛毯在手里塌下去，软，能压。你把它抱到门边，蹲下来，把毛毯往门缝底下塞。毛毯被压扁，填进那条缝里。",
+            "extractedClaims": [],
+            "checks": [],
+            "collapses": [],
+            "regenerated": false,
+            "final": "你弯腰，手抓住毛毯，从床面上提起来。毛毯在手里塌下去，软，能压。你把它抱到门边，蹲下来，把毛毯往门缝底下塞。毛毯被压扁，填进那条缝里。"
+          }
+        }
+      ],
+      "height": 3,
+      "kind": "plausible",
+      "narration": "你弯腰，手抓住毛毯，从床面上提起来。毛毯在手里塌下去，软，能压。你把它抱到门边，蹲下来，把毛毯往门缝底下塞。毛毯被压扁，填进那条缝里。"
+    },
+    {
+      "attempt": "再检查一下毛毯现在的样子。",
+      "stages": [
+        {
+          "stage": "GROUND",
+          "output": {
+            "entities": [
+              "blanket-1"
+            ],
+            "unbound": []
+          }
+        },
+        {
+          "stage": "RETRIEVE",
+          "output": [
+            "blanket-1 摸起来柔软，可以压缩。",
+            "blanket-1 现在放在 bed-1 上。",
+            "bed-1 在卧室里。",
+            "door-1 现在是关着的，没有上锁。",
+            "结果：看看毛毯摸起来怎么样。 —— 看不能告诉你摸起来怎么样，但场景里已经确立了：blanket-1 摸起来柔软，可以压缩。",
+            "毛毯被塞在门缝下面，堵住了门缝。"
+          ]
+        },
+        {
+          "stage": "ADJUDICATE",
+          "output": "毛毯被压缩着塞在 door-1 的门缝下面，堵住了门缝。"
+        },
+        {
+          "stage": "CLASSIFY",
+          "output": {
+            "missingAbout": "",
+            "outcome": "plausible"
+          }
+        },
+        {
+          "stage": "COMMIT",
+          "height": 4,
+          "outcome": "plausible",
+          "committedFactText": "结果：再检查一下毛毯现在的样子。 —— 毛毯被压缩着塞在 door-1 的门缝下面，堵住了门缝。"
+        },
+        {
+          "stage": "NARRATE_AUDIT",
+          "output": {
+            "draft": "毛毯被压扁了，挤在门底和地面之间的那条缝里，缝隙填满了。毛毯还是柔软的，但厚度被压薄了，表面有被挤压出来的褶皱，边缘贴着地面和门框，没有松动的部分。",
+            "extractedClaims": [
+              "毛毯填满了门底与地面之间的缝隙",
+              "毛毯的边缘同时接触地面和门框",
+              "毛毯没有松动的部分",
+              "毛毯的厚度比未压缩状态更薄"
+            ],
+            "checks": [
+              {
+                "claim": "毛毯填满了门底与地面之间的缝隙",
+                "reachable": true,
+                "verdictText": "可达。已知命题6直接说明\"毛毯被塞在门缝下面，堵住了门缝\"，\"门缝下面\"即门底与地面之间的缝隙，\"堵住了\"即填满了该缝隙，与目标命题语义等价。"
+              },
+              {
+                "claim": "毛毯的边缘同时接触地面和门框",
+                "reachable": false,
+                "verdictText": "不可达。已知命题6只说\"毛毯被塞在门缝下面，堵住了门缝\"，这能说明毛毯处于门与门框之间的缝隙区域，但\"毛毯的边缘同时接触地面和门框\"是一个更精确的空间接触关系——毛毯可能只接触门而非门框，或者底部并未完全贴地，或者\"边缘\"这个具体部位并未被确立。从\"塞在门缝下面\"到\"边缘同时接触地面和门框\"需要额外的空间细节假设，已知命题没有给出。"
+              },
+              {
+                "claim": "毛毯没有松动的部分",
+                "reachable": false,
+                "verdictText": "不可达。已知命题只说明毛毯被塞在门缝下面堵住了门缝（命题6），以及毛毯柔软、可压缩（命题1），但\"堵住门缝\"并不等于\"没有松动的部分\"——毛毯可能一部分塞在缝里、另一部分垂在外面或松散地搭着。没有任何已知命题给出毛毯整体是否紧实、有无松动部分的信息。"
+              },
+              {
+                "claim": "毛毯的厚度比未压缩状态更薄",
+                "reachable": false,
+                "verdictText": "不可达。已知命题只确立了毛毯\"可以压缩\"（即具有可压缩性这一属性），但\"可以压缩\"是一种潜在能力，并不等于毛毯当前正处于被压缩状态。命题6说毛毯被塞在门缝下面，虽然日常直觉上可能暗示压缩，但要严格推出\"厚度比未压缩状态更薄\"，还需要一个已知命题未明确给出的假设——即门缝的宽度小于毛毯未压缩时的厚度，从而迫使毛毯被压缩。这个环节在已知命题中缺乏直接支撑。"
+              }
+            ],
+            "collapses": [
+              {
+                "claim": "毛毯的边缘同时接触地面和门框",
+                "proposedFact": "blanket-1 的边缘接触地面，没有接触门框。",
+                "committed": true,
+                "height": 5,
+                "clerkDecision": "放行"
+              },
+              {
+                "claim": "毛毯没有松动的部分",
+                "proposedFact": "blanket-1 没有松动的部分。",
+                "committed": false,
+                "clerkDecision": "不放行"
+              },
+              {
+                "claim": "毛毯的厚度比未压缩状态更薄",
+                "proposedFact": "blanket-1 的厚度比未压缩状态更薄。",
+                "committed": true,
+                "height": 6,
+                "clerkDecision": "放行"
+              }
+            ],
+            "regenerated": true,
+            "final": "你蹲下来看门缝下面。毛毯被压着，比没压的时候薄，塞在门底和地面之间。毛毯的边缘贴着地面。"
+          }
+        }
+      ],
+      "height": 4,
+      "kind": "plausible",
+      "narration": "你蹲下来看门缝下面。毛毯被压着，比没压的时候薄，塞在门底和地面之间。毛毯的边缘贴着地面。"
+    },
+    {
+      "attempt": "打开五斗柜，把里面的枪拿出来。",
+      "stages": [
+        {
+          "stage": "GROUND",
+          "output": {
+            "entities": [],
+            "unbound": [
+              "五斗柜",
+              "枪"
+            ]
+          }
+        },
+        {
+          "stage": "BOUNDARY",
+          "height": 7,
+          "text": "边界：提到的\"五斗柜、枪\"在这个世界里没有对应物，不存在。"
+        }
+      ],
+      "height": 7,
+      "kind": "boundary",
+      "narration": "边界：提到的\"五斗柜、枪\"在这个世界里没有对应物，不存在。"
+    }
+  ],
+  "writeLog": [
+    {
+      "text": "self 在卧室里，站着。",
+      "entities": [
+        "self",
+        "bedroom"
+      ],
+      "height": 0,
+      "status": "active",
+      "source": "genesis",
+      "key": "props/self/h0-genesis-0.txt"
+    },
+    {
+      "text": "door-1 在卧室里，通向走廊。",
+      "entities": [
+        "door-1",
+        "bedroom"
+      ],
+      "height": 0,
+      "status": "active",
+      "source": "genesis",
+      "key": "props/door-1/h0-genesis-1.txt"
+    },
+    {
+      "text": "door-1 现在是关着的，没有上锁。",
+      "entities": [
+        "door-1"
+      ],
+      "height": 0,
+      "status": "active",
+      "source": "genesis",
+      "key": "props/door-1/h0-genesis-2.txt"
+    },
+    {
+      "text": "bed-1 在卧室里。",
+      "entities": [
+        "bed-1",
+        "bedroom"
+      ],
+      "height": 0,
+      "status": "active",
+      "source": "genesis",
+      "key": "props/bed-1/h0-genesis-3.txt"
+    },
+    {
+      "text": "floor-1 是卧室的地面。",
+      "entities": [
+        "floor-1",
+        "bedroom"
+      ],
+      "height": 0,
+      "status": "active",
+      "source": "genesis",
+      "key": "props/floor-1/h0-genesis-4.txt"
+    },
+    {
+      "text": "blanket-1 现在放在 bed-1 上。",
+      "entities": [
+        "blanket-1",
+        "bed-1"
+      ],
+      "height": 0,
+      "status": "active",
+      "source": "genesis",
+      "key": "props/blanket-1/h0-genesis-5.txt"
+    },
+    {
+      "text": "blanket-1 摸起来柔软，可以压缩。",
+      "entities": [
+        "blanket-1"
+      ],
+      "height": 0,
+      "status": "active",
+      "source": "genesis",
+      "key": "props/blanket-1/h0-genesis-6.txt"
+    },
+    {
+      "text": "结果：看看毛毯摸起来怎么样。 —— 看不能告诉你摸起来怎么样，但场景里已经确立了：blanket-1 摸起来柔软，可以压缩。",
+      "entities": [
+        "blanket-1"
+      ],
+      "height": 1,
+      "status": "active",
+      "source": "attempt-outcome",
+      "key": "props/blanket-1/h1-attempt-outcome-1787937972677.txt"
+    },
+    {
+      "text": "毛毯被塞在门缝下面，堵住了门缝。",
+      "entities": [
+        "blanket-1",
+        "door-1"
+      ],
+      "height": 3,
+      "status": "active",
+      "source": "attempt-outcome",
+      "key": "props/blanket-1/h3-attempt-outcome-1787938233460.txt"
+    },
+    {
+      "text": "结果：再检查一下毛毯现在的样子。 —— 毛毯被压缩着塞在 door-1 的门缝下面，堵住了门缝。",
+      "entities": [
+        "blanket-1"
+      ],
+      "height": 4,
+      "status": "active",
+      "source": "attempt-outcome",
+      "key": "props/blanket-1/h4-attempt-outcome-1787938339324.txt"
+    },
+    {
+      "text": "blanket-1 的边缘接触地面，没有接触门框。",
+      "entities": [
+        "blanket-1"
+      ],
+      "height": 5,
+      "status": "active",
+      "source": "collapse",
+      "key": "props/blanket-1/h5-collapse-1787938505527.txt"
+    },
+    {
+      "text": "blanket-1 的厚度比未压缩状态更薄。",
+      "entities": [
+        "blanket-1"
+      ],
+      "height": 6,
+      "status": "active",
+      "source": "collapse",
+      "key": "props/blanket-1/h6-collapse-1787938597090.txt"
+    }
+  ]
+}
