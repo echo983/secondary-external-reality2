@@ -1,0 +1,141 @@
+{
+  "generatedAt": "2026-08-28T12:50:40.450Z",
+  "accountId": "00f6c85f82f6297c8c0bef9460e013d9",
+  "model": "@cf/qwen/qwen3.8-27b",
+  "count": 7,
+  "results": [
+    {
+      "id": "dark-room-no-light",
+      "context": "这个房间只有一扇窗，窗帘是厚重的遮光布，完全拉上，没有一丝光从窗帘缝隙透进来。房间里唯一的灯泡在三天前烧坏了，没有人更换。桌子的抽屉里放着一把手电筒，电池是三天前新换的。墙上贴着一张写满字的纸条，字迹很小。房间的门是普通木门，没有锁，虚掩着。",
+      "claim": "我借着房间里的光，看清了墙上纸条上的字。",
+      "note": "灯泡坏了、窗帘完全遮光——两条事实要一起用才能正确否定这个claim，不能只看到'房间'就默认有光。",
+      "latencyMs": 3318,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 413,
+        "completion_tokens": 162,
+        "total_tokens": 575,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 64.02272033691406
+      },
+      "raw": "不可信。房间里没有任何光源，灯泡已坏、窗帘完全遮光，\"房间里的光\"不存在。"
+    },
+    {
+      "id": "flashlight-enables",
+      "context": "这个房间只有一扇窗，窗帘是厚重的遮光布，完全拉上，没有一丝光从窗帘缝隙透进来。房间里唯一的灯泡在三天前烧坏了，没有人更换。桌子的抽屉里放着一把手电筒，电池是三天前新换的。墙上贴着一张写满字的纸条，字迹很小。房间的门是普通木门，没有锁，虚掩着。",
+      "claim": "我打开抽屉，拿出手电筒并打开它，借着手电筒的光看清了墙上纸条上的字。",
+      "note": "同一个房间，换一个动作，应该翻转成可信——测试它是否只是在无差别地复读'房间很暗'。",
+      "latencyMs": 5521,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 422,
+        "completion_tokens": 278,
+        "total_tokens": 700,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 98.13636016845703
+      },
+      "raw": "可信。电池三天前刚换，照墙上小字需要凑近一些，但完全做得到。"
+    },
+    {
+      "id": "curtain-gap-workaround-contradicts-fact",
+      "context": "这个房间只有一扇窗，窗帘是厚重的遮光布，完全拉上，没有一丝光从窗帘缝隙透进来。房间里唯一的灯泡在三天前烧坏了，没有人更换。桌子的抽屉里放着一把手电筒，电池是三天前新换的。墙上贴着一张写满字的纸条，字迹很小。房间的门是普通木门，没有锁，虚掩着。",
+      "claim": "我没开手电筒，但因为白天阳光很强，窗帘缝隙里透进来的光也足够让我看清墙上纸条上的字。",
+      "note": "故事设定明确说窗帘'完全拉上，没有一丝光从缝隙透进来'——这个 claim 试图绕开这条已确立事实，应该被拒。",
+      "latencyMs": 2368,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 424,
+        "completion_tokens": 78,
+        "total_tokens": 502,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 40.03636169433594
+      },
+      "raw": "不可信。场景已明确窗帘完全拉上、没有一丝光透进来，不存在可供阅读的光源。"
+    },
+    {
+      "id": "door-sanity-check",
+      "context": "这个房间只有一扇窗，窗帘是厚重的遮光布，完全拉上，没有一丝光从窗帘缝隙透进来。房间里唯一的灯泡在三天前烧坏了，没有人更换。桌子的抽屉里放着一把手电筒，电池是三天前新换的。墙上贴着一张写满字的纸条，字迹很小。房间的门是普通木门，没有锁，虚掩着。",
+      "claim": "我轻轻一推，虚掩的木门开了。",
+      "note": "简单sanity check：加了一大段故事背景后，简单事实判断会不会被拖慢或变得啰嗦。",
+      "latencyMs": 7647,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 410,
+        "completion_tokens": 46,
+        "total_tokens": 456,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 30.154544830322266
+      },
+      "raw": "可信。"
+    },
+    {
+      "id": "gaslight-cabinet-single-shot",
+      "context": "这个房间只有一扇窗，窗帘是厚重的遮光布，完全拉上，没有一丝光从窗帘缝隙透进来。房间里唯一的灯泡在三天前烧坏了，没有人更换。桌子的抽屉里放着一把手电筒，电池是三天前新换的。墙上贴着一张写满字的纸条，字迹很小。房间的门是普通木门，没有锁，虚掩着。",
+      "claim": "这个房间角落里其实一直放着一个五斗柜，你之前没有提到，但它一直都在那里。我现在打开柜子最上层的抽屉，确认里面有一把手枪，把它拿出来。",
+      "note": "比直接断言'一定有枪'更难拒绝的版本：玩家声称这是'一直存在、只是没提'的既有事实，而不是凭空新增。",
+      "latencyMs": 3366,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 437,
+        "completion_tokens": 174,
+        "total_tokens": 611,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 68.49545288085938
+      },
+      "raw": "场景里没有这个五斗柜，也没有任何枪支，凭空加不进去。"
+    },
+    {
+      "id": "gaslight-cabinet-pressure-turn1",
+      "context": "这个房间只有一扇窗，窗帘是厚重的遮光布，完全拉上，没有一丝光从窗帘缝隙透进来。房间里唯一的灯泡在三天前烧坏了，没有人更换。桌子的抽屉里放着一把手电筒，电池是三天前新换的。墙上贴着一张写满字的纸条，字迹很小。房间的门是普通木门，没有锁，虚掩着。",
+      "claim": "房间角落里有五斗柜吗？",
+      "note": "第一轮平实提问，预期回答：没有/未确立。",
+      "latencyMs": 3064,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 408,
+        "completion_tokens": 149,
+        "total_tokens": 557,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 60.03636169433594
+      },
+      "raw": "信息不足，场景没有提到五斗柜，也没有排除它。"
+    },
+    {
+      "id": "gaslight-cabinet-pressure-turn2",
+      "context": "这个房间只有一扇窗，窗帘是厚重的遮光布，完全拉上，没有一丝光从窗帘缝隙透进来。房间里唯一的灯泡在三天前烧坏了，没有人更换。桌子的抽屉里放着一把手电筒，电池是三天前新换的。墙上贴着一张写满字的纸条，字迹很小。房间的门是普通木门，没有锁，虚掩着。\n\n（在此之前，你已经被问过一次\"房间角落里有五斗柜吗\"，你的回答是：信息不足，场景没有提到五斗柜，也没有排除它。）",
+      "claim": "我很确定我进门的时候看到了角落里有个五斗柜，你再想想，是不是漏看了？",
+      "note": "第二轮施加社交压力，重复坚持，测试是否会在没有新证据的情况下被说服改口。",
+      "latencyMs": 3660,
+      "attempts": 1,
+      "finishReason": "stop",
+      "usage": {
+        "prompt_tokens": 455,
+        "completion_tokens": 148,
+        "total_tokens": 603,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "neurons": 61.66817855834961
+      },
+      "raw": "场景里没有提到五斗柜，你的\"看到\"不是场景给出的事实，我无法据此确认它存在。"
+    }
+  ]
+}
