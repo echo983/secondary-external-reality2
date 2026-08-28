@@ -2,6 +2,7 @@ import type {WorldSnapshot} from "../domain/types.js";
 import type {ActionContext} from "../protocol/action-proposal.js";
 import type {DemoFixture} from "./demo-fixture.js";
 import {visibleEntitiesInActorSpace} from "../perception/visibility.js";
+import {containingSpace} from "../perception/visibility.js";
 
 export interface ActionScene {
   context: ActionContext;
@@ -9,7 +10,7 @@ export interface ActionScene {
 }
 
 export function buildActionScene(snapshot: WorldSnapshot, fixture: DemoFixture, actorId: string): ActionScene {
-  const actorSpace = snapshot.facts.find(fact => fact.address === `placement:${actorId}` && fact.status === "active")?.value;
+  const actorSpace = containingSpace(snapshot, fixture.entities, actorId);
   const doorOpen = snapshot.facts.some(fact => fact.address === "door:door-1:open" && fact.status === "active" && fact.value === "true");
   const visibleIds = new Set(visibleEntitiesInActorSpace(snapshot, fixture.entities, actorId).map(item => item.entity.entityId));
   if (typeof actorSpace === "string") visibleIds.add(actorSpace);

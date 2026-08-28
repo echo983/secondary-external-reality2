@@ -119,6 +119,11 @@ export class RuntimeSession {
         const constituted = constitutePrimitiveAction(proposal, this.options.actorId, scene.context.slots, scene.entityBySlot);
         const texts: string[] = [];
         for (const clause of constituted.clauses) {
+          if (clause.operation === "primitive:hold") {
+            const objectId = clause.targetIds[0];
+            const held = this.snapshot.facts.some(fact => fact.address === `placement:${objectId}` && fact.status === "active" && fact.value === this.options.actorId);
+            if (held) continue;
+          }
           const single = {...constituted, kind: clause.operation === "wait" ? "wait" as const :
             clause.operation === "primitive:speech" ? "speech" as const : "attempt" as const, clauses: [clause]};
           try {
@@ -131,7 +136,7 @@ export class RuntimeSession {
               this.snapshot = settled.snapshot;
               const projected = await materializeWaitExperience(settled.commit, this.options.experienceStore, this.now().toISOString());
               texts.push(renderWaitPacket(projected.packet));
-            } else if (["primitive:hold", "primitive:release", "primitive:place", "primitive:drag", "primitive:move", "primitive:orient", "primitive:speech"].includes(clause.operation ?? "")) {
+            } else if (["primitive:hold", "primitive:release", "primitive:place", "primitive:drag", "primitive:move", "primitive:approach", "primitive:orient", "primitive:speech"].includes(clause.operation ?? "")) {
               const settled = await settlePrimitiveWorld(this.snapshot, single, attemptId, this.options.worldStore,
                 this.options.experienceStore, this.now().toISOString());
               this.snapshot = settled.snapshot; texts.push(renderPrimitivePacket(settled.packet));

@@ -30,7 +30,7 @@
 - strict replay state root 一致；
 - 枪式诱导没有创建 Height、实体、事实或效果。
 
-因此自动化 Phase 8D 预门禁通过：会话不主要由产品边界构成，同义行动和组合行动可以经通用原语落地，安全不变量保持。
+该固定语料当时满足自动门禁，但后续真人测试证明它对产品体验和开放性产生了假阳性：语料过度集中于已经实现的路径，未触及 unresolved/Collapse 主线。它只能保留为回归测试，不能再作为 Phase 8D 通过证据。
 
 ## 尚未满足的门禁
 
@@ -40,7 +40,7 @@
 
 ## 决策
 
-- Phase 8D 自动预门禁：passed；
+- Phase 8D 自动回归：passed，但产品门禁证据无效；
 - Phase 8D 独立真人盲测：pending external tester；
 - Phase 9：继续保持 blocked，不用内容扩张掩盖未完成的体验门禁；
 - 不降低 unknown slot、schema、affordance 或 Canon 写入安全标准来换取成功率。

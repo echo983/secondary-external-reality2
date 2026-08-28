@@ -3,6 +3,9 @@ import type {PerceptionRequest} from "../perception/current-scene.js";
 export function detectPerceptionRequest(rawInput: string): PerceptionRequest | undefined {
   const text = rawInput.trim().replace(/[。！？!?]+$/u, "");
   if (/趴|蹲|走|移动|靠近|爬/u.test(text)) return undefined;
+  if (/^(我在哪里|我在哪|看看我的位置|查看我的位置|我的位置)$/u.test(text)) {
+    return {mode: "body", horizon: "location", targetId: "self"};
+  }
   if (/看|瞧|观察|查看|检查/u.test(text) && /门外|门缝/u.test(text)) {
     return {mode: "ambient", horizon: "directional", targetId: "door-1"};
   }

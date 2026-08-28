@@ -46,6 +46,22 @@ export interface TruthCell {
   revision: number;
 }
 
+export interface TruthCellChange {
+  address: SemanticAddress;
+  expectedRevision: number;
+  next: TruthCell;
+}
+
+export interface CollapseRecord {
+  address: SemanticAddress;
+  priorRevision: number;
+  resultingRevision: number;
+  constraintId: string;
+  resolverVersion: string;
+  blockingReason: string;
+  radius: "local";
+}
+
 export interface CanonicalEvent {
   eventId: EventId;
   kind: string;
@@ -77,6 +93,7 @@ export interface RealityDelta {
   endFactIds: readonly FactId[];
   addConstraints: readonly CanonicalConstraint[];
   processChanges: readonly ProcessChange[];
+  truthCellChanges?: readonly TruthCellChange[];
 }
 
 export interface ObservationSeed {
@@ -102,6 +119,7 @@ export interface SettlementCommit {
   attemptRefs: readonly AttemptId[];
   delta: RealityDelta;
   observationSeeds: readonly ObservationSeed[];
+  collapseRecords?: readonly CollapseRecord[];
   stateRoot: string;
   committedAt: string;
 }
@@ -114,6 +132,7 @@ export interface WorldSnapshot {
   constraints: readonly CanonicalConstraint[];
   events: readonly CanonicalEvent[];
   processes: readonly ProcessState[];
+  truthCells: readonly TruthCell[];
   stateRoot: string;
 }
 

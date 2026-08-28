@@ -1,6 +1,6 @@
 # 独立真人盲测操作单
 
-目的：完成 Phase 8D 尚缺的 15–30 分钟真实自由体验。测试者不能是本轮实现者，也不应先阅读命令示例、实现代码或自动评测语料。
+目的：首轮真人测试已经证明当前版本未形成世界感，且核心 Collapse 主链缺失。重做后仍需一次 15–30 分钟真实自由体验；复测者最好不是本轮实现者，也不应先阅读命令示例、实现代码或自动评测语料。
 
 ## 给主持人
 
@@ -18,7 +18,7 @@
 5. 会话结束后导出脱敏 JSONL：
 
    ```bash
-   npm run export:session -- --db=.world/human-blind-01.sqlite > human-blind-01.jsonl
+   npm run --silent export:session -- --db=.world/human-blind-01.sqlite > human-blind-01.jsonl
    ```
 
    导出包含世界提交、体验提交、原始玩家输入、边界码和模型 telemetry；不包含 Cloudflare token。

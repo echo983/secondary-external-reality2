@@ -15,7 +15,7 @@ npm run demo
 
 `better-sqlite3` 使用 Node-API 构建。如果曾在旧提交或不同 Node 版本下安装依赖，升级后先执行一次 `npm install`。
 
-`npm run demo` 默认使用本地确定性提案器和 `.world/demo-v3.sqlite`，不访问网络。当前可尝试：
+`npm run demo` 默认使用本地确定性提案器和 `.world/demo-v4.sqlite`，不访问网络。当前可尝试：
 
 ```text
 轻轻推门，只开一条缝，别出声
@@ -48,7 +48,7 @@ npm run demo -- --db=/absolute/path/to/demo.sqlite
 npm run demo -- --live-qwen
 ```
 
-CLI 默认使用 `.world/demo-v3.sqlite`，保留旧数据库不覆盖。进入会话会先显示当前房间；环顾、聆听和身体感知使用有来源的本地快路径。
+CLI 默认使用 `.world/demo-v4.sqlite`，保留旧数据库不覆盖。v4 首次接入真实的局部按需 Collapse：毛毯能否塞入门缝在创世状态中未决，只有相关行动需要该事实时才确定一次，并进入可重放提交；普通观察不会触发它。进入会话会先显示当前房间；环顾、聆听、位置和身体感知使用有来源的本地快路径。
 
 真实模型当前在普通 Demo 中只产生非权威 InputProposal。超时、reasoning-only、非法 JSON、额外字段和错误 source span 都会在世界提交前失败。实验性的 ActionProposal 门禁可单独运行：
 

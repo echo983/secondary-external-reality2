@@ -1,5 +1,5 @@
 import type {
-  CanonicalFact, ProcessState, SettlementCommit, WorldBasis, WorldSnapshot
+  CanonicalFact, ProcessState, SettlementCommit, TruthCell, WorldBasis, WorldSnapshot
 } from "../domain/types.js";
 import {ProtocolError} from "../protocol/errors.js";
 import {sha256Canonical} from "../protocol/canonical-json.js";
@@ -23,7 +23,8 @@ function statePayload(snapshot: Omit<WorldSnapshot, "stateRoot">): unknown {
     facts: byId(snapshot.facts, fact => fact.factId),
     constraints: byId(snapshot.constraints, constraint => constraint.constraintId),
     events: byId(snapshot.events, event => event.eventId),
-    processes: byId(snapshot.processes, process => process.processId)
+    processes: byId(snapshot.processes, process => process.processId),
+    truthCells: byId(snapshot.truthCells, cell => cell.address)
   };
 }
 
@@ -55,11 +56,19 @@ function validateWorld(
   processes: readonly ProcessState[],
   constraintIds: readonly string[],
   eventIds: readonly string[]
+  , truthCells: readonly TruthCell[]
 ): void {
   assertUnique(facts.map(fact => fact.factId), "fact id");
   assertUnique(processes.map(process => process.processId), "process id");
   assertUnique(constraintIds, "constraint id");
   assertUnique(eventIds, "event id");
+  assertUnique(truthCells.map(cell => cell.address), "truth cell address");
+  for (const cell of truthCells) {
+    if (cell.revision < 1) throw new ProtocolError("REPLAY_INVALID", "truth cell revision is invalid");
+    if (Array.isArray(cell.domain) && cell.resolvedValue !== undefined && !cell.domain.includes(cell.resolvedValue)) {
+      throw new ProtocolError("REPLAY_INVALID", "truth cell value is outside its domain");
+    }
+  }
   const activeAddresses = facts.filter(fact => fact.status === "active").map(fact => fact.address);
   assertUnique(activeAddresses, "active single-value address");
   validatePlacementAcyclic(facts);
@@ -68,7 +77,7 @@ function validateWorld(
 export function createGenesis(
   worldBasis: WorldBasis,
   worldTime: string,
-  initial: Partial<Pick<WorldSnapshot, "facts" | "constraints" | "events" | "processes">> = {}
+  initial: Partial<Pick<WorldSnapshot, "facts" | "constraints" | "events" | "processes" | "truthCells">> = {}
 ): WorldSnapshot {
   const withoutRoot = {
     worldBasis,
@@ -77,10 +86,11 @@ export function createGenesis(
     facts: initial.facts ?? [],
     constraints: initial.constraints ?? [],
     events: initial.events ?? [],
-    processes: initial.processes ?? []
+    processes: initial.processes ?? [],
+    truthCells: initial.truthCells ?? []
   };
   validateWorld(withoutRoot.facts, withoutRoot.processes,
-    withoutRoot.constraints.map(item => item.constraintId), withoutRoot.events.map(item => item.eventId));
+    withoutRoot.constraints.map(item => item.constraintId), withoutRoot.events.map(item => item.eventId), withoutRoot.truthCells);
   return {...withoutRoot, stateRoot: sha256Canonical(statePayload(withoutRoot))};
 }
 
@@ -124,6 +134,24 @@ function apply(snapshot: WorldSnapshot, commit: SettlementCommit, verifyRoot: bo
     }
     processMap.set(change.processId, change.next);
   }
+  const truthCellMap = new Map(snapshot.truthCells.map(cell => [cell.address, cell]));
+  for (const change of commit.delta.truthCellChanges ?? []) {
+    const current = truthCellMap.get(change.address);
+    if (current?.revision !== change.expectedRevision || change.next.address !== change.address ||
+        change.next.revision !== change.expectedRevision + 1) {
+      throw new ProtocolError("REVISION_CONFLICT", `stale or invalid truth cell: ${change.address}`);
+    }
+    truthCellMap.set(change.address, change.next);
+  }
+  for (const record of commit.collapseRecords ?? []) {
+    const change = (commit.delta.truthCellChanges ?? []).find(item => item.address === record.address);
+    if (change === undefined || record.priorRevision !== change.expectedRevision ||
+        record.resultingRevision !== change.next.revision ||
+        !change.next.constraints.some(item => item.constraintId === record.constraintId) ||
+        !commit.delta.addConstraints.some(item => item.constraintId === record.constraintId)) {
+      throw new ProtocolError("REPLAY_INVALID", "collapse record is not backed by its truth-cell constraint");
+    }
+  }
   const withoutRoot = {
     worldBasis: snapshot.worldBasis,
     height: commit.height,
@@ -131,7 +159,8 @@ function apply(snapshot: WorldSnapshot, commit: SettlementCommit, verifyRoot: bo
     facts,
     constraints: snapshot.constraints.concat(commit.delta.addConstraints),
     events: snapshot.events.concat(commit.delta.events),
-    processes: [...processMap.values()]
+    processes: [...processMap.values()],
+    truthCells: [...truthCellMap.values()]
   };
   const factIds = new Set(withoutRoot.facts.map(fact => fact.factId));
   const eventIds = new Set(withoutRoot.events.map(event => event.eventId));
@@ -144,7 +173,8 @@ function apply(snapshot: WorldSnapshot, commit: SettlementCommit, verifyRoot: bo
     withoutRoot.facts,
     withoutRoot.processes,
     withoutRoot.constraints.map(constraint => constraint.constraintId),
-    withoutRoot.events.map(event => event.eventId)
+    withoutRoot.events.map(event => event.eventId),
+    withoutRoot.truthCells
   );
   const next = {...withoutRoot, stateRoot: sha256Canonical(statePayload(withoutRoot))};
   if (verifyRoot && next.stateRoot !== commit.stateRoot) throw new ProtocolError("REPLAY_INVALID", "commit state root does not match future state");

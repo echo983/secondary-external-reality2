@@ -10,7 +10,7 @@ import {createDemoFixture} from "../src/world/demo-fixture.js";
 
 const live = process.argv.includes("--live-qwen");
 const databaseArgument = process.argv.find(argument => argument.startsWith("--db="));
-const filename = resolve(databaseArgument?.slice("--db=".length) ?? ".world/demo-v3.sqlite");
+const filename = resolve(databaseArgument?.slice("--db=".length) ?? ".world/demo-v4.sqlite");
 await mkdir(dirname(filename), {recursive: true});
 let model: ProposalModel;
 if (live) {

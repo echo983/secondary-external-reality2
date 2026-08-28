@@ -2,11 +2,12 @@ import type {CanonicalFact, Observation, WorldSnapshot} from "../domain/types.js
 import type {DemoFixture} from "../world/demo-fixture.js";
 import {ProtocolError} from "../protocol/errors.js";
 import {visibleEntitiesInActorSpace} from "./visibility.js";
+import {containingSpace} from "./visibility.js";
 
 export type PerceptionMode = "ambient" | "hearing" | "body";
 export interface PerceptionRequest {
   mode: PerceptionMode;
-  horizon: "ambient" | "directional" | "object" | "body";
+  horizon: "ambient" | "directional" | "object" | "body" | "location";
   targetId?: string;
 }
 
@@ -40,8 +41,16 @@ export function projectCurrentScene(
   const mode = request.mode;
   const placement = activeFact(snapshot, `placement:${actorId}`);
   if (typeof placement.value !== "string") throw new ProtocolError("INTERNAL_INVARIANT", "actor placement is invalid");
-  const room = fixture.entities.find(entity => entity.entityId === placement.value && entity.kind === "room");
+  const roomId = containingSpace(snapshot, fixture.entities, actorId);
+  const room = fixture.entities.find(entity => entity.entityId === roomId && entity.kind === "room");
   if (room === undefined) throw new ProtocolError("INTERNAL_INVARIANT", "actor room is absent from fixture");
+
+  if (request.horizon === "location") {
+    const nearDoor = snapshot.facts.find(fact => fact.address === `relation:${actorId}:near:door-1` && fact.status === "active")?.value === "true";
+    const roomName = room.entityId === "bedroom" ? "卧室" : "走廊";
+    return {mode, observations: [observation(snapshot, mode, {room: roomName, nearDoor: nearDoor ? "true" : "false"},
+      [placement.factId], actorId, "proprioception")], text: `你在${roomName}里${nearDoor ? "，就在门前" : ""}。`};
+  }
 
   if (mode === "hearing") {
     const soundRoom = request.horizon === "directional" && request.targetId === "door-1" ? "hallway" : room.entityId;

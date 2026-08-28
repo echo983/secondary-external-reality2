@@ -1,7 +1,7 @@
-# 可交互 Demo 实施计划 v0.2
+# 可交互 Demo 实施计划 v0.3
 
 日期：2026-08-27
-状态：replanned
+状态：replanned after human test failure
 前置：`vision-direction-review-2026-08-27.md`
 
 ## 1. 当前判断
@@ -88,7 +88,7 @@ Phase 0–7 已完成可信运行时、门/水壶纵向案例、真实 Qwen adap
 
 ## 5. Phase 8C：通用行动原语
 
-状态：completed（2026-08-28）
+状态：in progress（首条 Collapse 纵切已实现；待 Node 22+/24 SQLite 验证与真人复测）
 
 优先实现可组合的最小集合：
 
@@ -114,9 +114,13 @@ Phase 0–7 已完成可信运行时、门/水壶纵向案例、真实 Qwen adap
 
 范围说明：对象种类和物理规则仍很小；Phase 8C 完成表示通用扩展机制成立，不表示任意自然语言行动都已覆盖。真实 Qwen 全量小样本仅 3/7 结构接受且尾延迟达到 45 秒，因此产品可行性必须由 Phase 8D 判定。
 
+真人测试纠正：上述“完成”判断只证明了已知 fixture 操作的通用化，没有实现愿景核心的 blocking TruthCell 与按需 Collapse。Phase 8C 重新打开。新增首要门禁为：至少一个未决局部属性在自然行动真实阻断时，经 world-rule 申请、Policy 授权、deterministic resolver 收紧，并与行动结果进入同一可重放 Commit；非阻断查询与枪式诱导保持零 Collapse。详见 `human-test-direction-review-2026-08-28.md`。
+
+2026-08-28 重做进展：`fit:blanket-1:under_gap:door-1` 以未决 TruthCell 进入 H0；首次堵门动作由可信 world-rule 申请局部有限域 Collapse，确定性 resolver 生成约束，TruthCellChange 与 CollapseRecord 和物理结果同一提交，重复动作稳定复用，严格重放状态根一致。真实 Qwen 已将自然表达“把毛毯塞到门缝下面”送入 `hold → place(occludes)`。这只是第一条可证明纵切，不把它夸大成任意 unresolved 都已通用解决。
+
 ## 6. Phase 8D：盲测自由会话
 
-状态：in progress（自动预门禁 passed；独立真人盲测 pending）
+状态：failed（首轮真人测试未形成世界感；等待 Collapse 主线重做后复测）
 
 从 `fc1.txt`、`fc2.txt` 和 `世界反馈者手册.md` 抽取动作形态，但不把最终测试句交给逐句实现。另由测试者自由输入 15–30 分钟。
 
@@ -132,6 +136,8 @@ Phase 0–7 已完成可信运行时、门/水壶纵向案例、真实 Qwen adap
 退出条件不是追求虚假“任意行动成功率”，而是证明系统在已声明场景边界内优先尝试裁决，且自由会话不主要由产品能力边界构成。
 
 自动评测记录（2026-08-28）：固定 15 轮真实 Qwen 复测得到 9 world、5 query、1 个预期安全 boundary；9 次模型调用中 8 次提交，模型延迟中位约 11 秒、P95 约 27 秒；10 个 World/Experience Commit 严格 replay 一致，未知枪零 Height。自动预门禁通过，详见 `phase8d-free-session-evaluation-2026-08-28.md`。独立测试者 15–30 分钟自由输入尚未发生，不能以自动语料冒充，因此本阶段仍为 in progress。
+
+真人测试记录（2026-08-28）：10 次输入仅 3 committed、1 query、6 failed，其中 4 次为 `INTERNAL_INVARIANT`。测试者从未把系统当作一个地方，并指出核心 unresolved 按需坍缩根本没有实现。该证据推翻自动预门禁的产品结论；自动脚本只证明固定已支持路径可运行，不能证明愿景成立。
 
 真人盲测的主持词、隔离数据库命令、会后问题、判定表和脱敏导出命令已准备在 `human-blind-test-protocol.md`。工程侧已无剩余前置；当前阻碍是需要一位未参与实现的真实测试者。
 

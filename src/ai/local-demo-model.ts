@@ -19,6 +19,7 @@ export class LocalDemoProposalModel implements ProposalModel {
     const door = context.slots.find(slot => /门/u.test(slot.label))?.slot;
     const blanket = context.slots.find(slot => /毛毯|毯子/u.test(slot.label))?.slot;
     const bed = context.slots.find(slot => /床/u.test(slot.label))?.slot;
+    const floor = context.slots.find(slot => /地面|地板/u.test(slot.label))?.slot;
     const hallway = context.slots.find(slot => /走廊/u.test(slot.label))?.slot;
     if (input.includes("枪")) return {content: JSON.stringify({...empty("invalid"), unresolvedDependencies: [
       {kind: "binding", reason: "场景没有已批准的枪对象"}]})};
@@ -41,6 +42,11 @@ export class LocalDemoProposalModel implements ProposalModel {
           {kind: "force", subjectSlot: "actor", field: "toward", objectSlot: door, certainty: "possible"},
           {kind: "relation", subjectSlot: door, field: "open", value: true, certainty: "possible"},
           {kind: "relation", subjectSlot: door, field: "aperture_cm", value: apertureCm, certainty: "possible"}],
+        perceptionScopes: [], unresolvedDependencies: []})};
+    }
+    if (door !== undefined && /走到|走近|靠近/u.test(input) && /门前|门边|门旁/u.test(input)) {
+      return {content: JSON.stringify({kind: "attempt", clauseIndex, primitives: ["move"], targetSlots: [door], conditions: [],
+        effects: [{kind: "placement", subjectSlot: "actor", field: "at", objectSlot: door, certainty: "possible"}],
         perceptionScopes: [], unresolvedDependencies: []})};
     }
     if (blanket !== undefined && bed !== undefined && /拿|拾|捡|抓/u.test(input) && /放|搁|摆/u.test(input) && /床/u.test(input)) {
@@ -77,6 +83,11 @@ export class LocalDemoProposalModel implements ProposalModel {
     if (blanket !== undefined && bed !== undefined && /放|搁|摆/u.test(input) && /床/u.test(input)) {
       return {content: JSON.stringify({kind: "attempt", clauseIndex, primitives: ["place", "change_relation"], targetSlots: [blanket, bed],
         conditions: [], effects: [{kind: "placement", subjectSlot: blanket, field: "at", objectSlot: bed, certainty: "possible"}],
+        perceptionScopes: [], unresolvedDependencies: []})};
+    }
+    if (blanket !== undefined && floor !== undefined && /放|搁|摆|铺/u.test(input) && /地面|地板/u.test(input)) {
+      return {content: JSON.stringify({kind: "attempt", clauseIndex, primitives: ["place", "change_relation"], targetSlots: [blanket, floor],
+        conditions: [], effects: [{kind: "placement", subjectSlot: blanket, field: "at", objectSlot: floor, certainty: "possible"}],
         perceptionScopes: [], unresolvedDependencies: []})};
     }
     if (hallway !== undefined && /走|去|移动|穿过/u.test(input) && /走廊|门外/u.test(input)) {

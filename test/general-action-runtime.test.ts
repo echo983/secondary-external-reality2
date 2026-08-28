@@ -11,6 +11,7 @@ import {constitutePrimitiveAction} from "../src/protocol/primitive-action.js";
 import type {ActionProposal} from "../src/protocol/action-proposal.js";
 import {ProtocolError} from "../src/protocol/errors.js";
 import {LocalDemoProposalModel} from "../src/ai/local-demo-model.js";
+import {replayStrict} from "../src/world/replay.js";
 
 test("runtime action scene exposes opaque grounded slots and declared affordances", () => {
   const fixture = createDemoFixture();
@@ -107,17 +108,39 @@ test("one input can settle an ordered hold then place sequence", async () => {
   assert.equal(world.commits[0]?.attemptRefs[0], world.commits[1]?.attemptRefs[0]);
 });
 
+test("approaching an object preserves room placement and location queries remain valid", async () => {
+  const fixture = createDemoFixture();
+  const session = new RuntimeSession({sessionId: "approach", actorId: "self", fixture,
+    model: new LocalDemoProposalModel(), worldStore: new InMemoryCommitStore(), experienceStore: new InMemoryExperienceStore(),
+    auditStore: new InMemoryAuditStore(), now: () => new Date("2026-08-28T12:00:00.000Z")});
+  assert.match((await session.handle("走到门前去")).text, /走到门前/u);
+  assert.equal(session.currentSnapshot().facts.find(fact => fact.address === "placement:self" && fact.status === "active")?.value, "bedroom");
+  assert.match((await session.handle("我在哪里")).text, /卧室.*门前/u);
+  assert.match((await session.handle("看看我的位置")).text, /卧室.*门前/u);
+});
+
 test("drag and occluding placement are distinct generic object relations", async () => {
   const fixture = createDemoFixture();
+  const world = new InMemoryCommitStore();
   const session = new RuntimeSession({sessionId: "occlusion", actorId: "self", fixture,
-    model: new LocalDemoProposalModel(), worldStore: new InMemoryCommitStore(), experienceStore: new InMemoryExperienceStore(),
+    model: new LocalDemoProposalModel(), worldStore: world, experienceStore: new InMemoryExperienceStore(),
     auditStore: new InMemoryAuditStore(), now: () => new Date("2026-08-28T12:00:00.000Z")});
   assert.match((await session.handle("把毛毯拖到门边")).text, /拖到了门边/u);
   assert.equal(session.currentSnapshot().facts.some(fact => fact.address === "relation:blanket-1:occludes:door-1" && fact.status === "active"), false);
-  assert.match((await session.handle("把毛毯塞到门缝下面")).text, /拿起了毛毯.*放到/u);
+  await session.handle("拿起毛毯");
+  const beforePlacement = session.currentSnapshot().height;
+  assert.match((await session.handle("用毛毯堵住门")).text, /放到/u);
+  assert.equal(session.currentSnapshot().height, beforePlacement + 1, "an already-held blanket must not create a redundant hold commit");
+  const collapseCommits = world.commits.filter(commit => (commit.collapseRecords?.length ?? 0) > 0);
+  assert.equal(collapseCommits.length, 1);
+  assert.equal(collapseCommits[0]?.collapseRecords?.[0]?.address, "fit:blanket-1:under_gap:door-1");
+  assert.equal(collapseCommits[0]?.delta.truthCellChanges?.[0]?.next.resolvedValue, true);
+  assert.equal(session.currentSnapshot().truthCells[0]?.resolvedValue, true);
+  assert.equal(replayStrict(fixture.genesis, world.commits).stateRoot, session.currentSnapshot().stateRoot);
   assert.equal(session.currentSnapshot().facts.some(fact => fact.address === "relation:blanket-1:occludes:door-1" && fact.status === "active"), true);
   await session.handle("推开门");
   assert.match((await session.handle("从门缝往外看")).text, /毛毯挡在门缝处/u);
   await session.handle("拿起毛毯");
   assert.match((await session.handle("从门缝往外看")).text, /有光的走廊/u);
+  assert.equal(world.commits.filter(commit => (commit.collapseRecords?.length ?? 0) > 0).length, 1);
 });

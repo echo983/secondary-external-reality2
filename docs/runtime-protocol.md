@@ -502,7 +502,7 @@ interface CollapseRequest {
 - 一个 Height 最多 2 个 Collapse Address；
 - 每个提案必须列出保持未决内容。
 
-Phase 0–4 不启用模型参与 Collapse。获准的有限域由 `DeterministicCollapseResolver` 使用 world seed、规范 address、当前 revision 和 fixture 声明的 resolver version 计算；相同输入必须得到相同约束。通用语义 Collapse 暂缓，不能作为纵向切片完成的前置条件。
+Phase 0–4 不启用模型参与 Collapse。获准的有限域由 `DeterministicCollapseResolver` 使用 world seed、规范 address、当前 revision 和 fixture 声明的 resolver version 计算；相同输入必须得到相同约束。真人测试已证明：至少一个真实 blocking TruthCell 的确定性 Collapse 是文字 VR 纵向切片的核心退出条件，不能继续以“通用语义暂缓”为由把整个 Collapse 主链留在孤立测试中。首版仍不开放 structural Collapse，也不允许模型或玩家声明扩张地址和值域。
 
 ### 9.3 LLM 输入
 

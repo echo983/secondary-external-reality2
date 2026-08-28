@@ -94,6 +94,10 @@ export function constitutePrimitiveAction(proposal: ActionProposal, actorId: str
     const destinationSlot = proposal.effects.find(effect => effect.kind === "placement" && effect.objectSlot !== undefined)?.objectSlot ??
       proposal.targetSlots.find(slot => slotByName.get(slot)?.kind === "space");
     if (destinationSlot === undefined) throw new ProtocolError("TARGET_UNGROUNDED", "move destination is absent");
+    if (slotByName.get(destinationSlot)?.kind !== "space") {
+      return {kind: "attempt", actorId, unsupportedClaims: [], clauses: [{clauseIndex: proposal.clauseIndex,
+        operation: "primitive:approach", goal: "approach", method: "move", targetIds: [entity(destinationSlot)], modifiers: {}}]};
+    }
     requireAffordance(destinationSlot, "contains");
     return {kind: "attempt", actorId, unsupportedClaims: [], clauses: [{clauseIndex: proposal.clauseIndex,
       operation: "primitive:move", goal: "move", method: "move", targetIds: [entity(destinationSlot)], modifiers: {}}]};

@@ -133,3 +133,36 @@ test("SQLite restore repairs a pending generic primitive experience", async () =
     await rm(directory, {recursive: true, force: true});
   }
 });
+
+test("SQLite persists and recovers the blanket Collapse commit", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "ser-collapse-restore-"));
+  const filename = join(directory, "runtime.sqlite");
+  try {
+    const fixture = createDemoFixture();
+    const memoryWorld = new InMemoryCommitStore();
+    const memoryExperience = new InMemoryExperienceStore();
+    const holdInput = {kind: "attempt", actorId: "self", unsupportedClaims: [], clauses: [{clauseIndex: 0,
+      operation: "primitive:hold", goal: "hold", method: "hold", targetIds: ["blanket-1"], modifiers: {}}]} as const;
+    const held = await settlePrimitiveWorld(fixture.genesis, holdInput, "attempt-collapse", memoryWorld,
+      memoryExperience, "2026-08-28T12:00:02.000Z");
+    const placeInput = {kind: "attempt", actorId: "self", unsupportedClaims: [], clauses: [{clauseIndex: 1,
+      operation: "primitive:place", goal: "place", method: "place", targetIds: ["blanket-1", "door-1"],
+      modifiers: {occludes: true}}]} as const;
+    const placed = await settlePrimitiveWorld(held.snapshot, placeInput, "attempt-collapse", memoryWorld,
+      memoryExperience, "2026-08-28T12:00:04.000Z");
+    assert.equal(placed.commit.collapseRecords?.length, 1);
+    let store = new SqliteRuntimeStore(filename);
+    store.appendWorld(held.commit); store.appendWorld(placed.commit); store.close();
+    const restored = await restoreSqliteSession({filename, sessionId: "collapse-restored", actorId: "self", fixture,
+      model: new FakeProposalModel(new Error("model must not run during restore")),
+      now: () => new Date("2026-08-28T12:00:05.000Z")});
+    store = restored.store;
+    assert.deepEqual(store.pending("self"), []);
+    assert.equal(restored.session.currentSnapshot().truthCells[0]?.resolvedValue, true);
+    assert.equal(restored.session.currentSnapshot().stateRoot, placed.snapshot.stateRoot);
+    assert.match(store.exportJsonl(), /"collapseRecords":\[\{"address":"fit:blanket-1:under_gap:door-1"/u);
+    store.close();
+  } finally {
+    await rm(directory, {recursive: true, force: true});
+  }
+});
