@@ -1,0 +1,706 @@
+{
+  "generatedAt": "2026-08-28T17:07:40.675Z",
+  "corpusSize": 21,
+  "filesA": 21,
+  "filesB": 11,
+  "resultsA": [
+    {
+      "id": "blanket-location-current",
+      "query": "毛毯现在放在哪里？",
+      "expectSubstring": "门底的缝隙里",
+      "note": "recency test：门缝、床上两条都在语料里，正确答案是更晚那条(H9/H8)，不是H0的创世设定。",
+      "hit": true,
+      "rank": 3,
+      "topScore": 0.65313697,
+      "returnedTexts": [
+        {
+          "text": "blanket-1 现在是压缩状态，塞在 door-1 门底缝隙里，不再放在 bed-1 上。",
+          "score": 0.65313697,
+          "key": "expA/blanket-1/h9-19.txt"
+        },
+        {
+          "text": "blanket-1 现在放在 bed-1 上。",
+          "score": 0.6422327,
+          "key": "expA/blanket-1/h0-5.txt"
+        },
+        {
+          "text": "self 把 blanket-1 从 bed-1 上拿起来，塞进了 door-1 门底的缝隙里。",
+          "score": 0.54452395,
+          "key": "expA/self/h8-18.txt"
+        },
+        {
+          "text": "bed-1 在卧室里。",
+          "score": 0.53250057,
+          "key": "expA/bed-1/h0-3.txt"
+        },
+        {
+          "text": "blanket-1 摸起来柔软，可以压缩。",
+          "score": 0.52501297,
+          "key": "expA/blanket-1/h0-6.txt"
+        },
+        {
+          "text": "closet-1 在卧室里，门是关着的。",
+          "score": 0.49640015,
+          "key": "expA/closet-1/h0-9.txt"
+        },
+        {
+          "text": "rug-1 卷着放在墙角。",
+          "score": 0.49461827,
+          "key": "expA/rug-1/h0-10.txt"
+        },
+        {
+          "text": "blanket-1 的厚度约为三厘米。",
+          "score": 0.4822243,
+          "key": "expA/blanket-1/h1-11.txt"
+        },
+        {
+          "text": "kettle-1 在卧室里，插着电。",
+          "score": 0.46921605,
+          "key": "expA/kettle-1/h0-7.txt"
+        },
+        {
+          "text": "self 走到 closet-1 前面，看了看里面的衣服。",
+          "score": 0.454888,
+          "key": "expA/self/h10-20.txt"
+        }
+      ]
+    },
+    {
+      "id": "door-gap-width",
+      "query": "门缝有多宽？",
+      "expectSubstring": "一厘米",
+      "note": "",
+      "hit": true,
+      "rank": 1,
+      "topScore": 0.7358639,
+      "returnedTexts": [
+        {
+          "text": "door-1 门底缝隙宽约一厘米。",
+          "score": 0.7358639,
+          "key": "expA/door-1/h2-12.txt"
+        },
+        {
+          "text": "door-1 现在是关着的，没有上锁。",
+          "score": 0.49750388,
+          "key": "expA/door-1/h0-2.txt"
+        },
+        {
+          "text": "blanket-1 现在是压缩状态，塞在 door-1 门底缝隙里，不再放在 bed-1 上。",
+          "score": 0.47111154,
+          "key": "expA/blanket-1/h9-19.txt"
+        },
+        {
+          "text": "closet-1 在卧室里，门是关着的。",
+          "score": 0.4612943,
+          "key": "expA/closet-1/h0-9.txt"
+        },
+        {
+          "text": "door-1 在卧室里，通向走廊。",
+          "score": 0.4450178,
+          "key": "expA/door-1/h0-1.txt"
+        },
+        {
+          "text": "blanket-1 的厚度约为三厘米。",
+          "score": 0.4389448,
+          "key": "expA/blanket-1/h1-11.txt"
+        },
+        {
+          "text": "self 把 blanket-1 从 bed-1 上拿起来，塞进了 door-1 门底的缝隙里。",
+          "score": 0.42692116,
+          "key": "expA/self/h8-18.txt"
+        },
+        {
+          "text": "closet-1 被打开了，露出里面挂着的衣服。",
+          "score": 0.40151715,
+          "key": "expA/closet-1/h6-16.txt"
+        }
+      ]
+    },
+    {
+      "id": "kettle-still-boiling",
+      "query": "水壶现在还在烧水吗？",
+      "expectSubstring": "不再加热",
+      "note": "同样是recency：H3说在烧，H5说不再烧，正确答案是H5。",
+      "hit": true,
+      "rank": 4,
+      "topScore": 0.591963,
+      "returnedTexts": [
+        {
+          "text": "kettle-1 的水已经烧开，发出鸣笛声。",
+          "score": 0.591963,
+          "key": "expA/kettle-1/h3-13.txt"
+        },
+        {
+          "text": "kettle-1 正在加热。",
+          "score": 0.5787033,
+          "key": "expA/kettle-1/h0-8.txt"
+        },
+        {
+          "text": "self 把 kettle-1 关掉了。",
+          "score": 0.5276276,
+          "key": "expA/self/h4-14.txt"
+        },
+        {
+          "text": "kettle-1 不再加热，安静下来。",
+          "score": 0.49550083,
+          "key": "expA/kettle-1/h5-15.txt"
+        },
+        {
+          "text": "kettle-1 在卧室里，插着电。",
+          "score": 0.49141982,
+          "key": "expA/kettle-1/h0-7.txt"
+        }
+      ]
+    },
+    {
+      "id": "rug-texture-not-blanket",
+      "query": "地毯摸起来怎么样？",
+      "expectSubstring": "比 blanket-1 粗糙",
+      "note": "干扰测试：rug-1和blanket-1的质感描述很像，不能查地毯却答出毛毯的。",
+      "hit": true,
+      "rank": 2,
+      "topScore": 0.65065205,
+      "returnedTexts": [
+        {
+          "text": "blanket-1 摸起来柔软，可以压缩。",
+          "score": 0.65065205,
+          "key": "expA/blanket-1/h0-6.txt"
+        },
+        {
+          "text": "rug-1 摸起来比 blanket-1 粗糙，不太柔软。",
+          "score": 0.5675268,
+          "key": "expA/rug-1/h7-17.txt"
+        },
+        {
+          "text": "self 把 blanket-1 从 bed-1 上拿起来，塞进了 door-1 门底的缝隙里。",
+          "score": 0.49252522,
+          "key": "expA/self/h8-18.txt"
+        },
+        {
+          "text": "blanket-1 的厚度约为三厘米。",
+          "score": 0.48559117,
+          "key": "expA/blanket-1/h1-11.txt"
+        },
+        {
+          "text": "self 走到 closet-1 前面，看了看里面的衣服。",
+          "score": 0.4776991,
+          "key": "expA/self/h10-20.txt"
+        },
+        {
+          "text": "blanket-1 现在是压缩状态，塞在 door-1 门底缝隙里，不再放在 bed-1 上。",
+          "score": 0.47748038,
+          "key": "expA/blanket-1/h9-19.txt"
+        },
+        {
+          "text": "blanket-1 现在放在 bed-1 上。",
+          "score": 0.44725296,
+          "key": "expA/blanket-1/h0-5.txt"
+        },
+        {
+          "text": "closet-1 被打开了，露出里面挂着的衣服。",
+          "score": 0.41938907,
+          "key": "expA/closet-1/h6-16.txt"
+        },
+        {
+          "text": "rug-1 卷着放在墙角。",
+          "score": 0.4126687,
+          "key": "expA/rug-1/h0-10.txt"
+        }
+      ]
+    },
+    {
+      "id": "blanket-texture-not-rug",
+      "query": "毛毯摸起来怎么样？",
+      "expectSubstring": "柔软，可以压缩",
+      "note": "反向干扰测试：查毛毯不能被rug-1的相似内容抢走。",
+      "hit": true,
+      "rank": 1,
+      "topScore": 0.68444693,
+      "returnedTexts": [
+        {
+          "text": "blanket-1 摸起来柔软，可以压缩。",
+          "score": 0.68444693,
+          "key": "expA/blanket-1/h0-6.txt"
+        },
+        {
+          "text": "rug-1 摸起来比 blanket-1 粗糙，不太柔软。",
+          "score": 0.5497122,
+          "key": "expA/rug-1/h7-17.txt"
+        },
+        {
+          "text": "blanket-1 的厚度约为三厘米。",
+          "score": 0.54590106,
+          "key": "expA/blanket-1/h1-11.txt"
+        },
+        {
+          "text": "blanket-1 现在是压缩状态，塞在 door-1 门底缝隙里，不再放在 bed-1 上。",
+          "score": 0.49152103,
+          "key": "expA/blanket-1/h9-19.txt"
+        },
+        {
+          "text": "blanket-1 现在放在 bed-1 上。",
+          "score": 0.48502475,
+          "key": "expA/blanket-1/h0-5.txt"
+        },
+        {
+          "text": "self 把 blanket-1 从 bed-1 上拿起来，塞进了 door-1 门底的缝隙里。",
+          "score": 0.46986008,
+          "key": "expA/self/h8-18.txt"
+        }
+      ]
+    },
+    {
+      "id": "closet-contents",
+      "query": "衣柜里有什么？",
+      "expectSubstring": "挂着的衣服",
+      "note": "",
+      "hit": true,
+      "rank": 2,
+      "topScore": 0.59383315,
+      "returnedTexts": [
+        {
+          "text": "self 走到 closet-1 前面，看了看里面的衣服。",
+          "score": 0.59383315,
+          "key": "expA/self/h10-20.txt"
+        },
+        {
+          "text": "closet-1 被打开了，露出里面挂着的衣服。",
+          "score": 0.5668715,
+          "key": "expA/closet-1/h6-16.txt"
+        },
+        {
+          "text": "closet-1 在卧室里，门是关着的。",
+          "score": 0.53594863,
+          "key": "expA/closet-1/h0-9.txt"
+        },
+        {
+          "text": "bed-1 在卧室里。",
+          "score": 0.5018626,
+          "key": "expA/bed-1/h0-3.txt"
+        },
+        {
+          "text": "door-1 现在是关着的，没有上锁。",
+          "score": 0.47428948,
+          "key": "expA/door-1/h0-2.txt"
+        },
+        {
+          "text": "door-1 在卧室里，通向走廊。",
+          "score": 0.45905197,
+          "key": "expA/door-1/h0-1.txt"
+        },
+        {
+          "text": "rug-1 卷着放在墙角。",
+          "score": 0.43096408,
+          "key": "expA/rug-1/h0-10.txt"
+        },
+        {
+          "text": "blanket-1 现在是压缩状态，塞在 door-1 门底缝隙里，不再放在 bed-1 上。",
+          "score": 0.4271106,
+          "key": "expA/blanket-1/h9-19.txt"
+        },
+        {
+          "text": "self 在卧室里，站着。",
+          "score": 0.41963705,
+          "key": "expA/self/h0-0.txt"
+        },
+        {
+          "text": "self 把 blanket-1 从 bed-1 上拿起来，塞进了 door-1 门底的缝隙里。",
+          "score": 0.41173676,
+          "key": "expA/self/h8-18.txt"
+        }
+      ]
+    },
+    {
+      "id": "self-current-room",
+      "query": "自己现在在哪个房间？",
+      "expectSubstring": "卧室里",
+      "note": "",
+      "hit": true,
+      "rank": 1,
+      "topScore": 0.6267212,
+      "returnedTexts": [
+        {
+          "text": "bed-1 在卧室里。",
+          "score": 0.6267212,
+          "key": "expA/bed-1/h0-3.txt"
+        },
+        {
+          "text": "self 在卧室里，站着。",
+          "score": 0.60625124,
+          "key": "expA/self/h0-0.txt"
+        },
+        {
+          "text": "self 走到 closet-1 前面，看了看里面的衣服。",
+          "score": 0.5632344,
+          "key": "expA/self/h10-20.txt"
+        },
+        {
+          "text": "door-1 现在是关着的，没有上锁。",
+          "score": 0.54042494,
+          "key": "expA/door-1/h0-2.txt"
+        },
+        {
+          "text": "blanket-1 现在放在 bed-1 上。",
+          "score": 0.5383477,
+          "key": "expA/blanket-1/h0-5.txt"
+        },
+        {
+          "text": "door-1 在卧室里，通向走廊。",
+          "score": 0.5209922,
+          "key": "expA/door-1/h0-1.txt"
+        },
+        {
+          "text": "closet-1 在卧室里，门是关着的。",
+          "score": 0.5009346,
+          "key": "expA/closet-1/h0-9.txt"
+        },
+        {
+          "text": "blanket-1 现在是压缩状态，塞在 door-1 门底缝隙里，不再放在 bed-1 上。",
+          "score": 0.50028217,
+          "key": "expA/blanket-1/h9-19.txt"
+        },
+        {
+          "text": "kettle-1 在卧室里，插着电。",
+          "score": 0.49795976,
+          "key": "expA/kettle-1/h0-7.txt"
+        },
+        {
+          "text": "self 把 blanket-1 从 bed-1 上拿起来，塞进了 door-1 门底的缝隙里。",
+          "score": 0.48087507,
+          "key": "expA/self/h8-18.txt"
+        }
+      ]
+    },
+    {
+      "id": "blanket-thickness",
+      "query": "毛毯的厚度大概多少？",
+      "expectSubstring": "三厘米",
+      "note": "",
+      "hit": true,
+      "rank": 1,
+      "topScore": 0.7304703,
+      "returnedTexts": [
+        {
+          "text": "blanket-1 的厚度约为三厘米。",
+          "score": 0.7304703,
+          "key": "expA/blanket-1/h1-11.txt"
+        },
+        {
+          "text": "blanket-1 摸起来柔软，可以压缩。",
+          "score": 0.5853595,
+          "key": "expA/blanket-1/h0-6.txt"
+        },
+        {
+          "text": "blanket-1 现在是压缩状态，塞在 door-1 门底缝隙里，不再放在 bed-1 上。",
+          "score": 0.49907303,
+          "key": "expA/blanket-1/h9-19.txt"
+        },
+        {
+          "text": "blanket-1 现在放在 bed-1 上。",
+          "score": 0.49275813,
+          "key": "expA/blanket-1/h0-5.txt"
+        },
+        {
+          "text": "rug-1 摸起来比 blanket-1 粗糙，不太柔软。",
+          "score": 0.47374815,
+          "key": "expA/rug-1/h7-17.txt"
+        },
+        {
+          "text": "self 把 blanket-1 从 bed-1 上拿起来，塞进了 door-1 门底的缝隙里。",
+          "score": 0.43640795,
+          "key": "expA/self/h8-18.txt"
+        }
+      ]
+    }
+  ],
+  "resultsB": [
+    {
+      "id": "blanket-location-current",
+      "query": "毛毯现在放在哪里？",
+      "expectSubstring": "门底的缝隙里",
+      "note": "recency test：门缝、床上两条都在语料里，正确答案是更晚那条(H9/H8)，不是H0的创世设定。",
+      "hit": true,
+      "rank": 2,
+      "topScore": 0.65313697,
+      "returnedTexts": [
+        {
+          "text": "blanket-1 现在是压缩状态，塞在 door-1 门底缝隙里，不再放在 bed-1 上。",
+          "score": 0.65313697,
+          "key": "expB/h9.txt"
+        },
+        {
+          "text": "self 把 blanket-1 从 bed-1 上拿起来，塞进了 door-1 门底的缝隙里。",
+          "score": 0.54452395,
+          "key": "expB/h8.txt"
+        },
+        {
+          "text": "self 在卧室里，站着。\ndoor-1 在卧室里，通向走廊。\ndoor-1 现在是关着的，没有上锁。\nbed-1 在卧室里。\nfloor-1 是卧室的地面。\nblanket-1 现在放在 bed-1 上。\nblanket-1 摸起来柔软，可以压缩。\nkettle-1 在卧室里，插着电。\nkettle-1 正在加热。\ncloset-1 在卧室里，门是关着的。\nrug-1 卷着放在墙角。",
+          "score": 0.538025,
+          "key": "expB/h0.txt"
+        },
+        {
+          "text": "blanket-1 的厚度约为三厘米。",
+          "score": 0.4822243,
+          "key": "expB/h1.txt"
+        },
+        {
+          "text": "self 走到 closet-1 前面，看了看里面的衣服。",
+          "score": 0.454888,
+          "key": "expB/h10.txt"
+        },
+        {
+          "text": "closet-1 被打开了，露出里面挂着的衣服。",
+          "score": 0.42064688,
+          "key": "expB/h6.txt"
+        },
+        {
+          "text": "rug-1 摸起来比 blanket-1 粗糙，不太柔软。",
+          "score": 0.41430473,
+          "key": "expB/h7.txt"
+        }
+      ]
+    },
+    {
+      "id": "door-gap-width",
+      "query": "门缝有多宽？",
+      "expectSubstring": "一厘米",
+      "note": "",
+      "hit": true,
+      "rank": 1,
+      "topScore": 0.7358639,
+      "returnedTexts": [
+        {
+          "text": "door-1 门底缝隙宽约一厘米。",
+          "score": 0.7358639,
+          "key": "expB/h2.txt"
+        },
+        {
+          "text": "blanket-1 现在是压缩状态，塞在 door-1 门底缝隙里，不再放在 bed-1 上。",
+          "score": 0.47111154,
+          "key": "expB/h9.txt"
+        },
+        {
+          "text": "blanket-1 的厚度约为三厘米。",
+          "score": 0.4389448,
+          "key": "expB/h1.txt"
+        },
+        {
+          "text": "self 把 blanket-1 从 bed-1 上拿起来，塞进了 door-1 门底的缝隙里。",
+          "score": 0.42692116,
+          "key": "expB/h8.txt"
+        },
+        {
+          "text": "closet-1 被打开了，露出里面挂着的衣服。",
+          "score": 0.40151715,
+          "key": "expB/h6.txt"
+        }
+      ]
+    },
+    {
+      "id": "kettle-still-boiling",
+      "query": "水壶现在还在烧水吗？",
+      "expectSubstring": "不再加热",
+      "note": "同样是recency：H3说在烧，H5说不再烧，正确答案是H5。",
+      "hit": true,
+      "rank": 3,
+      "topScore": 0.591963,
+      "returnedTexts": [
+        {
+          "text": "kettle-1 的水已经烧开，发出鸣笛声。",
+          "score": 0.591963,
+          "key": "expB/h3.txt"
+        },
+        {
+          "text": "self 把 kettle-1 关掉了。",
+          "score": 0.5276276,
+          "key": "expB/h4.txt"
+        },
+        {
+          "text": "kettle-1 不再加热，安静下来。",
+          "score": 0.49550083,
+          "key": "expB/h5.txt"
+        }
+      ]
+    },
+    {
+      "id": "rug-texture-not-blanket",
+      "query": "地毯摸起来怎么样？",
+      "expectSubstring": "比 blanket-1 粗糙",
+      "note": "干扰测试：rug-1和blanket-1的质感描述很像，不能查地毯却答出毛毯的。",
+      "hit": true,
+      "rank": 1,
+      "topScore": 0.5675268,
+      "returnedTexts": [
+        {
+          "text": "rug-1 摸起来比 blanket-1 粗糙，不太柔软。",
+          "score": 0.5675268,
+          "key": "expB/h7.txt"
+        },
+        {
+          "text": "self 把 blanket-1 从 bed-1 上拿起来，塞进了 door-1 门底的缝隙里。",
+          "score": 0.49252522,
+          "key": "expB/h8.txt"
+        },
+        {
+          "text": "blanket-1 的厚度约为三厘米。",
+          "score": 0.48559117,
+          "key": "expB/h1.txt"
+        },
+        {
+          "text": "self 走到 closet-1 前面，看了看里面的衣服。",
+          "score": 0.4776991,
+          "key": "expB/h10.txt"
+        },
+        {
+          "text": "blanket-1 现在是压缩状态，塞在 door-1 门底缝隙里，不再放在 bed-1 上。",
+          "score": 0.47748038,
+          "key": "expB/h9.txt"
+        },
+        {
+          "text": "closet-1 被打开了，露出里面挂着的衣服。",
+          "score": 0.41938907,
+          "key": "expB/h6.txt"
+        }
+      ]
+    },
+    {
+      "id": "blanket-texture-not-rug",
+      "query": "毛毯摸起来怎么样？",
+      "expectSubstring": "柔软，可以压缩",
+      "note": "反向干扰测试：查毛毯不能被rug-1的相似内容抢走。",
+      "hit": true,
+      "rank": 5,
+      "topScore": 0.5497122,
+      "returnedTexts": [
+        {
+          "text": "rug-1 摸起来比 blanket-1 粗糙，不太柔软。",
+          "score": 0.5497122,
+          "key": "expB/h7.txt"
+        },
+        {
+          "text": "blanket-1 的厚度约为三厘米。",
+          "score": 0.54590106,
+          "key": "expB/h1.txt"
+        },
+        {
+          "text": "blanket-1 现在是压缩状态，塞在 door-1 门底缝隙里，不再放在 bed-1 上。",
+          "score": 0.49152103,
+          "key": "expB/h9.txt"
+        },
+        {
+          "text": "self 把 blanket-1 从 bed-1 上拿起来，塞进了 door-1 门底的缝隙里。",
+          "score": 0.46986008,
+          "key": "expB/h8.txt"
+        },
+        {
+          "text": "self 在卧室里，站着。\ndoor-1 在卧室里，通向走廊。\ndoor-1 现在是关着的，没有上锁。\nbed-1 在卧室里。\nfloor-1 是卧室的地面。\nblanket-1 现在放在 bed-1 上。\nblanket-1 摸起来柔软，可以压缩。\nkettle-1 在卧室里，插着电。\nkettle-1 正在加热。\ncloset-1 在卧室里，门是关着的。\nrug-1 卷着放在墙角。",
+          "score": 0.42608044,
+          "key": "expB/h0.txt"
+        }
+      ]
+    },
+    {
+      "id": "closet-contents",
+      "query": "衣柜里有什么？",
+      "expectSubstring": "挂着的衣服",
+      "note": "",
+      "hit": true,
+      "rank": 2,
+      "topScore": 0.59383315,
+      "returnedTexts": [
+        {
+          "text": "self 走到 closet-1 前面，看了看里面的衣服。",
+          "score": 0.59383315,
+          "key": "expB/h10.txt"
+        },
+        {
+          "text": "closet-1 被打开了，露出里面挂着的衣服。",
+          "score": 0.5668715,
+          "key": "expB/h6.txt"
+        },
+        {
+          "text": "self 在卧室里，站着。\ndoor-1 在卧室里，通向走廊。\ndoor-1 现在是关着的，没有上锁。\nbed-1 在卧室里。\nfloor-1 是卧室的地面。\nblanket-1 现在放在 bed-1 上。\nblanket-1 摸起来柔软，可以压缩。\nkettle-1 在卧室里，插着电。\nkettle-1 正在加热。\ncloset-1 在卧室里，门是关着的。\nrug-1 卷着放在墙角。",
+          "score": 0.4984247,
+          "key": "expB/h0.txt"
+        },
+        {
+          "text": "blanket-1 现在是压缩状态，塞在 door-1 门底缝隙里，不再放在 bed-1 上。",
+          "score": 0.4271106,
+          "key": "expB/h9.txt"
+        },
+        {
+          "text": "self 把 blanket-1 从 bed-1 上拿起来，塞进了 door-1 门底的缝隙里。",
+          "score": 0.41173676,
+          "key": "expB/h8.txt"
+        }
+      ]
+    },
+    {
+      "id": "self-current-room",
+      "query": "自己现在在哪个房间？",
+      "expectSubstring": "卧室里",
+      "note": "",
+      "hit": true,
+      "rank": 1,
+      "topScore": 0.5767399,
+      "returnedTexts": [
+        {
+          "text": "self 在卧室里，站着。\ndoor-1 在卧室里，通向走廊。\ndoor-1 现在是关着的，没有上锁。\nbed-1 在卧室里。\nfloor-1 是卧室的地面。\nblanket-1 现在放在 bed-1 上。\nblanket-1 摸起来柔软，可以压缩。\nkettle-1 在卧室里，插着电。\nkettle-1 正在加热。\ncloset-1 在卧室里，门是关着的。\nrug-1 卷着放在墙角。",
+          "score": 0.5767399,
+          "key": "expB/h0.txt"
+        },
+        {
+          "text": "self 走到 closet-1 前面，看了看里面的衣服。",
+          "score": 0.5632344,
+          "key": "expB/h10.txt"
+        },
+        {
+          "text": "blanket-1 现在是压缩状态，塞在 door-1 门底缝隙里，不再放在 bed-1 上。",
+          "score": 0.50028217,
+          "key": "expB/h9.txt"
+        },
+        {
+          "text": "self 把 blanket-1 从 bed-1 上拿起来，塞进了 door-1 门底的缝隙里。",
+          "score": 0.48087507,
+          "key": "expB/h8.txt"
+        },
+        {
+          "text": "closet-1 被打开了，露出里面挂着的衣服。",
+          "score": 0.4201222,
+          "key": "expB/h6.txt"
+        }
+      ]
+    },
+    {
+      "id": "blanket-thickness",
+      "query": "毛毯的厚度大概多少？",
+      "expectSubstring": "三厘米",
+      "note": "",
+      "hit": true,
+      "rank": 1,
+      "topScore": 0.7304703,
+      "returnedTexts": [
+        {
+          "text": "blanket-1 的厚度约为三厘米。",
+          "score": 0.7304703,
+          "key": "expB/h1.txt"
+        },
+        {
+          "text": "blanket-1 现在是压缩状态，塞在 door-1 门底缝隙里，不再放在 bed-1 上。",
+          "score": 0.49907303,
+          "key": "expB/h9.txt"
+        },
+        {
+          "text": "rug-1 摸起来比 blanket-1 粗糙，不太柔软。",
+          "score": 0.47374815,
+          "key": "expB/h7.txt"
+        },
+        {
+          "text": "self 把 blanket-1 从 bed-1 上拿起来，塞进了 door-1 门底的缝隙里。",
+          "score": 0.43640795,
+          "key": "expB/h8.txt"
+        }
+      ]
+    }
+  ]
+}
