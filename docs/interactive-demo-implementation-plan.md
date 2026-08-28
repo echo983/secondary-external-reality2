@@ -133,6 +133,8 @@ Phase 0–7 已完成可信运行时、门/水壶纵向案例、真实 Qwen adap
 
 自动评测记录（2026-08-28）：固定 15 轮真实 Qwen 复测得到 9 world、5 query、1 个预期安全 boundary；9 次模型调用中 8 次提交，模型延迟中位约 11 秒、P95 约 27 秒；10 个 World/Experience Commit 严格 replay 一致，未知枪零 Height。自动预门禁通过，详见 `phase8d-free-session-evaluation-2026-08-28.md`。独立测试者 15–30 分钟自由输入尚未发生，不能以自动语料冒充，因此本阶段仍为 in progress。
 
+真人盲测的主持词、隔离数据库命令、会后问题、判定表和脱敏导出命令已准备在 `human-blind-test-protocol.md`。工程侧已无剩余前置；当前阻碍是需要一位未参与实现的真实测试者。
+
 ## 7. Phase 9：扩展体验面
 
 状态：blocked by Phase 8

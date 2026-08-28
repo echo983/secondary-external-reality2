@@ -14,6 +14,7 @@
     "eval:qwen:action-spike": "npm run build && node dist/scripts/qwen-action-proposal-spike.js",
     "eval:free-session": "npm run build && node dist/scripts/free-session-eval.js",
     "eval:qwen:phase8d-targeted": "npm run build && node dist/scripts/qwen-phase8d-targeted.js",
+    "export:session": "npm run build && node dist/scripts/export-session.js",
     "demo": "npm run build && node dist/scripts/demo-cli.js",
     "eval:qwen:smoke": "node experiments/qwen-boundary/run.mjs --smoke",
     "eval:qwen:full": "node experiments/qwen-boundary/run.mjs",
