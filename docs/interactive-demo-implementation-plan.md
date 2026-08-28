@@ -1,14 +1,16 @@
-# 可交互 Demo 实施计划 v0.3
+# 可交互 Demo 实施计划 v0.4
 
-日期：2026-08-27
-状态：replanned after human test failure
+日期：2026-08-28
+状态：architecture redesign before further implementation
 前置：`vision-direction-review-2026-08-27.md`
 
 ## 1. 当前判断
 
+2026-08-28 第二轮真人自由测试进一步证明：问题不适合继续以动作、别名、affordance 或感知分支补丁处理。现有可信账本与权限骨架保留，但行动语义、交互语境、对象因果模型、按需 Collapse 和感知执行需要统一重设计。重设计产物、纸面案例和进入编码的门禁见 `architecture-redesign-plan-v0.1.md`；完成该设计阶段前暂停扩张 Phase 8C 实现。
+
 Phase 0–7 已完成可信运行时、门/水壶纵向案例、真实 Qwen adapter、SQLite 恢复和 CLI 组合。它们构成**开发者纵向切片基线**，尚不能证明可试玩文字 VR Demo。
 
-上一版把最大缺口判断为“组合而不是新增世界能力”，并以脚本化长会话代替自由体验门禁，这是错误的。实际首要缺口是：
+第一轮方向复审曾把首要缺口归纳为以下交互问题；这些修复提供了诊断证据，但第二轮测试证明它们不是充分的架构答案：
 
 - 没有主体当前位置的环境感知场和会话第一屏；
 - 无目标观察被实体 grounding gate 错误拒绝；
@@ -88,7 +90,7 @@ Phase 0–7 已完成可信运行时、门/水壶纵向案例、真实 Qwen adap
 
 ## 5. Phase 8C：通用行动原语
 
-状态：in progress（首条 Collapse 纵切已实现；待 Node 22+/24 SQLite 验证与真人复测）
+状态：architecture redesign（首条 Collapse 纵切保留为协议证据，不再作为目标架构模板）
 
 优先实现可组合的最小集合：
 
@@ -120,7 +122,7 @@ Phase 0–7 已完成可信运行时、门/水壶纵向案例、真实 Qwen adap
 
 ## 6. Phase 8D：盲测自由会话
 
-状态：failed（首轮真人测试未形成世界感；等待 Collapse 主线重做后复测）
+状态：blocked by architecture redesign（两轮真人测试均已作为架构证据）
 
 从 `fc1.txt`、`fc2.txt` 和 `世界反馈者手册.md` 抽取动作形态，但不把最终测试句交给逐句实现。另由测试者自由输入 15–30 分钟。
 
@@ -135,11 +137,11 @@ Phase 0–7 已完成可信运行时、门/水壶纵向案例、真实 Qwen adap
 
 退出条件不是追求虚假“任意行动成功率”，而是证明系统在已声明场景边界内优先尝试裁决，且自由会话不主要由产品能力边界构成。
 
-自动评测记录（2026-08-28）：固定 15 轮真实 Qwen 复测得到 9 world、5 query、1 个预期安全 boundary；9 次模型调用中 8 次提交，模型延迟中位约 11 秒、P95 约 27 秒；10 个 World/Experience Commit 严格 replay 一致，未知枪零 Height。自动预门禁通过，详见 `phase8d-free-session-evaluation-2026-08-28.md`。独立测试者 15–30 分钟自由输入尚未发生，不能以自动语料冒充，因此本阶段仍为 in progress。
+自动评测记录（2026-08-28）：固定 15 轮真实 Qwen 复测得到 9 world、5 query、1 个预期安全 boundary；9 次模型调用中 8 次提交，模型延迟中位约 11 秒、P95 约 27 秒；10 个 World/Experience Commit 严格 replay 一致，未知枪零 Height。该结果只保留为旧路径回归证据，不能作为产品或架构门禁，详见 `phase8d-free-session-evaluation-2026-08-28.md`。
 
 真人测试记录（2026-08-28）：10 次输入仅 3 committed、1 query、6 failed，其中 4 次为 `INTERNAL_INVARIANT`。测试者从未把系统当作一个地方，并指出核心 unresolved 按需坍缩根本没有实现。该证据推翻自动预门禁的产品结论；自动脚本只证明固定已支持路径可运行，不能证明愿景成立。
 
-真人盲测的主持词、隔离数据库命令、会后问题、判定表和脱敏导出命令已准备在 `human-blind-test-protocol.md`。工程侧已无剩余前置；当前阻碍是需要一位未参与实现的真实测试者。
+真人测试工具保留在 `human-blind-test-protocol.md`，但当前不立即重复盲测。先完成 `architecture-redesign-plan-v0.1.md` 的设计、纸面走查和新纵向切片；否则新增测试只会重复证明同一架构缺陷。
 
 ## 7. Phase 9：扩展体验面
 
