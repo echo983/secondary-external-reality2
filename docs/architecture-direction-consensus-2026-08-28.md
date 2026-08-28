@@ -137,3 +137,41 @@ namespace(世界)
 **这一路的方法论,回头看是一致的:每次修复都不是凭空设计,是让上一次真实运行暴露出的具体问题倒逼出下一个具体修复,而且每次都用真实调用验证过,不是改完就假设生效。** 副作用也如实记录了(ADJUDICATE 现在更容易触发 Collapse、CLASSIFY 偶尔误判纯描述性裁决为信息不足、调用链变深导致偶发 token 预算报错),没有为了报喜而略过。
 
 **当前状态:** 核心的判断(可信度、可达性)、生成(叙事)、校验(陪审团)、仲裁(Height 冲突)、闭环(反应式 Collapse)机制都已经过真实调用验证,`src/` 生产代码仍未触碰。剩下明确还没做的:真实 RAG 检索召回率(反复标注,一直没测)、陪审团分歧信号假设(`juror-clerk-spike` 里没能证实也没能证伪)、这次新冒出的几个小校准问题(CLASSIFY 误判、Collapse 触发阈值漂移、流水线深度带来的稳定性)。
+
+## 12. 角色能不能/该不该抽成"独立于项目的基础设施",以及要不要用 Cloudflare Agent
+
+起因:现有角色(ADJUDICATE、判官、书记员、编剧/Continuity Resolver、NARRATE、GROUND、断言抽取、可达性检查、FACT_WRITER、CLASSIFY)现在全部硬编码在 `experiments/pipeline-integration-slice/` 一个脚本里。edwin 提出:能不能基于真相文档库规范,把它们抽成独立于本项目的基础设施,并问是否应该用"Cloudflare Agent"来做。
+
+**范围先定清楚:项目无关可复用是这次讨论的次要收益,不是主要驱动力,不为了它牺牲任何东西。** 主要驱动力是复合的两条:(a) 这些角色的能力基于我们这套世界模型体系本身,概念上不局限于这个文字虚拟世界 demo;(b) 如果架构允许,Cloudflare Agent 这种存在形式本来就比较适合做成不与单一项目紧耦合的基础设施——但这只在"架构允许、不额外花代价"的前提下成立,不是不计代价也要追求的目标。
+
+**结论:不用 Cloudflare Agents SDK(Durable Object 支撑的那个有状态类),改用无状态 Cloudflare Worker 直接调用 Workers AI。** 给它世界真相文档库的 namespace 和要判定/编写的内容,它干活,不关心是哪个世界、哪个项目。理由(查过官方文档才定的,不是凭印象):
+
+- Agents SDK 本质是 Durable Objects 的封装,每次调用都必须路由到一个具名实例(`/agents/:agent-name/:instance-name`),哪怕完全不用它的持久状态,也被迫要先做一个身份/寻址设计决定——这不是零代价。
+- **Durable Object 显式单线程:"同一身份的请求排队串行执行,不同身份的请求才并行"。** 如果直觉地把每个角色(判官、编剧……)各做成一个全局共享的 Agent 实例,多个玩家同时调用同一角色时会被这个实例排队——正好是我们想避免的效果。真要用 Agent,身份粒度必须按会话/世界分,不能按角色分,而这不是套上 SDK 自动就有,弄错粒度反而引入排队。
+- 计费上也印证这个定位:Durable Objects 每百万请求比 Workers 贵一倍、含额度小十倍,官方定位就是"DO 适合真正需要协调的有状态工作负载,高频请求场景普通 Worker 更划算"。判官、编剧这类高频、无状态就能完成的调用不适合套 DO。
+
+**任务层面无状态原则(edwin 明确认可,记为通用守则):单次任务执行过程中允不允许有内部状态都可以,只要状态生命周期闭合在这次任务内,不跨调用持久化、不泄漏。** 这正是普通无状态 Worker 一次 fetch handler 天然就有的东西——不需要 Durable Object 才能做到"闭包式状态"。
+
+**现阶段明确不考虑多个使用者共同写入同一世界的并发情况,不支持、不为它设计。** 因此也不需要一个有状态的会话协调者来仲裁同一世界的并发写入——这类需求如果将来出现,是另一个独立问题,不因为这次的角色抽取决策而提前设计。
+
+**要不要上 Agent/Durable Object 类基础设施的真正触发条件,不是"规模变大"这种模糊信号,而是两条具体的硬约束之一被真正撞到:** (a) 单次 Worker 调用的执行时长/CPU 时间装不下需要的处理过程;(b) 处理过程需要跨调用存活/在被平台驱逐后恢复。单纯"命题多、需要查好几轮"不满足这两条中的任何一条,不必然触发。
+
+**多段召回(检索→推理→发现证据不足→针对性再检索)这个能力本身,不需要 Agent SDK 才能做:**
+
+- `@cf/qwen/qwen3.8-27b` 原生支持结构化 `tool_calls`(`parallel_tool_calls` 默认开),上下文窗口 262,144 tokens——这个循环可以整个跑在一次无状态 Worker 调用内部,模型和真相库多轮来回都停留在这次调用的内存里,回应一返回状态即消失,不需要跨调用存活。
+- **但 262k 这个硬上限不是真正会先撞到的门槛。** 长上下文模型普遍存在"注意力随上下文变长而变差"的现象(lost in the middle),一次性把大量命题塞进一次调用,即使技术上没超窗口,模型认真用上其中每一条的概率也会下降。真正会逼我们做有界多轮召回的信号,是观察到判官/编剧在命题较多时开始漏看、忽略非首尾位置的关键命题——这个质量门槛大概率远早于 262k 硬上限出现。这也进一步支持"精准、有界召回"应该是默认设计,不是"反正窗口够大就多召回点无所谓"。
+- **多轮循环必须保持代码仲裁,不能是模型自驱的开放搜索。** 模型只能用 tool_calls 表达"我还需要查什么",实际执行哪个查询、最多允许几轮,由我们自己的代码决定并设上限——这条和 Collapse "≤2 个坍缩地址、有界枚举域"是同一条纪律(LLM 提议、代码决定),不能因为换了个多轮召回的场景就松动。
+- **这套边界控制 Cloudflare 生态已经产品化,不需要我们从零手搓:** AI Search 可以直接作为 tool 接给 Agents SDK,也可以直接从普通 Worker 调用——两条路都通,不是 Agent 类专属。循环本身的步数控制(默认上限 20 步、可用 `maxSteps` 调低、可用 `stopWhen` 自定义停止条件,或用一个不执行任何代码的"done tool"让模型主动喊停)是 AI SDK(`generateText`/`streamText`)这一层的库级能力,同样不要求跑在 Durable Object 里。因此我们可以把这套现成的循环控制原语,配上我们自己更严格的 cap,跑在无状态 Worker 里,既不用手搓步数记账,也不引入 DO 的并发风险。
+
+**结论汇总:** 角色保持无状态 Worker 形态,给 namespace + 任务内容即可工作,不感知项目/世界身份;暂不做角色抽取/独立部署的具体工程(时机由"这次讨论"确认为不紧迫,不是"永不做");多段召回一旦需要,复用 AI SDK 的循环控制原语、配自定义低 cap,仍跑在无状态 Worker 里;Agent SDK/Durable Object 类基础设施留到真正撞到执行时长或跨调用存活这两条硬约束之一时再考虑,不因为"规模"这个模糊信号提前引入。
+
+参考来源(2026-08-28 查证):
+- [Agents API · Cloudflare Agents docs](https://developers.cloudflare.com/agents/runtime/agents-api/)
+- [What are Durable Objects? · Cloudflare Durable Objects docs](https://developers.cloudflare.com/durable-objects/concepts/what-are-durable-objects/)
+- [Durable Objects pricing](https://developers.cloudflare.com/durable-objects/platform/pricing/)
+- [Workers pricing](https://developers.cloudflare.com/workers/platform/pricing/)
+- [qwen3.8-27b (Qwen) · Cloudflare Workers AI docs](https://developers.cloudflare.com/workers-ai/models/qwen3.8-27b/)
+- [Function calling · Cloudflare Workers AI docs](https://developers.cloudflare.com/workers-ai/features/function-calling/)
+- [Agents SDK · Cloudflare AI Search docs](https://developers.cloudflare.com/ai-search/agent-sdks/agents-sdk/)
+- [AI Search: the search primitive for your agents · Cloudflare Blog](https://blog.cloudflare.com/ai-search-agent-primitive/)
+- [Agents: Loop Control · AI SDK docs](https://ai-sdk.dev/docs/agents/loop-control)
