@@ -150,7 +150,39 @@ export const NARRATE_SYSTEM_PROMPT = `你是《世界反馈者手册》定义的
 
 只输出这次结算对应的原始反馈文本本身，不要输出手册元话语，不要用 Markdown。`;
 
-export function buildNarrateUserPrompt(propositions, attempt, outcomeSummary) {
+export function buildNarrateUserPrompt(propositions, attempt, outcomeSummary, avoidClaims) {
   const list = propositions.map(p => `- ${p.text}`).join("\n");
-  return `已知场景：\n${list}\n\n这次尝试：${attempt}\n\n结算结果（内部信息，不要逐字复述，只用来生成感官反馈）：${outcomeSummary}`;
+  const avoidBlock = avoidClaims === undefined || avoidClaims.length === 0 ? "" :
+    `\n\n【重写要求】上一版草稿里出现了这些具体断言，但它们没有依据、不能出现——不要重复它们，改用不具体的质感/结构描述，或者干脆不提这个细节：\n${avoidClaims.map(c => `- ${c}`).join("\n")}`;
+  return `已知场景：\n${list}\n\n这次尝试：${attempt}\n\n结算结果（内部信息，不要逐字复述，只用来生成感官反馈）：${outcomeSummary}${avoidBlock}`;
 }
+
+// New: post-NARRATE audit. Extracts only claims that read as specific, checkable
+// assertions (numbers, definite states, existence claims) -- explicitly NOT the L1-L2
+// texture/structure descriptions 世界反馈者手册.md permits improvising freely. Each
+// extracted claim then gets checked with the *unmodified* reachability-judge prompt
+// from reachability-inference-spike (imported directly, not copied) against the same
+// propositions NARRATE was given.
+export const CLAIM_EXTRACTOR_SYSTEM_PROMPT = `你会读到一段世界反馈者写给玩家的感官反馈文本，以及这段文本生成时依据的已知命题列表。你的任务是：从这段反馈文本里，挑出所有"具体、可核查的断言"——也就是那种如果被记录下来，以后可以被拿来对照、被违反或被引用的具体事实（比如精确数字、明确的存在性声明、明确的状态归属）。
+
+不要挑出单纯的质感/结构描述（硬、软、粗糙、有棱角、反光、明暗、起伏这类）——这些是允许即兴发挥的感官细节，不是需要核查的断言。只挑出可能违反"不能凭空具体化一个从未确定的世界属性"这条规则的那种断言。
+
+只输出 JSON：{"claims": string[]}——每条是从文本里提取出的、可以独立拿去核查的简短陈述句（不需要逐字引用原文，改写成清楚的独立陈述句即可）；如果这段反馈里没有这类断言，claims 是空数组。`;
+
+export const CLAIM_EXTRACTOR_JSON_SCHEMA = {
+  type: "object", additionalProperties: false, required: ["claims"],
+  properties: {claims: {type: "array", items: {type: "string"}}}
+};
+
+export function buildClaimExtractorUserPrompt(propositions, narrationText) {
+  const list = propositions.map(p => `- ${p.text}`).join("\n");
+  return `已知命题：\n${list}\n\n反馈文本：\n${narrationText}`;
+}
+
+// New: light binary reader of the reachability-judge's free-text verdict. Classifies
+// already-computed text; doesn't itself judge reachability.
+export const REACHABILITY_CLASSIFIER_SYSTEM_PROMPT = `你会收到一段关于某个命题是否"可达"的裁决文本。判断这段文本的结论是"可达"还是"不可达"。只输出 JSON：{"reachable": true|false}。`;
+
+export const REACHABILITY_CLASSIFIER_JSON_SCHEMA = {
+  type: "object", additionalProperties: false, required: ["reachable"], properties: {reachable: {type: "boolean"}}
+};
