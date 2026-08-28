@@ -1,0 +1,119 @@
+{
+  "generatedAt": "2026-08-28T14:09:59.376Z",
+  "accountId": "00f6c85f82f6297c8c0bef9460e013d9",
+  "model": "@cf/qwen/qwen3.8-27b",
+  "count": 3,
+  "results": [
+    {
+      "id": "unanimous-accept-expected",
+      "context": "",
+      "claim": "我轻轻推了一下虚掩的木门，门开了一条缝。",
+      "note": "普通无争议物理事件，预期三票接近一致通过，直接多数放行。",
+      "jurorVerdicts": [
+        {
+          "raw": "可信。",
+          "latencyMs": 56981
+        },
+        {
+          "raw": "可信。",
+          "latencyMs": 5799
+        },
+        {
+          "raw": "可信。",
+          "latencyMs": 2108
+        }
+      ],
+      "clerk": {
+        "latencyMs": 4877,
+        "finishReason": "stop",
+        "raw": "{\"classifications\":[\"通过\",\"通过\",\"通过\"],\"finalDecision\":\"放行\",\"rule\":\"majority-pass\",\"vetoReason\":\"\",\"vetoTriggered\":false}",
+        "parsed": {
+          "classifications": [
+            "通过",
+            "通过",
+            "通过"
+          ],
+          "finalDecision": "放行",
+          "rule": "majority-pass",
+          "vetoReason": "",
+          "vetoTriggered": false
+        },
+        "parseError": null
+      }
+    },
+    {
+      "id": "veto-expected-fabrication",
+      "context": "这是一间普通卧室，房间里有一张床、一个衣柜、一扇门。没有人提到过五斗柜或抽屉里有任何东西。",
+      "claim": "我从五斗柜最上层的抽屉里，拿出了一把手枪。",
+      "note": "凭空编造一个从未确立的实体，预期至少一票明确拒绝且依据是'无中生有'，应该触发否决，不需要凑够多数。",
+      "jurorVerdicts": [
+        {
+          "raw": "不可信，房间里没有五斗柜。",
+          "latencyMs": 1350
+        },
+        {
+          "raw": "不可信，这间卧室里没有五斗柜。",
+          "latencyMs": 10117
+        },
+        {
+          "raw": "不可信，房间里没有五斗柜。",
+          "latencyMs": 1328
+        }
+      ],
+      "clerk": {
+        "latencyMs": 31384,
+        "finishReason": "stop",
+        "raw": "{\"classifications\":[\"拒绝\",\"拒绝\",\"拒绝\"],\"finalDecision\":\"不放行\",\"rule\":\"veto\",\"vetoReason\":\"三位判官均指出五斗柜在给定场景中完全不存在（场景仅有床、衣柜、门），属于凭空编造的实体，触发单独否决。\",\"vetoTriggered\":true}",
+        "parsed": {
+          "classifications": [
+            "拒绝",
+            "拒绝",
+            "拒绝"
+          ],
+          "finalDecision": "不放行",
+          "rule": "veto",
+          "vetoReason": "三位判官均指出五斗柜在给定场景中完全不存在（场景仅有床、衣柜、门），属于凭空编造的实体，触发单独否决。",
+          "vetoTriggered": true
+        },
+        "parseError": null
+      }
+    },
+    {
+      "id": "genuine-disagreement-expected",
+      "context": "门缝距离地面大约0.8厘米。这条毛毯叠起来后大约0.8厘米厚，边缘看起来紧实，不算特别蓬松。",
+      "claim": "我用力把毛毯塞进门缝下面。",
+      "note": "缝隙和毛毯厚度精确相等，且毛毯被描述为'不算特别蓬松'（可压缩性弱于之前测过的版本）——这是故意卡在边界上的数值，预期三个同源判官可能给出不完全一致的裁决，用来测分歧信号和聚合规则在真正有分歧时的表现，而不是提前预设它该通过还是不该通过。",
+      "jurorVerdicts": [
+        {
+          "raw": "可信，但会很勉强——织物边缘能被压扁通过，不过大概率只能塞进去一部分，不会整条平整地贴住门底。",
+          "latencyMs": 7330
+        },
+        {
+          "raw": "刚好卡得住，但不会轻松滑入——紧实的边缘意味着它会顶住门底，可能把门微微顶起几毫米。",
+          "latencyMs": 49722
+        },
+        {
+          "raw": "刚好卡住，能塞进去但会绷得很紧，边缘紧实意味着它不会自己缩薄，塞进去后基本是顶死的。",
+          "latencyMs": 6674
+        }
+      ],
+      "clerk": {
+        "latencyMs": 28896,
+        "finishReason": "stop",
+        "raw": "{\"classifications\":[\"通过\",\"通过\",\"通过\"],\"finalDecision\":\"放行\",\"rule\":\"majority-pass\",\"vetoReason\":\"\",\"vetoTriggered\":false}",
+        "parsed": {
+          "classifications": [
+            "通过",
+            "通过",
+            "通过"
+          ],
+          "finalDecision": "放行",
+          "rule": "majority-pass",
+          "vetoReason": "",
+          "vetoTriggered": false
+        },
+        "parseError": null
+      }
+    }
+  ]
+}
