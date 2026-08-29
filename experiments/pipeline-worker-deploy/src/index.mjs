@@ -40,18 +40,25 @@ import {REACHABILITY_SYSTEM_PROMPT, buildUserPrompt as buildReachabilityUserProm
 import {renderPage} from "./page.mjs";
 
 // Default model for roles that need real reasoning/generation (ADJUDICATE, NARRATE,
-// Continuity Resolver, JUROR, CLAIM_EXTRACTOR, the reachability judge itself). Three
-// specific roles use a different, cheaper/faster model instead -- see MODEL_LIGHT and
-// MODEL_GROUND below, and docs/model-tier-spike-findings-2026-08-29.md for why: a real
-// A/B on labeled test cases showed GROUND holds accuracy on a same-family MoE model at
-// ~37% lower latency, and CLASSIFY/REACHABILITY_CLASSIFIER (reading an already-
-// generated verdict and picking a fixed label -- shallower than real generation) hold
-// perfect accuracy on a much smaller, much faster model. Both are Cloudflare-self-
-// hosted, per the loosened constraint in
+// Continuity Resolver, JUROR, CLAIM_EXTRACTOR, the reachability judge itself, and now
+// GROUND too -- see below). CLASSIFY/REACHABILITY_CLASSIFIER still use a lighter model
+// -- see MODEL_LIGHT_CLASSIFIER and docs/model-tier-spike-findings-2026-08-29.md for
+// why: reading an already-generated verdict and picking a fixed label is shallower
+// than real generation, held perfect accuracy on a much smaller, much faster model in
+// real A/B testing. Cloudflare-self-hosted only, per the loosened constraint in
 // docs/architecture-direction-consensus-2026-08-28.md section 13 -- never a runtime
 // fallback, each role's model is a fixed, tested choice.
 const MODEL = "@cf/qwen/qwen3.8-27b";
-const MODEL_GROUND = "@cf/qwen/qwen3-30b-a3b-fp8";
+// GROUND was switched to qwen3-30b-a3b-fp8 2026-08-29 based on an 8-case A/B (same
+// accuracy, ~37% faster) -- then reverted the same day after real human play found it
+// flip-flopping on vague spatial references ("看看周围"/"再看看周围") that weren't in
+// that test set: repeated identical calls at temperature 0 sometimes correctly
+// returned unbound:[] and sometimes wrongly flagged "周围" as a missing entity. The
+// baseline model was 100% consistent across repeats on the same cases (verified
+// directly, not assumed) -- the speed gain wasn't worth an intermittent correctness
+// regression on an entirely ordinary, common player phrasing. See
+// docs/model-tier-spike-findings-2026-08-29.md for the correction note.
+const MODEL_GROUND = MODEL;
 // Plain "@cf/meta/llama-3.1-8b-instruct" works fine via REST but errors via the
 // env.AI.run() Workers binding this file actually uses -- the binding's model
 // resolver still points at a deprecated internal alias
