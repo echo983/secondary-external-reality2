@@ -31,7 +31,7 @@ node experiments/pipeline-integration-slice/run.mjs          # 本地内存真�
 node experiments/pipeline-integration-slice/run-ai-search.mjs  # 接真实 AI Search 实例
 ```
 
-真实调用唯一批准的模型是 `@cf/qwen/qwen3.8-27b`（Cloudflare Workers AI）。把 API token 放在被 Git 忽略的 `secret/cftoken.txt`。
+真实调用只允许用 Cloudflare 自托管的模型（Workers AI 上 `@cf/...` 命名空间下的模型），不允许第三方 API、不允许自己另外托管的模型。具体哪个角色用哪个模型是经过真实 A/B 测试后的选择，不是运行时的降级/fallback——现在所有角色跑的都是 `@cf/qwen/qwen3.8-27b`。把 API token 放在被 Git 忽略的 `secret/cftoken.txt`。
 
 ## 真实部署
 

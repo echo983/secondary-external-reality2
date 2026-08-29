@@ -175,3 +175,15 @@ namespace(世界)
 - [Agents SDK · Cloudflare AI Search docs](https://developers.cloudflare.com/ai-search/agent-sdks/agents-sdk/)
 - [AI Search: the search primitive for your agents · Cloudflare Blog](https://blog.cloudflare.com/ai-search-agent-primitive/)
 - [Agents: Loop Control · AI SDK docs](https://ai-sdk.dev/docs/agents/loop-control)
+
+## 13. 模型约束放宽:从"只能用 qwen3.8-27b"改成"只能用 Cloudflare 自托管的模型"
+
+起因:优化"看看四周"耗时 231 秒这个真实体验问题时,定位到大头是推理 token 长度天然波动(已在 `reasoning_effort:"low"` 这个下限,压不下去了)和 Collapse 触发本身的成本,edwin 提出:能不能对流水线里偏机械的步骤,换用 Workers AI 上更小更快、能力弱一点的模型,用速度换一点能力冗余。这直接触及最早那条"仅允许使用 `@cf/qwen/qwen3.8-27b`"的约束——**这条约束是 edwin 自己在 session 最初定的,这次也是 edwin 自己主动提出要不要放宽,不是被说服放弃原则,是原作者在调整自己的规矩。**
+
+**放宽后的表述:只允许使用 Cloudflare 自托管的模型(Workers AI 上 `@cf/...` 命名空间下的任意模型),不允许第三方 API(OpenAI、Anthropic 等),不允许自己另外托管的模型。** 这个改动没有动原来约束真正的用意——"不允许运行时静默降级/fallback"(`docs/runtime-protocol.md` §12 那条)——**换模型必须是针对某个角色、经过真实 A/B 测试后的明确选择,写进代码里固定下来,不是"这次调用失败了就换个模型试试"这种运行时兜底。** 放宽的只是"能不能有不止一个模型在用",不是放松"模型选择要不要透明、可预期、可复现"这条更上位的原则。
+
+**哪些角色适合优先试换成更轻的模型,项目自己的设计注释里已经分了类,不用重新判断:**
+- 适合先试:GROUND(实体绑定,抽取/匹配任务)、CLASSIFY / REACHABILITY_CLASSIFIER(把已经生成好的文本归类成固定标签,不生成新内容)——这几个角色的代码注释里原话就是"light bookkeeping-level structure only... not modeling open-world meaning"。
+- 不该先动:ADJUDICATE、NARRATE、编剧(Continuity Resolver)、判官(JUROR)——真正需要推理/生成的角色,也是这一整个 session 里验证得最扎实、返工过真实 bug 的地方。CLAIM_EXTRACTOR 单独排除在"机械"这一类之外——虽然看起来像抽取,但已经因为校准问题返工过一次(过严、误伤合法内容),没有看起来那么简单。
+
+**换之前必须做什么,原则不变:** 不能凭猜测切换,要拿候选模型和现在的 qwen3.8-27b,在同一批已经验证过的测试用例上(`semantic-intent-spike`、`plausibility-judge-spike`、`reachability-inference-spike` 现成的用例集)做真实 A/B,比准确率有没有明显掉,不是只比速度。这次只是把约束改开、把优先级排清楚,还没有实际去查候选模型、也没有跑任何 A/B——这是下一步要做的事,不是这次已经做完的事。
