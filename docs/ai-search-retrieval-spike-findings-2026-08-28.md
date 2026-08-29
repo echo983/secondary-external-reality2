@@ -12,7 +12,7 @@
 
 - **文档摘要工具在这类细节上很快就到极限**(反复回答"这段没写"),真正搞清楚接口形状靠的是直接拿真实 token 试探性调用,不是继续查文档。
 - **`key`(文件路径)不是独立的表单字段,是通过 multipart 里 `file` 部分的文件名覆盖来设置的**(curl 里是 `-F "file=@path;filename=自定义路径"`)。
-- **自定义 metadata 字段格式没有攻克**——试了 JSON 字符串、bracket 记法、`custom_metadata`,要么报 `invalid_metadata_format`,要么被静默忽略。放弃了,改用路径结构(`props/{entity}/...`)代替,索引完成后系统会自动从路径生成 `folder` 字段,但**这个自动生成的 `folder` 字段在 `/search` 的过滤参数里也没测出正确用法**(两种参数写法都没报错,但都没有真正生效或者返回空)——这两块(自定义 metadata、检索时过滤)目前都是没解决的问题,不阻塞这次的核心测试,但以后要用实体过滤缩小检索范围时需要单独啃下来。
+- **自定义 metadata 字段格式没有攻克**——试了 JSON 字符串、bracket 记法、`custom_metadata`,要么报 `invalid_metadata_format`,要么被静默忽略。放弃了,改用路径结构(`props/{entity}/...`)代替,索引完成后系统会自动从路径生成 `folder` 字段,但**这个自动生成的 `folder` 字段在 `/search` 的过滤参数里也没测出正确用法**(两种参数写法都没报错,但都没有真正生效或者返回空)——这两块(自定义 metadata、检索时过滤)目前都是没解决的问题,不阻塞这次的核心测试,但以后要用实体过滤缩小检索范围时需要单独啃下来。**〔2026-08-29 更正〕这条结论是错的,当时只是顺手试了几种写法就放弃,没有真正查文档。正确写法是把 `filters` 套在 `ai_search_options.retrieval` 下面,folder 过滤是能跑通的,而且过滤发生在排序之前、不是事后筛选。详见 `docs/ai-search-folder-filtering-findings-2026-08-29.md`。这条原文保留不改写,只在这里补一个指向更正的说明。**
 - **实例默认开着查询缓存**(`cache: true, cache_threshold: "close_enough", cache_ttl: 172800`,两天)——第一次跑对比实验时完全没意识到这个变量,Mode B 查询返回的其实是 Mode A 的缓存结果(返回的 `key` 全是 `expA/...`,这个证据才让我发现问题)。已经把实例的 `cache` 关掉重跑。**这是这次最容易被忽略、但差点让整个对比实验失效的一个坑**,值得专门记一笔。
 - 更新实例配置用的是 `PUT`,不是 `PATCH`(`PATCH` 返回 "Route not found")。
 - 删除条目要用 `id`,不能用 `key`(用 `key` 会报 `item_not_found`)。
