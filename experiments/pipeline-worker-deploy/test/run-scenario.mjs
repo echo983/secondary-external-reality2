@@ -1,12 +1,13 @@
 // Runs the same 5-turn scenario as pipeline-integration-slice/run-ai-search.mjs, but
-// against the deployed sr2-pipeline-worker instead of a local Node process -- this is
-// the actual end-to-end proof that the whole validated pipeline (not just one role)
-// works when running as a real, stateless, deployed Worker against real AI Search.
+// against the deployed sr2-pipeline-worker instead of a local Node process, now
+// scoped to a specific world (see docs/ai-search-folder-filtering-findings-2026-08-29.md
+// -- worlds share one AI Search instance, isolated by folder-prefixed keys).
 
 import {mkdir, writeFile} from "node:fs/promises";
-import {waitUntilIndexed} from "../../ai-search-retrieval-spike/client.mjs";
 
 const WORKER_URL = process.argv[2] ?? "https://sr2-pipeline-worker.edwin-abel-3.workers.dev";
+const WORLD_ID = process.argv[3] ?? "smoke-test";
+const base = `${WORKER_URL}/w/${WORLD_ID}`;
 
 const attempts = [
   "看看毛毯摸起来怎么样。",
@@ -16,19 +17,26 @@ const attempts = [
   "打开五斗柜，把里面的枪拿出来。"
 ];
 
-console.log(`清空并重新播种 ${WORKER_URL} 的真相文档库...`);
-const seedRes = await fetch(`${WORKER_URL}/seed`, {method: "POST"});
+console.log(`清空并重新播种 ${base} 的真相文档库...`);
+const seedRes = await fetch(`${base}/seed`, {method: "POST"});
 const seedBody = await seedRes.json();
 console.log(`  已删除旧条目 ${seedBody.deletedPreviousItems} 个，写入创世事实 ${seedBody.seededCount} 条。`);
-console.log("  轮询等待索引真正完成（复用 ai-search-retrieval-spike 的 waitUntilIndexed，不再靠猜的固定等待）...");
-await waitUntilIndexed(seedBody.seededCount, {timeoutMs: 180_000});
+
+console.log("  轮询等待这个世界的条目数达到播种数量（真正等索引，不是固定等待）...");
+const seedStartedAt = Date.now();
+for (;;) {
+  const state = await (await fetch(`${base}/state`)).json();
+  if (state.itemCount >= seedBody.seededCount) { console.log(`  就绪，itemCount=${state.itemCount}`); break; }
+  if (Date.now() - seedStartedAt > 180_000) { console.log(`  等待超时，itemCount=${state.itemCount}，继续往下跑`); break; }
+  await new Promise(r => setTimeout(r, 5_000));
+}
 
 const results = [];
 for (const [index, attempt] of attempts.entries()) {
   console.log(`\n[${index + 1}/${attempts.length}] ${attempt}`);
   const startedAt = Date.now();
   try {
-    const res = await fetch(`${WORKER_URL}/attempt`, {
+    const res = await fetch(`${base}/attempt`, {
       method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({attempt})
     });
     const result = await res.json();
@@ -48,6 +56,6 @@ for (const [index, attempt] of attempts.entries()) {
 }
 
 await mkdir(new URL("../results/", import.meta.url), {recursive: true});
-const report = {generatedAt: new Date().toISOString(), workerUrl: WORKER_URL, results};
+const report = {generatedAt: new Date().toISOString(), workerUrl: WORKER_URL, worldId: WORLD_ID, results};
 await writeFile(new URL("../results/full-pipeline-worker-run.json", import.meta.url), `${JSON.stringify(report, null, 2)}\n`);
 console.log("\nWrote experiments/pipeline-worker-deploy/results/full-pipeline-worker-run.json");

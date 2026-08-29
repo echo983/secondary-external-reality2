@@ -2,21 +2,25 @@
 // (judge+clerk), the ENTIRE experiments/pipeline-integration-slice/pipeline.mjs
 // orchestration (GROUND -> RETRIEVE -> ADJUDICATE -> groundVerdict -> CLASSIFY ->
 // COLLAPSE -> COMMIT -> NARRATE+audit) runs as a real, deployed, stateless Cloudflare
-// Worker against the real sr2-truth-store AI Search instance -- the first end-to-end
-// run of this project's whole validated pipeline outside a local Node script.
+// Worker against the real sr2-truth-store AI Search instance.
 //
 // Every prompt/role is imported unmodified from pipeline-integration-slice/prompts.mjs
-// and reachability-inference-spike/prompts.mjs (same source of truth the local script
-// uses -- no drift risk). Only two things change relative to pipeline.mjs:
-//   1. Model transport: env.AI.run() (Workers AI binding) instead of REST fetch.
-//   2. Height bookkeeping: instead of an in-memory counter carried across a single
-//      Node process's loop, nextHeight() is *derived* each call from the max height
-//      already present in AI Search's item keys. This is deliberate, not an
-//      afterthought -- a stateless Worker has no memory across HTTP requests, so
-//      "what height are we at" has to live in the one place that actually persists:
-//      the truth store itself. This is the task-level-statelessness principle from
-//      docs/architecture-direction-consensus-2026-08-28.md section 12 put into
-//      practice, not just asserted.
+// and reachability-inference-spike/prompts.mjs. Two things differ from the local
+// pipeline.mjs: model transport (env.AI.run() binding) and Height bookkeeping (derived
+// each call from the max height in AI Search item keys -- a stateless Worker has no
+// memory across requests, so anything that must persist lives in the truth store).
+//
+// Multi-world support (2026-08-29, see docs/ai-search-folder-filtering-findings-
+// 2026-08-29.md): one internal person = one exclusive world. Worlds share the single
+// sr2-truth-store instance -- NOT one instance per person, that was the original plan
+// but turned out unnecessary once folder-based metadata filtering was confirmed
+// working (ai_search_options.retrieval.filters, filtering happens before ranking, not
+// a post-hoc result filter). Every item's key is prefixed `worlds/<worldId>/...`, and
+// every retrieve/list/delete call for a given world passes `filters: {folder:
+// "worlds/<worldId>/"}` (or filters the listed items client-side by key prefix, for
+// the plain /items endpoint which does not take the same filter parameter). Adding a
+// new world costs nothing operationally -- it is just a new worldId string, no
+// instance provisioning.
 
 import {
   GROUND_SYSTEM_PROMPT, GROUND_JSON_SCHEMA, buildGroundUserPrompt,
@@ -33,17 +37,17 @@ import {
 import {entityRegistry, genesisPropositions} from "../../pipeline-integration-slice/world.mjs";
 import {REACHABILITY_SYSTEM_PROMPT, buildUserPrompt as buildReachabilityUserPrompt}
   from "../../reachability-inference-spike/prompts.mjs";
+import {renderPage} from "./page.mjs";
 
 const MODEL = "@cf/qwen/qwen3.8-27b";
-const HEIGHT_TAG = /\/h(\d+)-/;
+// Matches "-h<n>-" in the flat key format `worlds/<id>/<entity>-h<n>-<source>-...txt`
+// (dash-delimited, since folder filtering requires a flat one-level-per-world key --
+// see append()/seedWorld() below). None of entityRegistry's names contain "-h<digit>-".
+const HEIGHT_TAG = /-h(\d+)-/;
+const WORLD_ID_PATTERN = /^[a-z0-9-]{1,40}$/;
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-// Retry-on-transient-failure, ported back from pipeline-integration-slice/client.mjs's
-// REST fetch retry loop -- dropped when this Worker was first written (see "diagnosed:
-// this port dropped..." in docs/pipeline-worker-deploy-findings-2026-08-29.md, turn 1's
-// bare `TypeError: fetch failed`), restored here as a single shared helper used by both
-// the model call and every AI Search REST call.
 async function withRetry(fn, {attempts = 4, label = "call"} = {}) {
   let lastError;
   for (let attempt = 0; attempt < attempts; attempt += 1) {
@@ -80,25 +84,50 @@ async function callModel(env, {system, user, jsonSchema, maxTokens = 1800}) {
   return extractText(body).trim();
 }
 
-// ---- AI Search REST (truth store), same endpoints as ai-search-retrieval-spike/client.mjs ----
+// ---- AI Search REST (truth store), scoped per world via key prefix + folder filter ----
 
 function aiSearchBase(env) {
   return `https://api.cloudflare.com/client/v4/accounts/${env.ACCOUNT_ID}/ai-search/instances/${env.AI_SEARCH_INSTANCE}`;
 }
 
-async function aiSearchListItems(env) {
-  return withRetry(async () => {
-    const res = await fetch(`${aiSearchBase(env)}/items?per_page=50`, {headers: {Authorization: `Bearer ${env.CF_API_TOKEN}`}});
-    const body = await res.json();
-    if (!body.success) throw new Error(`list items failed: ${JSON.stringify(body.errors)}`);
-    return body.result;
-  }, {label: "list items"});
+function worldFolder(worldId) {
+  return `worlds/${worldId}/`;
 }
 
-async function aiSearchDeleteAllItems(env) {
-  const items = await aiSearchListItems(env);
+// GET /items has no folder-filter parameter (that's a /search-only feature) -- lists
+// everything in the instance and paginates, caller filters by key prefix for the
+// world it cares about. Small internal-use corpus, so full pagination is cheap.
+async function aiSearchListAllItems(env) {
+  const all = [];
+  let page = 1;
+  for (;;) {
+    const items = await withRetry(async () => {
+      const res = await fetch(`${aiSearchBase(env)}/items?per_page=50&page=${page}`, {headers: {Authorization: `Bearer ${env.CF_API_TOKEN}`}});
+      const body = await res.json();
+      if (!body.success) throw new Error(`list items (page ${page}) failed: ${JSON.stringify(body.errors)}`);
+      return body.result;
+    }, {label: `list items page ${page}`});
+    all.push(...items);
+    if (items.length < 50) break;
+    page += 1;
+  }
+  return all;
+}
+
+async function aiSearchListWorldItems(env, worldId) {
+  const all = await aiSearchListAllItems(env);
+  const prefix = worldFolder(worldId);
+  return all.filter(i => i.key?.startsWith(prefix));
+}
+
+async function aiSearchDeleteWorldItems(env, worldId) {
+  const items = await aiSearchListWorldItems(env, worldId);
   for (const item of items) {
-    await fetch(`${aiSearchBase(env)}/items/${item.id}`, {method: "DELETE", headers: {Authorization: `Bearer ${env.CF_API_TOKEN}`}});
+    await withRetry(async () => {
+      const res = await fetch(`${aiSearchBase(env)}/items/${item.id}`, {method: "DELETE", headers: {Authorization: `Bearer ${env.CF_API_TOKEN}`}});
+      const body = await res.json();
+      if (!body.success) throw new Error(`delete ${item.key} failed: ${JSON.stringify(body.errors)}`);
+    }, {label: `delete ${item.key}`});
   }
   return items.length;
 }
@@ -114,12 +143,15 @@ async function aiSearchUploadItem(env, key, text) {
   }, {label: `upload ${key}`});
 }
 
-async function aiSearchSearch(env, query) {
+// Folder-scoped search: filters happen before ranking (confirmed empirically, see
+// docs/ai-search-folder-filtering-findings-2026-08-29.md), so another world's content
+// never dilutes or crowds out this world's results.
+async function aiSearchSearch(env, worldId, query) {
   return withRetry(async () => {
     const res = await fetch(`${aiSearchBase(env)}/search`, {
       method: "POST",
       headers: {Authorization: `Bearer ${env.CF_API_TOKEN}`, "Content-Type": "application/json"},
-      body: JSON.stringify({query})
+      body: JSON.stringify({query, ai_search_options: {retrieval: {filters: {folder: worldFolder(worldId)}}}})
     });
     const body = await res.json();
     if (!body.success) throw new Error(`search "${query}" failed: ${JSON.stringify(body.errors)}`);
@@ -132,8 +164,8 @@ function parseHeightFromKey(key) {
   return match ? Number(match[1]) : null;
 }
 
-async function nextHeight(env) {
-  const items = await aiSearchListItems(env);
+async function nextHeight(env, worldId) {
+  const items = await aiSearchListWorldItems(env, worldId);
   let max = -1;
   for (const item of items) {
     const h = parseHeightFromKey(item.key);
@@ -142,17 +174,23 @@ async function nextHeight(env) {
   return max + 1;
 }
 
-async function retrieve(env, entityNames, queryText) {
+async function retrieve(env, worldId, entityNames, queryText) {
   const query = queryText && queryText.trim() !== "" ? queryText : `关于 ${entityNames.join("、")} 的已知信息`;
-  const chunks = await aiSearchSearch(env, query);
+  const chunks = await aiSearchSearch(env, worldId, query);
   return chunks.map(c => ({text: c.text, height: parseHeightFromKey(c.item?.key), score: c.score, key: c.item?.key}))
     .filter(p => p.height !== null)
     .sort((a, b) => a.height - b.height);
 }
 
-async function append(env, text, entities, atHeight, source) {
+async function append(env, worldId, text, entities, atHeight, source) {
   const primaryEntity = entities[0] ?? "misc";
-  const key = `props/${primaryEntity}/h${atHeight}-${source}-${Date.now()}.txt`;
+  // Flat: one directory level per world (worlds/<worldId>/) with entity/height/source
+  // folded into the filename, not a subdirectory. Required for the folder filter to
+  // work at all -- confirmed empirically that AI Search's folder metadata matches the
+  // *exact* immediate directory of the key, not a prefix over ancestor directories, so
+  // worlds/<id>/props/<entity>/... would never match a filter on worlds/<id>/ alone.
+  // See docs/ai-search-folder-filtering-findings-2026-08-29.md.
+  const key = `${worldFolder(worldId)}${primaryEntity}-h${atHeight}-${source}-${Date.now()}.txt`;
   await aiSearchUploadItem(env, key, text);
   return {text, entities, height: atHeight, status: "active", source, key};
 }
@@ -188,12 +226,12 @@ async function runJurorsAndClerk(env, propositions, proposedFact) {
   return {verdicts, clerk: JSON.parse(clerkRaw)};
 }
 
-async function resolveClaimViaCollapse(env, groundResult, propositions, attempt, missingDescription) {
+async function resolveClaimViaCollapse(env, worldId, groundResult, propositions, attempt, missingDescription) {
   const proposedFact = await proposeCollapse(env, propositions, attempt, missingDescription);
   const {verdicts, clerk} = await runJurorsAndClerk(env, propositions, proposedFact);
   if (clerk.finalDecision !== "放行") return {committed: false, proposedFact, verdicts, clerk};
-  const height = await nextHeight(env);
-  const committedRecord = await append(env, proposedFact, groundResult.entities, height, "collapse");
+  const height = await nextHeight(env, worldId);
+  const committedRecord = await append(env, worldId, proposedFact, groundResult.entities, height, "collapse");
   return {committed: true, proposedFact, verdicts, clerk, height, committedRecord};
 }
 
@@ -212,7 +250,7 @@ async function checkReachable(env, propositions, claim) {
   return {claim, verdictText, reachable: JSON.parse(classifiedRaw).reachable};
 }
 
-async function narrateWithAudit(env, groundResult, propositions, attempt, outcomeSummary) {
+async function narrateWithAudit(env, worldId, groundResult, propositions, attempt, outcomeSummary) {
   const draft = await narrate(env, propositions, attempt, outcomeSummary);
   const claims = await extractClaims(env, propositions, draft);
   if (claims.length === 0) return {text: draft, draft, claims: [], checks: [], collapses: [], regenerated: false};
@@ -225,7 +263,7 @@ async function narrateWithAudit(env, groundResult, propositions, attempt, outcom
   const stillAvoid = [];
   const collapses = [];
   for (const check of unreachableChecks) {
-    const outcome = await resolveClaimViaCollapse(env, groundResult, workingPropositions, attempt, check.claim);
+    const outcome = await resolveClaimViaCollapse(env, worldId, groundResult, workingPropositions, attempt, check.claim);
     if (outcome.committed) {
       workingPropositions = [...workingPropositions, outcome.committedRecord];
       collapses.push({claim: check.claim, ...outcome});
@@ -239,7 +277,7 @@ async function narrateWithAudit(env, groundResult, propositions, attempt, outcom
   return {text: revised, draft, claims, checks, collapses, regenerated: true, finalPropositions: workingPropositions};
 }
 
-async function groundVerdict(env, groundResult, propositions, attempt, verdictText) {
+async function groundVerdict(env, worldId, groundResult, propositions, attempt, verdictText) {
   const claims = await extractClaims(env, propositions, verdictText);
   if (claims.length === 0) return {propositions, allResolved: true, anyCommitted: false, unresolvedClaims: [], claims: [], collapses: []};
 
@@ -252,7 +290,7 @@ async function groundVerdict(env, groundResult, propositions, attempt, verdictTe
   const collapses = [];
   let anyCommitted = false;
   for (const check of unreachableChecks) {
-    const outcome = await resolveClaimViaCollapse(env, groundResult, workingPropositions, attempt, check.claim);
+    const outcome = await resolveClaimViaCollapse(env, worldId, groundResult, workingPropositions, attempt, check.claim);
     if (outcome.committed) {
       workingPropositions = [...workingPropositions, outcome.committedRecord];
       anyCommitted = true;
@@ -267,31 +305,31 @@ async function groundVerdict(env, groundResult, propositions, attempt, verdictTe
 
 // ---- orchestration, structurally identical to pipeline-integration-slice/pipeline.mjs's processAttempt ----
 
-async function processAttempt(env, attempt) {
+async function processAttempt(env, worldId, attempt) {
   const log = {attempt, stages: []};
 
   const groundResult = await ground(env, attempt);
   log.stages.push({stage: "GROUND", output: groundResult});
   if (groundResult.unbound.length > 0) {
-    const height = await nextHeight(env);
+    const height = await nextHeight(env, worldId);
     const text = `边界：提到的"${groundResult.unbound.join("、")}"在这个世界里没有对应物，不存在。`;
     log.stages.push({stage: "BOUNDARY", height, text});
     return {...log, height, kind: "boundary", narration: text};
   }
 
-  let propositions = await retrieve(env, groundResult.entities, attempt);
+  let propositions = await retrieve(env, worldId, groundResult.entities, attempt);
   log.stages.push({stage: "RETRIEVE", output: propositions.map(p => p.text)});
 
   let verdictText = await adjudicate(env, propositions, attempt);
   log.stages.push({stage: "ADJUDICATE", output: verdictText});
 
-  const grounding = await groundVerdict(env, groundResult, propositions, attempt, verdictText);
+  const grounding = await groundVerdict(env, worldId, groundResult, propositions, attempt, verdictText);
   log.stages.push({stage: "ADJUDICATE_GROUNDING", output: {
     claims: grounding.claims, unresolvedClaims: grounding.unresolvedClaims,
     collapses: grounding.collapses.map(c => ({claim: c.claim, proposedFact: c.proposedFact, committed: c.committed, clerkDecision: c.clerk.finalDecision}))
   }});
   if (!grounding.allResolved) {
-    const height = await nextHeight(env);
+    const height = await nextHeight(env, worldId);
     const text = `边界：这次裁决依赖无法确定的事实（${grounding.unresolvedClaims.join("；")}），陪审团没有放行相应的补全。`;
     log.stages.push({stage: "BOUNDARY", height, text});
     return {...log, height, kind: "boundary", narration: text};
@@ -306,11 +344,11 @@ async function processAttempt(env, attempt) {
   log.stages.push({stage: "CLASSIFY", output: classification});
 
   if (classification.outcome === "insufficient") {
-    const outcome = await resolveClaimViaCollapse(env, groundResult, propositions, attempt, classification.missingAbout);
+    const outcome = await resolveClaimViaCollapse(env, worldId, groundResult, propositions, attempt, classification.missingAbout);
     log.stages.push({stage: "COLLAPSE", output: {proposedFact: outcome.proposedFact, verdicts: outcome.verdicts, clerk: outcome.clerk}});
 
     if (outcome.committed) {
-      propositions = await retrieve(env, groundResult.entities, attempt);
+      propositions = await retrieve(env, worldId, groundResult.entities, attempt);
       log.stages.push({stage: "RETRIEVE_AFTER_COLLAPSE", output: propositions.map(p => p.text)});
 
       verdictText = await adjudicate(env, propositions, attempt);
@@ -318,23 +356,23 @@ async function processAttempt(env, attempt) {
       classification = await classifyOutcome(env, verdictText);
       log.stages.push({stage: "CLASSIFY_AFTER_COLLAPSE", output: classification});
     } else {
-      const height = await nextHeight(env);
+      const height = await nextHeight(env, worldId);
       const text = `边界：这件事依赖一个无法确定的事实（${classification.missingAbout || "未指明"}），陪审团没有放行编剧提出的补全。`;
       log.stages.push({stage: "BOUNDARY", height, text});
       return {...log, height, kind: "boundary", narration: text};
     }
   }
 
-  const height = await nextHeight(env);
+  const height = await nextHeight(env, worldId);
   let committedFactText;
   if (classification.outcome === "plausible") {
     const cleanFact = await writeFact(env, attempt, verdictText);
     committedFactText = cleanFact !== "" ? cleanFact : `结果：${attempt} —— ${verdictText}`;
-    await append(env, committedFactText, groundResult.entities, height, "attempt-outcome");
+    await append(env, worldId, committedFactText, groundResult.entities, height, "attempt-outcome");
   }
   log.stages.push({stage: "COMMIT", height, outcome: classification.outcome, committedFactText});
 
-  const audited = await narrateWithAudit(env, groundResult, propositions, attempt, verdictText);
+  const audited = await narrateWithAudit(env, worldId, groundResult, propositions, attempt, verdictText);
   log.stages.push({stage: "NARRATE_AUDIT", output: {
     draft: audited.draft, extractedClaims: audited.claims,
     checks: audited.checks.map(c => ({claim: c.claim, reachable: c.reachable, verdictText: c.verdictText})),
@@ -345,43 +383,80 @@ async function processAttempt(env, attempt) {
   return {...log, height, kind: classification.outcome, narration: audited.text};
 }
 
+async function seedWorld(env, worldId) {
+  const deleted = await aiSearchDeleteWorldItems(env, worldId);
+  for (const p of genesisPropositions) {
+    // Same flat key structure as append() -- see the comment there.
+    const key = `${worldFolder(worldId)}${p.entities[0] ?? "misc"}-h${p.height}-genesis-${Math.random().toString(36).slice(2, 8)}.txt`;
+    await aiSearchUploadItem(env, key, p.text);
+  }
+  return {deletedPreviousItems: deleted, seededCount: genesisPropositions.length};
+}
+
 // ---- HTTP surface ----
+
+function jsonError(message, status = 400) {
+  return Response.json({error: message}, {status});
+}
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    const match = /^\/w\/([^/]+)(\/.*)?$/.exec(url.pathname);
 
-    if (url.pathname === "/seed" && request.method === "POST") {
+    if (!match) {
+      return new Response(
+        "sr2-pipeline-worker\nGET  /w/<worldId>            网页入口\nPOST /w/<worldId>/seed        清空并重新播种这个世界\nPOST /w/<worldId>/attempt     {attempt: string}\nGET  /w/<worldId>/state       当前世界是否已初始化\n",
+        {status: 200, headers: {"content-type": "text/plain; charset=utf-8"}}
+      );
+    }
+
+    const worldId = match[1];
+    const sub = match[2] ?? "";
+    if (!WORLD_ID_PATTERN.test(worldId)) return jsonError("worldId must match [a-z0-9-]{1,40}");
+
+    if (sub === "" && request.method === "GET") {
+      return new Response(renderPage(worldId), {status: 200, headers: {"content-type": "text/html; charset=utf-8"}});
+    }
+
+    if (sub === "/state" && request.method === "GET") {
       try {
-        const deleted = await aiSearchDeleteAllItems(env);
-        for (const p of genesisPropositions) {
-          const key = `props/${p.entities[0] ?? "misc"}/h${p.height}-genesis-${Math.random().toString(36).slice(2, 8)}.txt`;
-          await aiSearchUploadItem(env, key, p.text);
-        }
-        return Response.json({deletedPreviousItems: deleted, seededCount: genesisPropositions.length});
+        const items = await aiSearchListWorldItems(env, worldId);
+        // itemCount alone isn't enough to know the world is actually usable -- an item
+        // appears in the list immediately on upload but isn't searchable until AI
+        // Search finishes indexing it (status "completed"), which took anywhere from
+        // ~1s to 2+ minutes in real testing. A caller that only checks itemCount can
+        // send an /attempt against a world whose genesis facts aren't retrievable yet
+        // (confirmed: this happened once during testing -- RETRIEVE came back empty
+        // even though itemCount already matched the seeded count).
+        const pendingCount = items.filter(i => i.status !== "completed" && i.status !== "error").length;
+        return Response.json({worldId, itemCount: items.length, pendingCount, initialized: items.length > 0 && pendingCount === 0});
       } catch (error) {
-        return Response.json({error: String(error), stack: error?.stack}, {status: 502});
+        return jsonError(String(error), 502);
       }
     }
 
-    if (url.pathname === "/attempt" && request.method === "POST") {
-      let payload;
-      try { payload = await request.json(); } catch { return Response.json({error: "invalid JSON body"}, {status: 400}); }
-      if (typeof payload.attempt !== "string" || payload.attempt.trim() === "") {
-        return Response.json({error: "expected {attempt: string}"}, {status: 400});
+    if (sub === "/seed" && request.method === "POST") {
+      try {
+        return Response.json(await seedWorld(env, worldId));
+      } catch (error) {
+        return jsonError(String(error), 502);
       }
+    }
+
+    if (sub === "/attempt" && request.method === "POST") {
+      let payload;
+      try { payload = await request.json(); } catch { return jsonError("invalid JSON body"); }
+      if (typeof payload.attempt !== "string" || payload.attempt.trim() === "") return jsonError("expected {attempt: string}");
       const startedAt = Date.now();
       try {
-        const result = await processAttempt(env, payload.attempt);
+        const result = await processAttempt(env, worldId, payload.attempt);
         return Response.json({...result, totalElapsedMs: Date.now() - startedAt, handledAt: new Date().toISOString()});
       } catch (error) {
         return Response.json({error: String(error), totalElapsedMs: Date.now() - startedAt}, {status: 502});
       }
     }
 
-    return new Response(
-      "sr2-pipeline-worker\nPOST /seed (clears and re-seeds sr2-truth-store with genesis)\nPOST /attempt {attempt: string}\n",
-      {status: 200, headers: {"content-type": "text/plain; charset=utf-8"}}
-    );
+    return jsonError("not found", 404);
   }
 };
