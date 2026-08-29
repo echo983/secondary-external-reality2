@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-08-29T15:05:34.626Z",
+  "generatedAt": "2026-08-29T15:41:20.641Z",
   "workerUrl": "https://sr2-pipeline-worker.edwin-abel-3.workers.dev",
-  "worldId": "modeltiertest3",
+  "worldId": "fixverify1",
   "results": [
     {
       "attempt": "看看毛毯摸起来怎么样。",
@@ -21,7 +21,7 @@
         },
         {
           "stage": "ADJUDICATE",
-          "output": "可信，\"看看\"在这里是口语里\"试试、感受一下\"的意思，去摸毛毯感受触感没有障碍。"
+          "output": "信息不足，场景中没有提到任何毛毯。"
         },
         {
           "stage": "ADJUDICATE_GROUNDING",
@@ -35,32 +35,42 @@
           "stage": "CLASSIFY",
           "output": {
             "missingAbout": "",
-            "outcome": "plausible"
+            "outcome": "insufficient"
           }
         },
         {
-          "stage": "COMMIT",
-          "height": 1,
-          "outcome": "plausible",
-          "committedFactText": "结果：看看毛毯摸起来怎么样。 —— 可信，\"看看\"在这里是口语里\"试试、感受一下\"的意思，去摸毛毯感受触感没有障碍。"
-        },
-        {
-          "stage": "NARRATE_AUDIT",
+          "stage": "COLLAPSE",
           "output": {
-            "draft": "手掌贴上去，表面是软的，指腹能感觉到细密的纤维，不是平滑的，有一点点涩。手指往下压，纤维被分开，底下是更密的一层，压到底的时候能感觉到底下有东西撑着，没有完全陷进去。",
-            "extractedClaims": [],
-            "checks": [],
-            "collapses": [],
-            "regenerated": false,
-            "final": "手掌贴上去，表面是软的，指腹能感觉到细密的纤维，不是平滑的，有一点点涩。手指往下压，纤维被分开，底下是更密的一层，压到底的时候能感觉到底下有东西撑着，没有完全陷进去。"
+            "proposedFact": "毛毯摸起来是粗糙的。",
+            "verdicts": [
+              "不能接受。\"毛毯\"这个实体从未在任何已知命题中被确立过，属于无中生有地编造了一个新实体。",
+              "不能接受。\"毛毯\"这个实体从未在任何已知命题中被确立过，这条命题属于无中生有地编造了一个不存在的实体。",
+              "不能接受。\"毛毯\"这个实体从未在任何已知命题中被确立过，这条命题属于无中生有地编造了一个不存在的实体。"
+            ],
+            "clerk": {
+              "classifications": [
+                "拒绝",
+                "拒绝",
+                "拒绝"
+              ],
+              "finalDecision": "不放行",
+              "rule": "veto",
+              "vetoReason": "判官1指出'毛毯'这一实体在已知命题中从未出现，属于无中生有编造新实体，触发单独否决",
+              "vetoTriggered": true
+            }
           }
+        },
+        {
+          "stage": "BOUNDARY",
+          "height": 1,
+          "text": "边界：这件事依赖一个无法确定的事实（未指明），陪审团没有放行编剧提出的补全。"
         }
       ],
       "height": 1,
-      "kind": "plausible",
-      "narration": "手掌贴上去，表面是软的，指腹能感觉到细密的纤维，不是平滑的，有一点点涩。手指往下压，纤维被分开，底下是更密的一层，压到底的时候能感觉到底下有东西撑着，没有完全陷进去。",
-      "totalElapsedMs": 46684,
-      "handledAt": "2026-08-29T14:55:03.222Z"
+      "kind": "boundary",
+      "narration": "边界：这件事依赖一个无法确定的事实（未指明），陪审团没有放行编剧提出的补全。",
+      "totalElapsedMs": 49994,
+      "handledAt": "2026-08-29T15:30:42.750Z"
     },
     {
       "attempt": "量一下门缝到底有多宽。",
@@ -91,13 +101,13 @@
           "stage": "ADJUDICATE_GROUNDING",
           "output": {
             "claims": [
-              "door-1 关闭时与门框之间存在缝隙"
+              "door-1 和门框之间存在缝隙"
             ],
             "unresolvedClaims": [],
             "collapses": [
               {
-                "claim": "door-1 关闭时与门框之间存在缝隙",
-                "proposedFact": "door-1 关闭时与门框之间的缝隙宽约三毫米。",
+                "claim": "door-1 和门框之间存在缝隙",
+                "proposedFact": "door-1 和门框之间的缝隙宽约两厘米。",
                 "committed": true,
                 "clerkDecision": "放行"
               }
@@ -106,7 +116,7 @@
         },
         {
           "stage": "ADJUDICATE_AFTER_GROUNDING",
-          "output": "可信，三毫米的缝隙用细塞尺或类似工具可以量出来。"
+          "output": "可信，door-1 和门框之间的缝隙宽约两厘米，量一下即可确认。"
         },
         {
           "stage": "CLASSIFY",
@@ -119,53 +129,41 @@
           "stage": "COMMIT",
           "height": 2,
           "outcome": "plausible",
-          "committedFactText": "结果：量一下门缝到底有多宽。 —— 可信，三毫米的缝隙用细塞尺或类似工具可以量出来。"
+          "committedFactText": "结果：量一下门缝到底有多宽。 —— 可信，door-1 和门框之间的缝隙宽约两厘米，量一下即可确认。"
         },
         {
           "stage": "NARRATE_AUDIT",
           "output": {
-            "draft": "门缝里塞进去的那条薄片，两边都贴着，不松，抽出来时边缘各带过一道极细的摩擦感。你沿着缝从下往上走了一遍，薄片经过的每一处都是同样的宽度，没有哪一段明显变宽或变窄。",
+            "draft": "你把食指伸进门缝，指尖贴着门框内侧的木面，指腹抵住门板边缘。指节卡住了，再往里推不动。你换用食指和中指并拢，两指刚好塞进去，指腹和指背分别贴着两侧，没有余量。",
             "extractedClaims": [
-              "薄片的宽度与 door-1 关闭时门缝的宽度基本一致（薄片两边都贴着缝的两侧，不松）",
-              "door-1 关闭时与门框之间的缝隙宽度沿缝的整个长度方向是均匀的，没有哪一段明显变宽或变窄"
+              "door-1 和门框之间的缝隙宽度恰好等于食指和中指并拢的宽度，没有多余空间"
             ],
             "checks": [
               {
-                "claim": "薄片的宽度与 door-1 关闭时门缝的宽度基本一致（薄片两边都贴着缝的两侧，不松）",
+                "claim": "door-1 和门框之间的缝隙宽度恰好等于食指和中指并拢的宽度，没有多余空间",
                 "reachable": false,
-                "verdictText": "不可达。已知命题5给出了 door-1 关闭时门缝宽约三毫米，但所有已知命题中都没有提到任何\"薄片\"的存在、尺寸或宽度，因此无法建立薄片宽度与门缝宽度之间的关系。"
-              },
-              {
-                "claim": "door-1 关闭时与门框之间的缝隙宽度沿缝的整个长度方向是均匀的，没有哪一段明显变宽或变窄",
-                "reachable": false,
-                "verdictText": "不可达。已知命题5只给出了缝隙宽度\"约三毫米\"这一数值，并未说明该宽度沿缝隙长度方向是否均匀分布。\"约三毫米\"可能只是某一点的测量值或一个粗略估计，无法由此推出整条缝隙各处宽度一致、没有明显变宽或变窄。缺少关于缝隙均匀性的任何信息。"
+                "verdictText": "不可达。已知命题5只说缝隙宽\"约两厘米\"，这是一个近似值，无法推出\"恰好等于\"某个精确宽度且\"没有多余空间\"。此外，食指和中指并拢的宽度是多少属于已知命题未提供的外部事实，无法仅凭给定信息建立\"约两厘米\"与\"食指和中指并拢宽度\"之间的等量关系。"
               }
             ],
             "collapses": [
               {
-                "claim": "薄片的宽度与 door-1 关闭时门缝的宽度基本一致（薄片两边都贴着缝的两侧，不松）",
-                "proposedFact": "薄片的宽度与 door-1 关闭时门缝的宽度一致。",
-                "committed": false,
-                "clerkDecision": "不放行"
-              },
-              {
-                "claim": "door-1 关闭时与门框之间的缝隙宽度沿缝的整个长度方向是均匀的，没有哪一段明显变宽或变窄",
-                "proposedFact": "door-1 关闭时与门框之间的缝隙宽度沿缝的整个长度方向是均匀的。",
+                "claim": "door-1 和门框之间的缝隙宽度恰好等于食指和中指并拢的宽度，没有多余空间",
+                "proposedFact": "door-1 和门框之间的缝隙宽度恰好等于食指和中指并拢的宽度。",
                 "committed": true,
                 "height": 3,
                 "clerkDecision": "放行"
               }
             ],
             "regenerated": true,
-            "final": "你把一片薄而平的物件压进 door-1 与门框之间的缝隙。它进去的时候，整条缝的长度上阻力是均匀的，上端和下端摸起来没有差别。物件停在那里，没有被卡住，也没有松到要掉出来。"
+            "final": "你把食指和中指并拢，插进 door-1 和门框之间的缝隙里。两根手指的侧面同时贴上门板和门框，不松不紧，没有余量。"
           }
         }
       ],
       "height": 2,
       "kind": "plausible",
-      "narration": "你把一片薄而平的物件压进 door-1 与门框之间的缝隙。它进去的时候，整条缝的长度上阻力是均匀的，上端和下端摸起来没有差别。物件停在那里，没有被卡住，也没有松到要掉出来。",
-      "totalElapsedMs": 256343,
-      "handledAt": "2026-08-29T14:59:19.603Z"
+      "narration": "你把食指和中指并拢，插进 door-1 和门框之间的缝隙里。两根手指的侧面同时贴上门板和门框，不松不紧，没有余量。",
+      "totalElapsedMs": 280582,
+      "handledAt": "2026-08-29T15:35:23.368Z"
     },
     {
       "attempt": "把毛毯拿起来，塞到门缝下面。",
@@ -189,26 +187,25 @@
             "door-1 现在是关着的，没有上锁。",
             "door-1 在卧室里，通向走廊。",
             "self 在卧室里，站着。",
-            "结果：看看毛毯摸起来怎么样。 —— 可信，\"看看\"在这里是口语里\"试试、感受一下\"的意思，去摸毛毯感受触感没有障碍。",
-            "结果：量一下门缝到底有多宽。 —— 可信，三毫米的缝隙用细塞尺或类似工具可以量出来。",
-            "door-1 关闭时与门框之间的缝隙宽约三毫米。"
+            "door-1 和门框之间的缝隙宽约两厘米。",
+            "结果：量一下门缝到底有多宽。 —— 可信，door-1 和门框之间的缝隙宽约两厘米，量一下即可确认。"
           ]
         },
         {
           "stage": "ADJUDICATE",
-          "output": "不可信，三毫米的缝隙太窄，整块毛毯即使压缩也塞不进去。"
+          "output": "可信，毛毯柔软可压缩，两厘米的门缝足以塞入。"
         },
         {
           "stage": "ADJUDICATE_GROUNDING",
           "output": {
             "claims": [
-              "blanket-1 即使压缩后，其最小维度仍大于三毫米，无法通过 door-1 关闭时与门框之间约三毫米的缝隙"
+              "blanket-1 压缩后可以塞入 door-1 和门框之间约两厘米宽的缝隙中"
             ],
             "unresolvedClaims": [],
             "collapses": [
               {
-                "claim": "blanket-1 即使压缩后，其最小维度仍大于三毫米，无法通过 door-1 关闭时与门框之间约三毫米的缝隙",
-                "proposedFact": "blanket-1 压缩后的最小厚度大于三毫米。",
+                "claim": "blanket-1 压缩后可以塞入 door-1 和门框之间约两厘米宽的缝隙中",
+                "proposedFact": "blanket-1 压缩后厚度不超过两厘米。",
                 "committed": true,
                 "clerkDecision": "放行"
               }
@@ -217,53 +214,54 @@
         },
         {
           "stage": "ADJUDICATE_AFTER_GROUNDING",
-          "output": "不可信，毛毯压缩后的最小厚度大于三毫米的门缝，塞不进去。"
+          "output": "可信，blanket-1 压缩后厚度不超过两厘米，刚好能塞进约两厘米的门缝。"
         },
         {
           "stage": "CLASSIFY",
           "output": {
             "missingAbout": "",
-            "outcome": "implausible"
+            "outcome": "plausible"
           }
         },
         {
           "stage": "COMMIT",
           "height": 4,
-          "outcome": "implausible"
+          "outcome": "plausible",
+          "committedFactText": "blanket-1 被塞在门缝下方，压缩后厚度不超过两厘米，封堵了约两厘米的门缝。"
         },
         {
           "stage": "NARRATE_AUDIT",
           "output": {
-            "draft": "你拿起毛毯，把它压向门底和地面之间的缝隙。毛毯被压扁，抵在门框下沿上，没有穿过去。",
+            "draft": "你从 bed-1 上把 blanket-1 拿起来，攥在手里压缩。blanket-1 柔软，压缩后厚度不超过两厘米。你走到 door-1 前面蹲下，把压缩后的 blanket-1 从 door-1 底部往缝隙里塞。缝隙宽约两厘米，blanket-1 的边缘抵住门底，你往里推，blanket-1 被挤进缝隙里，边缘贴着门底和地面。",
             "extractedClaims": [
-              "blanket-1 压缩后的厚度大于 door-1 底部与地面之间的缝隙宽度"
+              "blanket-1 压缩后塞入 door-1 底部缝隙时，其边缘同时接触 door-1 的底部和地面"
             ],
             "checks": [
               {
-                "claim": "blanket-1 压缩后的厚度大于 door-1 底部与地面之间的缝隙宽度",
+                "claim": "blanket-1 压缩后塞入 door-1 底部缝隙时，其边缘同时接触 door-1 的底部和地面",
                 "reachable": false,
-                "verdictText": "不可达。已知命题9给出的是 door-1 关闭时\"与门框之间\"的缝隙宽约三毫米，而目标命题问的是\"底部与地面之间\"的缝隙宽度。门与门框之间的缝隙和门底边与地面之间的缝隙是两个不同的测量，已知命题中没有提供后者，因此无法比较。"
+                "verdictText": "不可达。已知命题只给出\"缝隙宽约两厘米\"和\"压缩后厚度不超过两厘米\"，\"不超过\"意味着厚度可能小于两厘米，若小于缝隙宽度则塞入后无法同时接触门底部和地面。要推出目标命题，需要确认压缩后厚度恰好等于缝隙宽度，而这一点在已知命题中没有给出。"
               }
             ],
             "collapses": [
               {
-                "claim": "blanket-1 压缩后的厚度大于 door-1 底部与地面之间的缝隙宽度",
-                "proposedFact": "blanket-1 压缩后的厚度大于 door-1 底部与地面之间的缝隙宽度。",
+                "claim": "blanket-1 压缩后塞入 door-1 底部缝隙时，其边缘同时接触 door-1 的底部和地面",
+                "proposedFact": "blanket-1 压缩后塞入 door-1 底部缝隙时，其边缘没有同时接触 door-1 的底部和地面。",
                 "committed": true,
                 "height": 5,
                 "clerkDecision": "放行"
               }
             ],
             "regenerated": true,
-            "final": "你拿起毛毯，把它压到最薄，往门底和地面之间那道缝里塞。毛毯压到最薄的时候，边缘还是比那道缝厚。你往前推，毛毯抵在门底上，过不去。"
+            "final": "你从 bed-1 上抓起 blanket-1，双手把它压扁。你蹲下去，把压扁的 blanket-1 从 door-1 底部边缘往地面方向推。blanket-1 滑进了 door-1 底部和地面之间的缝隙。塞进去之后，blanket-1 的边缘没有同时贴住 door-1 的底部和地面。"
           }
         }
       ],
       "height": 4,
-      "kind": "implausible",
-      "narration": "你拿起毛毯，把它压到最薄，往门底和地面之间那道缝里塞。毛毯压到最薄的时候，边缘还是比那道缝厚。你往前推，毛毯抵在门底上，过不去。",
-      "totalElapsedMs": 242634,
-      "handledAt": "2026-08-29T15:03:22.277Z"
+      "kind": "plausible",
+      "narration": "你从 bed-1 上抓起 blanket-1，双手把它压扁。你蹲下去，把压扁的 blanket-1 从 door-1 底部边缘往地面方向推。blanket-1 滑进了 door-1 底部和地面之间的缝隙。塞进去之后，blanket-1 的边缘没有同时贴住 door-1 的底部和地面。",
+      "totalElapsedMs": 184391,
+      "handledAt": "2026-08-29T15:38:27.795Z"
     },
     {
       "attempt": "再检查一下毛毯现在的样子。",
@@ -284,19 +282,21 @@
             "blanket-1 现在放在 bed-1 上。",
             "bed-1 在卧室里。",
             "door-1 现在是关着的，没有上锁。",
-            "结果：看看毛毯摸起来怎么样。 —— 可信，\"看看\"在这里是口语里\"试试、感受一下\"的意思，去摸毛毯感受触感没有障碍。",
-            "结果：量一下门缝到底有多宽。 —— 可信，三毫米的缝隙用细塞尺或类似工具可以量出来。",
-            "blanket-1 压缩后的最小厚度大于三毫米。"
+            "结果：量一下门缝到底有多宽。 —— 可信，door-1 和门框之间的缝隙宽约两厘米，量一下即可确认。",
+            "blanket-1 被塞在门缝下方，压缩后厚度不超过两厘米，封堵了约两厘米的门缝。",
+            "blanket-1 压缩后厚度不超过两厘米。"
           ]
         },
         {
           "stage": "ADJUDICATE",
-          "output": "可信，毛毯就在床上，看一眼没有障碍。"
+          "output": "毛毯被压缩着塞在 door-1 门缝下方，厚度不超过两厘米，整体呈扁平状贴着地面，边缘被门框和门底夹住。"
         },
         {
           "stage": "ADJUDICATE_GROUNDING",
           "output": {
-            "claims": [],
+            "claims": [
+              "blanket-1 的边缘被门框和 door-1 门底夹住"
+            ],
             "unresolvedClaims": [],
             "collapses": []
           }
@@ -312,41 +312,47 @@
           "stage": "COMMIT",
           "height": 6,
           "outcome": "plausible",
-          "committedFactText": "结果：再检查一下毛毯现在的样子。 —— 可信，毛毯就在床上，看一眼没有障碍。"
+          "committedFactText": "结果：再检查一下毛毯现在的样子。 —— 毛毯被压缩着塞在 door-1 门缝下方，厚度不超过两厘米，整体呈扁平状贴着地面，边缘被门框和门底夹住。"
         },
         {
           "stage": "NARRATE_AUDIT",
           "output": {
-            "draft": "你看向 bed-1 上的 blanket-1。它铺在床面上，表面有褶皱和起伏，边缘有一部分垂到床沿外面。从侧面看，blanket-1 的厚度各处不一样，有的地方薄一些，有的地方厚一些。",
+            "draft": "你蹲下来看门底。毛毯被压扁了，贴着地面，厚度很薄，边缘卡在门框和门底之间。",
             "extractedClaims": [
-              "blanket-1 的边缘有一部分超出 bed-1 的床沿，即 blanket-1 在至少一个方向上的宽度大于 bed-1 在该方向上的宽度"
+              "blanket-1 贴着地面",
+              "blanket-1 的边缘卡在门框和门底之间"
             ],
             "checks": [
               {
-                "claim": "blanket-1 的边缘有一部分超出 bed-1 的床沿，即 blanket-1 在至少一个方向上的宽度大于 bed-1 在该方向上的宽度",
+                "claim": "blanket-1 贴着地面",
+                "reachable": true,
+                "verdictText": "可达。命题6说blanket-1被塞在门缝下方并封堵了门缝，\"门缝下方\"即门底与地面之间的缝隙，塞入该位置意味着blanket-1贴着地面。"
+              },
+              {
+                "claim": "blanket-1 的边缘卡在门框和门底之间",
                 "reachable": false,
-                "verdictText": "不可达。已知命题只说明 blanket-1 放在 bed-1 上（命题2），以及它的材质特性和压缩后厚度（命题1、7），但没有任何命题涉及 blanket-1 与 bed-1 在宽度方向上的尺寸比较。\"放在上面\"这一位置关系本身不能推出毛毯是否超出床沿——它可能完全在床内，也可能超出，已知信息无法区分这两种情况。"
+                "verdictText": "不可达。已知命题6只说blanket-1\"被塞在门缝下方\"，并未描述其边缘\"卡在\"门框和门底之间。\"塞在\"和\"边缘卡在\"是不同的状态描述——后者暗示边缘被夹住固定，前者仅表示放置。此外，\"门缝下方\"与\"门框和门底之间\"也不是完全等同的表述，已知命题没有给出足够信息确认边缘被卡住这一具体状态。"
               }
             ],
             "collapses": [
               {
-                "claim": "blanket-1 的边缘有一部分超出 bed-1 的床沿，即 blanket-1 在至少一个方向上的宽度大于 bed-1 在该方向上的宽度",
-                "proposedFact": "blanket-1 的边缘超出了 bed-1 的床沿。",
+                "claim": "blanket-1 的边缘卡在门框和门底之间",
+                "proposedFact": "blanket-1 的边缘被夹在 door-1 的底边和门框之间。",
                 "committed": true,
                 "height": 7,
                 "clerkDecision": "放行"
               }
             ],
             "regenerated": true,
-            "final": "毛毯铺在床面上，边缘垂过床沿，搭在床侧。布面不平整，有折痕和起伏，没有绷紧。"
+            "final": "你蹲下来看门底。毛毯被压扁了，贴着地面，厚度很薄，边缘卡在门底和门框之间。"
           }
         }
       ],
       "height": 6,
       "kind": "plausible",
-      "narration": "毛毯铺在床面上，边缘垂过床沿，搭在床侧。布面不平整，有折痕和起伏，没有绷紧。",
-      "totalElapsedMs": 116272,
-      "handledAt": "2026-08-29T15:05:18.583Z"
+      "narration": "你蹲下来看门底。毛毯被压扁了，贴着地面，厚度很薄，边缘卡在门底和门框之间。",
+      "totalElapsedMs": 167762,
+      "handledAt": "2026-08-29T15:41:15.584Z"
     },
     {
       "attempt": "打开五斗柜，把里面的枪拿出来。",
@@ -363,15 +369,15 @@
         },
         {
           "stage": "BOUNDARY",
-          "height": 8,
+          "height": 7,
           "text": "边界：提到的\"五斗柜、枪\"在这个世界里没有对应物，不存在。"
         }
       ],
-      "height": 8,
+      "height": 7,
       "kind": "boundary",
       "narration": "边界：提到的\"五斗柜、枪\"在这个世界里没有对应物，不存在。",
-      "totalElapsedMs": 15989,
-      "handledAt": "2026-08-29T15:05:34.608Z"
+      "totalElapsedMs": 5005,
+      "handledAt": "2026-08-29T15:41:20.624Z"
     }
   ]
 }

@@ -442,7 +442,17 @@ async function processAttempt(env, worldId, attempt) {
     log.stages.push({stage: "COLLAPSE", output: {proposedFact: outcome.proposedFact, verdicts: outcome.verdicts, clerk: outcome.clerk}});
 
     if (outcome.committed) {
-      propositions = await retrieve(env, worldId, groundResult.entities, attempt);
+      // Root cause of a real contradiction found via human play 2026-08-29 (see
+      // docs/collapse-indexing-race-findings-2026-08-29.md): this used to re-RETRIEVE
+      // from AI Search right after the commit, gambling that indexing would keep up.
+      // When it didn't, the fresh RETRIEVE silently came back without the fact just
+      // committed, so everything downstream (including NARRATE's own audit-driven
+      // Collapse loop) proceeded unaware it existed and could approve something that
+      // directly contradicted it. Fixed the same way groundVerdict/resolveDraftAudit's
+      // own loops already do it safely: append the record we already know we just
+      // wrote, in memory, instead of re-querying a store with unpredictable indexing
+      // latency for something we don't need to ask it about.
+      propositions = [...propositions, outcome.committedRecord];
       log.stages.push({stage: "RETRIEVE_AFTER_COLLAPSE", output: propositions.map(p => p.text)});
 
       verdictText = await adjudicate(env, propositions, attempt);
