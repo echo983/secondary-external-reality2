@@ -73,6 +73,7 @@ function extractText(body) {
 }
 
 async function callModel(env, {system, user, jsonSchema, maxTokens = 1800}) {
+  const __t0 = Date.now();
   const body = await withRetry(() => env.AI.run(MODEL, {
     messages: [{role: "system", content: system}, {role: "user", content: user}],
     // reasoning_effort: "low" is the real, documented lever for this model (values:
@@ -81,6 +82,7 @@ async function callModel(env, {system, user, jsonSchema, maxTokens = 1800}) {
     temperature: 0, reasoning_effort: "low", max_completion_tokens: maxTokens,
     ...(jsonSchema === undefined ? {} : {response_format: {type: "json_schema", json_schema: jsonSchema}})
   }), {label: "AI.run"});
+  console.log(`[TIMING] callModel(${system.slice(0, 24).replace(/\n/g, " ")}...) took ${Date.now() - __t0}ms`);
   return extractText(body).trim();
 }
 
@@ -98,6 +100,7 @@ function worldFolder(worldId) {
 // everything in the instance and paginates, caller filters by key prefix for the
 // world it cares about. Small internal-use corpus, so full pagination is cheap.
 async function aiSearchListAllItems(env) {
+  const __t0 = Date.now();
   const all = [];
   let page = 1;
   for (;;) {
@@ -111,6 +114,7 @@ async function aiSearchListAllItems(env) {
     if (items.length < 50) break;
     page += 1;
   }
+  console.log(`[TIMING] aiSearchListAllItems() ${page} page(s), ${all.length} items total, took ${Date.now() - __t0}ms`);
   return all;
 }
 
@@ -147,7 +151,8 @@ async function aiSearchUploadItem(env, key, text) {
 // docs/ai-search-folder-filtering-findings-2026-08-29.md), so another world's content
 // never dilutes or crowds out this world's results.
 async function aiSearchSearch(env, worldId, query) {
-  return withRetry(async () => {
+  const __t0 = Date.now();
+  const chunks = await withRetry(async () => {
     const res = await fetch(`${aiSearchBase(env)}/search`, {
       method: "POST",
       headers: {Authorization: `Bearer ${env.CF_API_TOKEN}`, "Content-Type": "application/json"},
@@ -157,6 +162,8 @@ async function aiSearchSearch(env, worldId, query) {
     if (!body.success) throw new Error(`search "${query}" failed: ${JSON.stringify(body.errors)}`);
     return body.result.chunks;
   }, {label: `search "${query}"`});
+  console.log(`[TIMING] aiSearchSearch("${query}") took ${Date.now() - __t0}ms`);
+  return chunks;
 }
 
 function parseHeightFromKey(key) {
@@ -240,7 +247,11 @@ async function narrate(env, propositions, attempt, outcomeSummary, avoidClaims) 
 }
 
 async function extractClaims(env, propositions, narrationText) {
-  const raw = await callModel(env, {system: CLAIM_EXTRACTOR_SYSTEM_PROMPT, user: buildClaimExtractorUserPrompt(propositions, narrationText), jsonSchema: CLAIM_EXTRACTOR_JSON_SCHEMA, maxTokens: 1800});
+  // 1800 was observed to be fully consumed by reasoning trace alone (zero content,
+  // finish_reason=length) in a real /attempt call 2026-08-29 -- reasoning length is
+  // inherently variable (docs/reasoning-token-diagnosis-findings-2026-08-29.md), this
+  // role apparently needs more headroom than others. Raised, not a guess.
+  const raw = await callModel(env, {system: CLAIM_EXTRACTOR_SYSTEM_PROMPT, user: buildClaimExtractorUserPrompt(propositions, narrationText), jsonSchema: CLAIM_EXTRACTOR_JSON_SCHEMA, maxTokens: 3000});
   return JSON.parse(raw).claims;
 }
 
@@ -250,12 +261,23 @@ async function checkReachable(env, propositions, claim) {
   return {claim, verdictText, reachable: JSON.parse(classifiedRaw).reachable};
 }
 
-async function narrateWithAudit(env, worldId, groundResult, propositions, attempt, outcomeSummary) {
+// Split from the former single narrateWithAudit into two phases so the caller can run
+// the first phase concurrently with COMMIT's write (see processAttempt): drafting and
+// checking reachability touch nothing in the store (no height allocation, no writes),
+// so there is no race with COMMIT's own nextHeight()/append(). The second phase
+// (resolveDraftAudit) DOES allocate heights via resolveClaimViaCollapse and therefore
+// must run only after COMMIT's height allocation has actually landed -- caller is
+// responsible for sequencing that (awaiting both, then calling this after).
+async function draftAndCheck(env, propositions, attempt, outcomeSummary) {
   const draft = await narrate(env, propositions, attempt, outcomeSummary);
   const claims = await extractClaims(env, propositions, draft);
-  if (claims.length === 0) return {text: draft, draft, claims: [], checks: [], collapses: [], regenerated: false};
-
+  if (claims.length === 0) return {draft, claims: [], checks: []};
   const checks = await Promise.all(claims.map(claim => checkReachable(env, propositions, claim)));
+  return {draft, claims, checks};
+}
+
+async function resolveDraftAudit(env, worldId, groundResult, propositions, attempt, outcomeSummary, draftResult) {
+  const {draft, claims, checks} = draftResult;
   const unreachableChecks = checks.filter(c => !c.reachable);
   if (unreachableChecks.length === 0) return {text: draft, draft, claims, checks, collapses: [], regenerated: false};
 
@@ -308,7 +330,15 @@ async function groundVerdict(env, worldId, groundResult, propositions, attempt, 
 async function processAttempt(env, worldId, attempt) {
   const log = {attempt, stages: []};
 
-  const groundResult = await ground(env, attempt);
+  // GROUND and RETRIEVE run concurrently: retrieve()'s search query is always the raw
+  // attempt text (entityNames is only a fallback for an empty query, which never
+  // happens here), so RETRIEVE has no real data dependency on GROUND's result -- only
+  // on whether we end up needing it at all. If GROUND rejects the attempt as unbound,
+  // the speculative RETRIEVE result is simply discarded below.
+  const [groundResult, speculativeRetrieve] = await Promise.all([
+    ground(env, attempt),
+    retrieve(env, worldId, [], attempt)
+  ]);
   log.stages.push({stage: "GROUND", output: groundResult});
   if (groundResult.unbound.length > 0) {
     const height = await nextHeight(env, worldId);
@@ -317,13 +347,22 @@ async function processAttempt(env, worldId, attempt) {
     return {...log, height, kind: "boundary", narration: text};
   }
 
-  let propositions = await retrieve(env, worldId, groundResult.entities, attempt);
+  let propositions = speculativeRetrieve;
   log.stages.push({stage: "RETRIEVE", output: propositions.map(p => p.text)});
 
   let verdictText = await adjudicate(env, propositions, attempt);
   log.stages.push({stage: "ADJUDICATE", output: verdictText});
 
-  const grounding = await groundVerdict(env, worldId, groundResult, propositions, attempt, verdictText);
+  // groundVerdict (audits ADJUDICATE's own verdict) and classifyOutcome both read the
+  // same verdictText and don't depend on each other's output -- UNLESS grounding
+  // triggers a Collapse-driven recommit, in which case verdictText itself changes and
+  // the speculative classification below has to be thrown away and redone on the new
+  // text. Run them concurrently and only keep the speculative result when grounding
+  // didn't change anything (the common case).
+  const [grounding, speculativeClassification] = await Promise.all([
+    groundVerdict(env, worldId, groundResult, propositions, attempt, verdictText),
+    classifyOutcome(env, verdictText)
+  ]);
   log.stages.push({stage: "ADJUDICATE_GROUNDING", output: {
     claims: grounding.claims, unresolvedClaims: grounding.unresolvedClaims,
     collapses: grounding.collapses.map(c => ({claim: c.claim, proposedFact: c.proposedFact, committed: c.committed, clerkDecision: c.clerk.finalDecision}))
@@ -334,13 +373,16 @@ async function processAttempt(env, worldId, attempt) {
     log.stages.push({stage: "BOUNDARY", height, text});
     return {...log, height, kind: "boundary", narration: text};
   }
+
+  let classification;
   if (grounding.anyCommitted) {
     propositions = grounding.propositions;
     verdictText = await adjudicate(env, propositions, attempt);
     log.stages.push({stage: "ADJUDICATE_AFTER_GROUNDING", output: verdictText});
+    classification = await classifyOutcome(env, verdictText);
+  } else {
+    classification = speculativeClassification;
   }
-
-  let classification = await classifyOutcome(env, verdictText);
   log.stages.push({stage: "CLASSIFY", output: classification});
 
   if (classification.outcome === "insufficient") {
@@ -363,16 +405,29 @@ async function processAttempt(env, worldId, attempt) {
     }
   }
 
+  // Height allocation for COMMIT must happen before anything that could also allocate
+  // a height (the draft/audit's eventual Collapse resolution), to avoid two concurrent
+  // nextHeight() calls landing on the same value. But COMMIT's actual write
+  // (writeFact + append) and NARRATE's draft-generation + claim-extraction +
+  // reachability-checks don't touch each other's inputs or the store's height
+  // bookkeeping at all, so those two can run concurrently -- only the *resolution* of
+  // any unreachable claim (resolveDraftAudit, which does allocate heights) has to wait
+  // until after this Promise.all settles, guaranteeing COMMIT's write has landed.
   const height = await nextHeight(env, worldId);
   let committedFactText;
-  if (classification.outcome === "plausible") {
-    const cleanFact = await writeFact(env, attempt, verdictText);
-    committedFactText = cleanFact !== "" ? cleanFact : `结果：${attempt} —— ${verdictText}`;
-    await append(env, worldId, committedFactText, groundResult.entities, height, "attempt-outcome");
-  }
+  const [, draftResult] = await Promise.all([
+    (async () => {
+      if (classification.outcome === "plausible") {
+        const cleanFact = await writeFact(env, attempt, verdictText);
+        committedFactText = cleanFact !== "" ? cleanFact : `结果：${attempt} —— ${verdictText}`;
+        await append(env, worldId, committedFactText, groundResult.entities, height, "attempt-outcome");
+      }
+    })(),
+    draftAndCheck(env, propositions, attempt, verdictText)
+  ]);
   log.stages.push({stage: "COMMIT", height, outcome: classification.outcome, committedFactText});
 
-  const audited = await narrateWithAudit(env, worldId, groundResult, propositions, attempt, verdictText);
+  const audited = await resolveDraftAudit(env, worldId, groundResult, propositions, attempt, verdictText, draftResult);
   log.stages.push({stage: "NARRATE_AUDIT", output: {
     draft: audited.draft, extractedClaims: audited.claims,
     checks: audited.checks.map(c => ({claim: c.claim, reachable: c.reachable, verdictText: c.verdictText})),
