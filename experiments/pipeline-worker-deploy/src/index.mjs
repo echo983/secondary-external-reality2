@@ -148,6 +148,33 @@ async function aiSearchListWorldItems(env, worldId) {
   return all.filter(i => i.key?.startsWith(prefix));
 }
 
+// Closes the CROSS-turn half of the indexing race documented in
+// docs/collapse-indexing-race-findings-2026-08-29.md -- the fix there only covers a
+// fact committed and then re-read within the SAME /attempt call (safe: the record is
+// already in memory). A fact committed near the end of one turn can still not be
+// indexed yet by the time the player's NEXT turn's RETRIEVE runs, since nothing
+// forced this turn to wait. Called once, right before processAttempt returns, on
+// every item id committed during this turn -- bounded added latency (once per turn,
+// not once per commit), but the player literally cannot send a new turn before
+// receiving this response, so by the time they do, this turn's writes are guaranteed
+// searchable.
+async function waitForIndexing(env, worldId, ids, {timeoutMs = 150_000, pollMs = 4_000} = {}) {
+  if (ids.length === 0) return {waitedMs: 0, allIndexed: true};
+  const startedAt = Date.now();
+  const pending = new Set(ids);
+  for (;;) {
+    const items = await aiSearchListWorldItems(env, worldId);
+    const byId = new Map(items.map(i => [i.id, i]));
+    for (const id of [...pending]) {
+      const item = byId.get(id);
+      if (item && (item.status === "completed" || item.status === "error")) pending.delete(id);
+    }
+    if (pending.size === 0) return {waitedMs: Date.now() - startedAt, allIndexed: true};
+    if (Date.now() - startedAt > timeoutMs) return {waitedMs: Date.now() - startedAt, allIndexed: false, stillPending: pending.size};
+    await delay(pollMs);
+  }
+}
+
 async function aiSearchDeleteWorldItems(env, worldId) {
   const items = await aiSearchListWorldItems(env, worldId);
   for (const item of items) {
@@ -169,6 +196,28 @@ async function aiSearchUploadItem(env, key, text) {
     if (!body.success) throw new Error(`upload ${key} failed: ${JSON.stringify(body.errors)}`);
     return body.result;
   }, {label: `upload ${key}`});
+}
+
+async function aiSearchDownloadItem(env, id) {
+  return withRetry(async () => {
+    const res = await fetch(`${aiSearchBase(env)}/items/${id}/download`, {headers: {Authorization: `Bearer ${env.CF_API_TOKEN}`}});
+    if (!res.ok) throw new Error(`download ${id} failed: ${res.status}`);
+    return res.text();
+  }, {label: `download ${id}`});
+}
+
+// Debug view (docs/architecture-... section on structural gaps, 2026-08-29): before
+// this, inspecting what a world actually believes required a one-off script against
+// the raw AI Search REST API -- that's how the H6/H7 contradiction in
+// docs/collapse-indexing-race-findings-2026-08-29.md got diagnosed. Making this a
+// normal endpoint means that kind of check doesn't need a fresh script every time.
+async function getWorldFacts(env, worldId) {
+  const items = await aiSearchListWorldItems(env, worldId);
+  const withText = await Promise.all(items.map(async item => ({
+    key: item.key, status: item.status, height: parseHeightFromKey(item.key),
+    text: item.status === "completed" ? await aiSearchDownloadItem(env, item.id) : null
+  })));
+  return withText.sort((a, b) => (a.height ?? -1) - (b.height ?? -1));
 }
 
 // Folder-scoped search: filters happen before ranking (confirmed empirically, see
@@ -222,8 +271,8 @@ async function append(env, worldId, text, entities, atHeight, source) {
   // worlds/<id>/props/<entity>/... would never match a filter on worlds/<id>/ alone.
   // See docs/ai-search-folder-filtering-findings-2026-08-29.md.
   const key = `${worldFolder(worldId)}${primaryEntity}-h${atHeight}-${source}-${Date.now()}.txt`;
-  await aiSearchUploadItem(env, key, text);
-  return {text, entities, height: atHeight, status: "active", source, key};
+  const uploaded = await aiSearchUploadItem(env, key, text);
+  return {text, entities, height: atHeight, status: "active", source, key, id: uploaded.id};
 }
 
 // ---- roles (unchanged logic from pipeline-integration-slice/pipeline.mjs, transport swapped) ----
@@ -381,6 +430,13 @@ async function groundVerdict(env, worldId, groundResult, propositions, attempt, 
 
 async function processAttempt(env, worldId, attempt) {
   const log = {attempt, stages: []};
+  // Every item id committed anywhere during this turn -- waited on right before every
+  // return (see waitForIndexing's comment for why: closes the cross-turn half of the
+  // indexing race, the same-turn half is already closed by not re-retrieving from the
+  // store after a same-turn commit). Collected progressively since a boundary can
+  // return after some Collapse resolutions already landed (grounding can be
+  // anyCommitted=true even when allResolved=false, if the batch was mixed).
+  const committedIds = [];
 
   // GROUND and RETRIEVE run concurrently: retrieve()'s search query is always the raw
   // attempt text (entityNames is only a fallback for an empty query, which never
@@ -419,10 +475,13 @@ async function processAttempt(env, worldId, attempt) {
     claims: grounding.claims, unresolvedClaims: grounding.unresolvedClaims,
     collapses: grounding.collapses.map(c => ({claim: c.claim, proposedFact: c.proposedFact, committed: c.committed, clerkDecision: c.clerk.finalDecision}))
   }});
+  for (const c of grounding.collapses) if (c.committed) committedIds.push(c.committedRecord.id);
+
   if (!grounding.allResolved) {
     const height = await nextHeight(env, worldId);
     const text = `边界：这次裁决依赖无法确定的事实（${grounding.unresolvedClaims.join("；")}），陪审团没有放行相应的补全。`;
     log.stages.push({stage: "BOUNDARY", height, text});
+    await waitForIndexing(env, worldId, committedIds);
     return {...log, height, kind: "boundary", narration: text};
   }
 
@@ -442,6 +501,7 @@ async function processAttempt(env, worldId, attempt) {
     log.stages.push({stage: "COLLAPSE", output: {proposedFact: outcome.proposedFact, verdicts: outcome.verdicts, clerk: outcome.clerk}});
 
     if (outcome.committed) {
+      committedIds.push(outcome.committedRecord.id);
       // Root cause of a real contradiction found via human play 2026-08-29 (see
       // docs/collapse-indexing-race-findings-2026-08-29.md): this used to re-RETRIEVE
       // from AI Search right after the commit, gambling that indexing would keep up.
@@ -463,6 +523,7 @@ async function processAttempt(env, worldId, attempt) {
       const height = await nextHeight(env, worldId);
       const text = `边界：这件事依赖一个无法确定的事实（${classification.missingAbout || "未指明"}），陪审团没有放行编剧提出的补全。`;
       log.stages.push({stage: "BOUNDARY", height, text});
+      await waitForIndexing(env, worldId, committedIds);
       return {...log, height, kind: "boundary", narration: text};
     }
   }
@@ -482,7 +543,8 @@ async function processAttempt(env, worldId, attempt) {
       if (classification.outcome === "plausible") {
         const cleanFact = await writeFact(env, attempt, verdictText);
         committedFactText = cleanFact !== "" ? cleanFact : `结果：${attempt} —— ${verdictText}`;
-        await append(env, worldId, committedFactText, groundResult.entities, height, "attempt-outcome");
+        const record = await append(env, worldId, committedFactText, groundResult.entities, height, "attempt-outcome");
+        committedIds.push(record.id);
       }
     })(),
     draftAndCheck(env, propositions, attempt, verdictText)
@@ -490,6 +552,7 @@ async function processAttempt(env, worldId, attempt) {
   log.stages.push({stage: "COMMIT", height, outcome: classification.outcome, committedFactText});
 
   const audited = await resolveDraftAudit(env, worldId, groundResult, propositions, attempt, verdictText, draftResult);
+  for (const c of (audited.collapses ?? [])) if (c.committed) committedIds.push(c.committedRecord.id);
   log.stages.push({stage: "NARRATE_AUDIT", output: {
     draft: audited.draft, extractedClaims: audited.claims,
     checks: audited.checks.map(c => ({claim: c.claim, reachable: c.reachable, verdictText: c.verdictText})),
@@ -497,6 +560,8 @@ async function processAttempt(env, worldId, attempt) {
     regenerated: audited.regenerated, final: audited.text
   }});
 
+  const indexWait = await waitForIndexing(env, worldId, committedIds);
+  log.stages.push({stage: "INDEX_WAIT", waitedMs: indexWait.waitedMs, allIndexed: indexWait.allIndexed});
   return {...log, height, kind: classification.outcome, narration: audited.text};
 }
 
@@ -523,7 +588,7 @@ export default {
 
     if (!match) {
       return new Response(
-        "sr2-pipeline-worker\nGET  /w/<worldId>            网页入口\nPOST /w/<worldId>/seed        清空并重新播种这个世界\nPOST /w/<worldId>/attempt     {attempt: string}\nGET  /w/<worldId>/state       当前世界是否已初始化\n",
+        "sr2-pipeline-worker\nGET  /w/<worldId>            网页入口\nPOST /w/<worldId>/seed        清空并重新播种这个世界\nPOST /w/<worldId>/attempt     {attempt: string}\nGET  /w/<worldId>/state       当前世界是否已初始化\nGET  /w/<worldId>/facts       当前世界记住的全部命题，按 Height 排序（调试用）\n",
         {status: 200, headers: {"content-type": "text/plain; charset=utf-8"}}
       );
     }
@@ -548,6 +613,14 @@ export default {
         // even though itemCount already matched the seeded count).
         const pendingCount = items.filter(i => i.status !== "completed" && i.status !== "error").length;
         return Response.json({worldId, itemCount: items.length, pendingCount, initialized: items.length > 0 && pendingCount === 0});
+      } catch (error) {
+        return jsonError(String(error), 502);
+      }
+    }
+
+    if (sub === "/facts" && request.method === "GET") {
+      try {
+        return Response.json({worldId, facts: await getWorldFacts(env, worldId)});
       } catch (error) {
         return jsonError(String(error), 502);
       }

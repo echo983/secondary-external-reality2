@@ -28,14 +28,22 @@ export function renderPage(worldId) {
   #resetBtn { background: transparent; color: #b91c1c; border: 1px solid #b91c1c; padding: 4px 10px; font-size: 12px; }
   #status { font-size: 13px; opacity: 0.6; padding: 8px 0; }
   #initGate { text-align: center; padding: 60px 20px; }
+  .narration.error { opacity: 0.7; border: 1px dashed #b91c1c; }
+  #factsBtn { background: transparent; color: CanvasText; border: 1px solid color-mix(in srgb, CanvasText 25%, transparent); padding: 4px 10px; font-size: 12px; }
+  #factsPanel { display: none; margin-bottom: 90px; font-size: 13px; }
+  #factsPanel table { width: 100%; border-collapse: collapse; }
+  #factsPanel th, #factsPanel td { text-align: left; padding: 4px 6px; border-bottom: 1px solid color-mix(in srgb, CanvasText 10%, transparent); vertical-align: top; }
+  #factsPanel th { opacity: 0.6; font-weight: 500; }
+  #factsPanel td.h { white-space: nowrap; opacity: 0.6; }
 </style>
 </head>
 <body>
-<h1>世界：${safeWorldId} <button id="resetBtn">重置世界</button></h1>
+<h1>世界：${safeWorldId} <button id="factsBtn">世界记忆</button> <button id="resetBtn">重置世界</button></h1>
 <div id="initGate" style="display:none;">
   <p>这个世界还没有初始化。</p>
   <button id="initBtn">初始化世界（写入创世事实）</button>
 </div>
+<div id="factsPanel"></div>
 <div id="log"></div>
 <div id="status"></div>
 <div id="composer" style="display:none;">
@@ -53,6 +61,8 @@ const input = document.getElementById("input");
 const sendBtn = document.getElementById("sendBtn");
 const initBtn = document.getElementById("initBtn");
 const resetBtn = document.getElementById("resetBtn");
+const factsBtn = document.getElementById("factsBtn");
+const factsPanel = document.getElementById("factsPanel");
 
 function addTurn(attempt, result) {
   const turn = document.createElement("div");
@@ -62,16 +72,44 @@ function addTurn(attempt, result) {
   a.textContent = attempt;
   turn.appendChild(a);
   const n = document.createElement("div");
-  n.className = "narration" + (result.kind === "boundary" ? " boundary" : "");
-  n.textContent = result.narration ?? result.error ?? "(无反馈)";
+  // A raw pipeline error (result.error set, no narration) is not the same as an
+  // in-world boundary rejection -- don't show the player a stack-trace-shaped string
+  // as if it were world feedback, that breaks immersion for no reason and isn't
+  // actionable to them anyway.
+  const isError = result.narration === undefined && result.error !== undefined;
+  n.className = "narration" + (result.kind === "boundary" ? " boundary" : "") + (isError ? " error" : "");
+  n.textContent = isError ? "这次结算失败了（模型调用异常），你的输入没有生效，世界状态没有变化，可以直接重试。" : (result.narration ?? "(无反馈)");
   turn.appendChild(n);
   const m = document.createElement("div");
   m.className = "meta";
-  m.textContent = "H" + (result.height ?? "?") + " · " + (result.kind ?? "error") + " · " + Math.round((result.totalElapsedMs ?? 0) / 1000) + "s";
+  m.textContent = isError
+    ? "失败 · " + Math.round((result.totalElapsedMs ?? 0) / 1000) + "s"
+    : "H" + (result.height ?? "?") + " · " + (result.kind ?? "?") + " · " + Math.round((result.totalElapsedMs ?? 0) / 1000) + "s";
   turn.appendChild(m);
   log.appendChild(turn);
   window.scrollTo(0, document.body.scrollHeight);
 }
+
+function escapeHtml(s) {
+  const map = {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"};
+  return s.replace(/[&<>"]/g, c => map[c]);
+}
+
+let factsVisible = false;
+async function toggleFacts() {
+  factsVisible = !factsVisible;
+  if (!factsVisible) { factsPanel.style.display = "none"; return; }
+  factsPanel.style.display = "block";
+  factsPanel.textContent = "加载中…";
+  const res = await fetch(base + "/facts");
+  const body = await res.json();
+  if (body.error) { factsPanel.textContent = "加载失败：" + body.error; return; }
+  const rows = body.facts.map(f =>
+    "<tr><td class='h'>H" + (f.height ?? "?") + "</td><td>" + escapeHtml(f.text ?? ("(还未索引完成: " + f.status + ")")) + "</td></tr>"
+  ).join("");
+  factsPanel.innerHTML = "<table><tr><th>Height</th><th>命题</th></tr>" + rows + "</table>";
+}
+factsBtn.onclick = toggleFacts;
 
 // itemCount alone doesn't mean the world is usable yet -- AI Search indexing takes
 // anywhere from ~1s to 2+ minutes per item in practice, and an /attempt sent before

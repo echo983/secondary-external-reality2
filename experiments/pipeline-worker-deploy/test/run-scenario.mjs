@@ -31,28 +31,42 @@ for (;;) {
   await new Promise(r => setTimeout(r, 5_000));
 }
 
+// Turns can legitimately take 200s+ (Collapse rounds, now plus the indexing wait --
+// see docs/collapse-indexing-race-findings-2026-08-29.md), and this local client
+// fetch has no retry unlike the Worker's own outbound calls -- a single transient
+// network blip over that long a connection used to just kill the whole scenario run.
+// Confirmed 2026-08-29: retrying the exact same request immediately succeeded both
+// times a "fetch failed" happened, so this is a client-side gap, not a server issue.
+async function postAttempt(attempt, attempts_ = 3) {
+  let lastError;
+  for (let i = 0; i < attempts_; i++) {
+    try {
+      const res = await fetch(`${base}/attempt`, {
+        method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({attempt})
+      });
+      return await res.json();
+    } catch (error) {
+      lastError = error;
+      console.log(`  (client fetch failed, attempt ${i + 1}/${attempts_}: ${error})`);
+    }
+  }
+  return {error: String(lastError)};
+}
+
 const results = [];
 for (const [index, attempt] of attempts.entries()) {
   console.log(`\n[${index + 1}/${attempts.length}] ${attempt}`);
   const startedAt = Date.now();
-  try {
-    const res = await fetch(`${base}/attempt`, {
-      method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({attempt})
-    });
-    const result = await res.json();
-    if (result.error) {
-      console.log(`  WORKER ERROR: ${result.error}`);
-    }
-    for (const stage of result.stages ?? []) {
-      console.log(`  ${stage.stage}:`, JSON.stringify(stage.output ?? stage.text ?? "").slice(0, 200));
-    }
-    console.log(`  => H${result.height} [${result.kind}] 反馈: ${result.narration}`);
-    console.log(`  (worker totalElapsedMs=${result.totalElapsedMs}, client elapsedMs=${Date.now() - startedAt})`);
-    results.push(result);
-  } catch (error) {
-    console.log("  ERROR:", String(error));
-    results.push({attempt, error: String(error)});
+  const result = await postAttempt(attempt);
+  if (result.error) {
+    console.log(`  WORKER ERROR: ${result.error}`);
   }
+  for (const stage of result.stages ?? []) {
+    console.log(`  ${stage.stage}:`, JSON.stringify(stage.output ?? stage.text ?? "").slice(0, 200));
+  }
+  console.log(`  => H${result.height} [${result.kind}] 反馈: ${result.narration}`);
+  console.log(`  (worker totalElapsedMs=${result.totalElapsedMs}, client elapsedMs=${Date.now() - startedAt})`);
+  results.push(result);
 }
 
 await mkdir(new URL("../results/", import.meta.url), {recursive: true});
