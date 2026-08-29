@@ -32,8 +32,15 @@ export async function callModel({system, user, jsonSchema, maxTokens = 1200, tim
           headers: {Authorization: `Bearer ${token}`, "Content-Type": "application/json"},
           body: JSON.stringify({
             messages: [{role: "system", content: system}, {role: "user", content: user}],
+            // reasoning_effort: "low" is the real, documented lever (values: low/medium/
+            // xhigh-default; "high" is invalid and 400s). The `reasoning:
+            // {enable_thinking: false}` field this project sent since the start is NOT
+            // a real parameter for this model -- confirmed 2026-08-29 via a controlled
+            // A/B (docs/reasoning-token-diagnosis-findings-2026-08-29.md): 3/4 test
+            // scenarios produced byte-identical completion_tokens/reasoning length with
+            // and without it. Removed rather than kept "just in case" -- it does
+            // nothing and implies a control that doesn't exist.
             temperature: 0, reasoning_effort: "low", max_completion_tokens: maxTokens,
-            reasoning: {enable_thinking: false},
             ...(jsonSchema === undefined ? {} : {response_format: {type: "json_schema", json_schema: jsonSchema}})
           }),
           signal: AbortSignal.timeout(timeoutMs)

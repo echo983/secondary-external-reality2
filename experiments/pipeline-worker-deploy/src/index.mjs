@@ -37,6 +37,26 @@ import {REACHABILITY_SYSTEM_PROMPT, buildUserPrompt as buildReachabilityUserProm
 const MODEL = "@cf/qwen/qwen3.8-27b";
 const HEIGHT_TAG = /\/h(\d+)-/;
 
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+// Retry-on-transient-failure, ported back from pipeline-integration-slice/client.mjs's
+// REST fetch retry loop -- dropped when this Worker was first written (see "diagnosed:
+// this port dropped..." in docs/pipeline-worker-deploy-findings-2026-08-29.md, turn 1's
+// bare `TypeError: fetch failed`), restored here as a single shared helper used by both
+// the model call and every AI Search REST call.
+async function withRetry(fn, {attempts = 4, label = "call"} = {}) {
+  let lastError;
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+      if (attempt < attempts - 1) await delay(1_000 * (2 ** attempt));
+    }
+  }
+  throw new Error(`${label} failed after ${attempts} attempts: ${lastError}`);
+}
+
 // ---- model transport (Workers AI binding) ----
 
 function extractText(body) {
@@ -49,12 +69,14 @@ function extractText(body) {
 }
 
 async function callModel(env, {system, user, jsonSchema, maxTokens = 1800}) {
-  const body = await env.AI.run(MODEL, {
+  const body = await withRetry(() => env.AI.run(MODEL, {
     messages: [{role: "system", content: system}, {role: "user", content: user}],
+    // reasoning_effort: "low" is the real, documented lever for this model (values:
+    // low/medium/xhigh-default). `reasoning: {enable_thinking: false}` is not a real
+    // parameter -- removed, see docs/reasoning-token-diagnosis-findings-2026-08-29.md.
     temperature: 0, reasoning_effort: "low", max_completion_tokens: maxTokens,
-    reasoning: {enable_thinking: false},
     ...(jsonSchema === undefined ? {} : {response_format: {type: "json_schema", json_schema: jsonSchema}})
-  });
+  }), {label: "AI.run"});
   return extractText(body).trim();
 }
 
@@ -65,10 +87,12 @@ function aiSearchBase(env) {
 }
 
 async function aiSearchListItems(env) {
-  const res = await fetch(`${aiSearchBase(env)}/items?per_page=50`, {headers: {Authorization: `Bearer ${env.CF_API_TOKEN}`}});
-  const body = await res.json();
-  if (!body.success) throw new Error(`list items failed: ${JSON.stringify(body.errors)}`);
-  return body.result;
+  return withRetry(async () => {
+    const res = await fetch(`${aiSearchBase(env)}/items?per_page=50`, {headers: {Authorization: `Bearer ${env.CF_API_TOKEN}`}});
+    const body = await res.json();
+    if (!body.success) throw new Error(`list items failed: ${JSON.stringify(body.errors)}`);
+    return body.result;
+  }, {label: "list items"});
 }
 
 async function aiSearchDeleteAllItems(env) {
@@ -80,23 +104,27 @@ async function aiSearchDeleteAllItems(env) {
 }
 
 async function aiSearchUploadItem(env, key, text) {
-  const form = new FormData();
-  form.append("file", new Blob([text], {type: "text/plain"}), key);
-  const res = await fetch(`${aiSearchBase(env)}/items`, {method: "POST", headers: {Authorization: `Bearer ${env.CF_API_TOKEN}`}, body: form});
-  const body = await res.json();
-  if (!body.success) throw new Error(`upload ${key} failed: ${JSON.stringify(body.errors)}`);
-  return body.result;
+  return withRetry(async () => {
+    const form = new FormData();
+    form.append("file", new Blob([text], {type: "text/plain"}), key);
+    const res = await fetch(`${aiSearchBase(env)}/items`, {method: "POST", headers: {Authorization: `Bearer ${env.CF_API_TOKEN}`}, body: form});
+    const body = await res.json();
+    if (!body.success) throw new Error(`upload ${key} failed: ${JSON.stringify(body.errors)}`);
+    return body.result;
+  }, {label: `upload ${key}`});
 }
 
 async function aiSearchSearch(env, query) {
-  const res = await fetch(`${aiSearchBase(env)}/search`, {
-    method: "POST",
-    headers: {Authorization: `Bearer ${env.CF_API_TOKEN}`, "Content-Type": "application/json"},
-    body: JSON.stringify({query})
-  });
-  const body = await res.json();
-  if (!body.success) throw new Error(`search "${query}" failed: ${JSON.stringify(body.errors)}`);
-  return body.result.chunks;
+  return withRetry(async () => {
+    const res = await fetch(`${aiSearchBase(env)}/search`, {
+      method: "POST",
+      headers: {Authorization: `Bearer ${env.CF_API_TOKEN}`, "Content-Type": "application/json"},
+      body: JSON.stringify({query})
+    });
+    const body = await res.json();
+    if (!body.success) throw new Error(`search "${query}" failed: ${JSON.stringify(body.errors)}`);
+    return body.result.chunks;
+  }, {label: `search "${query}"`});
 }
 
 function parseHeightFromKey(key) {

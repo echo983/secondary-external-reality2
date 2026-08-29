@@ -21,6 +21,25 @@ import {
 
 const MODEL = "@cf/qwen/qwen3.8-27b";
 
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+// Retry-on-transient-failure, ported back from pipeline-integration-slice/client.mjs's
+// REST fetch retry loop -- dropped when this Worker was first written, restored here
+// after pipeline-worker-deploy hit a bare `TypeError: fetch failed` (see
+// docs/pipeline-worker-deploy-findings-2026-08-29.md).
+async function withRetry(fn, {attempts = 4, label = "call"} = {}) {
+  let lastError;
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+      if (attempt < attempts - 1) await delay(1_000 * (2 ** attempt));
+    }
+  }
+  throw new Error(`${label} failed after ${attempts} attempts: ${lastError}`);
+}
+
 function extractText(body) {
   if (typeof body?.response === "string") return body.response;
   if (typeof body?.result?.response === "string") return body.result.response;
@@ -31,14 +50,16 @@ function extractText(body) {
 }
 
 async function callModel(env, {system, user, jsonSchema, maxTokens = 1800}) {
-  const body = await env.AI.run(MODEL, {
+  const body = await withRetry(() => env.AI.run(MODEL, {
     messages: [{role: "system", content: system}, {role: "user", content: user}],
     temperature: 0,
+    // reasoning_effort: "low" is the real, documented lever for this model (values:
+    // low/medium/xhigh-default). `reasoning: {enable_thinking: false}` is not a real
+    // parameter -- removed, see docs/reasoning-token-diagnosis-findings-2026-08-29.md.
     reasoning_effort: "low",
     max_completion_tokens: maxTokens,
-    reasoning: {enable_thinking: false},
     ...(jsonSchema === undefined ? {} : {response_format: {type: "json_schema", json_schema: jsonSchema}})
-  });
+  }), {label: "AI.run"});
   return extractText(body).trim();
 }
 
@@ -59,16 +80,18 @@ async function runJurorsAndClerk(env, propositions, proposedFact) {
 
 async function searchAiSearch(env, query) {
   const startedAt = Date.now();
-  const response = await fetch(
-    `https://api.cloudflare.com/client/v4/accounts/${env.ACCOUNT_ID}/ai-search/instances/${env.AI_SEARCH_INSTANCE}/search`,
-    {
-      method: "POST",
-      headers: {Authorization: `Bearer ${env.CF_API_TOKEN}`, "Content-Type": "application/json"},
-      body: JSON.stringify({query})
-    }
-  );
-  const body = await response.json();
-  return {ok: response.ok, status: response.status, elapsedMs: Date.now() - startedAt, result: body.success ? body.result : body};
+  return withRetry(async () => {
+    const response = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${env.ACCOUNT_ID}/ai-search/instances/${env.AI_SEARCH_INSTANCE}/search`,
+      {
+        method: "POST",
+        headers: {Authorization: `Bearer ${env.CF_API_TOKEN}`, "Content-Type": "application/json"},
+        body: JSON.stringify({query})
+      }
+    );
+    const body = await response.json();
+    return {ok: response.ok, status: response.status, elapsedMs: Date.now() - startedAt, result: body.success ? body.result : body};
+  }, {label: `search "${query}"`});
 }
 
 export default {
