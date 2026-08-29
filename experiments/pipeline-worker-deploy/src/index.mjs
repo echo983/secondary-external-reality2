@@ -39,7 +39,25 @@ import {REACHABILITY_SYSTEM_PROMPT, buildUserPrompt as buildReachabilityUserProm
   from "../../reachability-inference-spike/prompts.mjs";
 import {renderPage} from "./page.mjs";
 
+// Default model for roles that need real reasoning/generation (ADJUDICATE, NARRATE,
+// Continuity Resolver, JUROR, CLAIM_EXTRACTOR, the reachability judge itself). Three
+// specific roles use a different, cheaper/faster model instead -- see MODEL_LIGHT and
+// MODEL_GROUND below, and docs/model-tier-spike-findings-2026-08-29.md for why: a real
+// A/B on labeled test cases showed GROUND holds accuracy on a same-family MoE model at
+// ~37% lower latency, and CLASSIFY/REACHABILITY_CLASSIFIER (reading an already-
+// generated verdict and picking a fixed label -- shallower than real generation) hold
+// perfect accuracy on a much smaller, much faster model. Both are Cloudflare-self-
+// hosted, per the loosened constraint in
+// docs/architecture-direction-consensus-2026-08-28.md section 13 -- never a runtime
+// fallback, each role's model is a fixed, tested choice.
 const MODEL = "@cf/qwen/qwen3.8-27b";
+const MODEL_GROUND = "@cf/qwen/qwen3-30b-a3b-fp8";
+// Plain "@cf/meta/llama-3.1-8b-instruct" works fine via REST but errors via the
+// env.AI.run() Workers binding this file actually uses -- the binding's model
+// resolver still points at a deprecated internal alias
+// (infire-llama-3.1-8b-instruct) for that id, confirmed 2026-08-29 in a real
+// deployed run. Trying the -fast variant, which also passed the REST smoke check.
+const MODEL_LIGHT_CLASSIFIER = "@cf/meta/llama-3.1-8b-instruct-fast";
 // Matches "-h<n>-" in the flat key format `worlds/<id>/<entity>-h<n>-<source>-...txt`
 // (dash-delimited, since folder filtering requires a flat one-level-per-world key --
 // see append()/seedWorld() below). None of entityRegistry's names contain "-h<digit>-".
@@ -72,17 +90,23 @@ function extractText(body) {
   throw new Error(`Workers AI binding response had no text (finish_reason=${choice?.finish_reason ?? "unknown"}): ${JSON.stringify(body)}`);
 }
 
-async function callModel(env, {system, user, jsonSchema, maxTokens = 1800}) {
+// model/reasoningEffort default to the reasoning-capable baseline; MODEL_LIGHT_CLASSIFIER
+// (llama-3.1-8b) doesn't support reasoning_effort, so callers targeting it pass
+// reasoningEffort: undefined explicitly to omit the param rather than send one it
+// doesn't understand.
+async function callModel(env, {system, user, jsonSchema, maxTokens = 1800, model = MODEL, reasoningEffort = "low"}) {
   const __t0 = Date.now();
-  const body = await withRetry(() => env.AI.run(MODEL, {
+  const body = await withRetry(() => env.AI.run(model, {
     messages: [{role: "system", content: system}, {role: "user", content: user}],
-    // reasoning_effort: "low" is the real, documented lever for this model (values:
-    // low/medium/xhigh-default). `reasoning: {enable_thinking: false}` is not a real
-    // parameter -- removed, see docs/reasoning-token-diagnosis-findings-2026-08-29.md.
-    temperature: 0, reasoning_effort: "low", max_completion_tokens: maxTokens,
+    // reasoning_effort: "low" is the real, documented lever for reasoning-capable
+    // models (values: low/medium/xhigh-default). `reasoning: {enable_thinking: false}`
+    // is not a real parameter -- removed, see
+    // docs/reasoning-token-diagnosis-findings-2026-08-29.md.
+    temperature: 0, max_completion_tokens: maxTokens,
+    ...(reasoningEffort ? {reasoning_effort: reasoningEffort} : {}),
     ...(jsonSchema === undefined ? {} : {response_format: {type: "json_schema", json_schema: jsonSchema}})
   }), {label: "AI.run"});
-  console.log(`[TIMING] callModel(${system.slice(0, 24).replace(/\n/g, " ")}...) took ${Date.now() - __t0}ms`);
+  console.log(`[TIMING] callModel(${model}, ${system.slice(0, 24).replace(/\n/g, " ")}...) took ${Date.now() - __t0}ms`);
   return extractText(body).trim();
 }
 
@@ -205,12 +229,20 @@ async function append(env, worldId, text, entities, atHeight, source) {
 // ---- roles (unchanged logic from pipeline-integration-slice/pipeline.mjs, transport swapped) ----
 
 async function ground(env, attempt) {
-  const raw = await callModel(env, {system: GROUND_SYSTEM_PROMPT, user: buildGroundUserPrompt(attempt, entityRegistry), jsonSchema: GROUND_JSON_SCHEMA, maxTokens: 1800});
+  const raw = await callModel(env, {
+    system: GROUND_SYSTEM_PROMPT, user: buildGroundUserPrompt(attempt, entityRegistry), jsonSchema: GROUND_JSON_SCHEMA, maxTokens: 1800,
+    model: MODEL_GROUND
+  });
   return JSON.parse(raw);
 }
 
 async function adjudicate(env, propositions, attempt) {
-  return callModel(env, {system: ADJUDICATE_SYSTEM_PROMPT, user: buildAdjudicateUserPrompt(propositions, attempt), maxTokens: 1800});
+  // Raised proactively alongside proposeCollapse/checkReachable, 2026-08-29: same
+  // class of role (reasoning-heavy, free-text verdict) as three others that have now
+  // each independently blown a 1800 budget on pure reasoning trace in real runs. Not
+  // yet observed failing here specifically, but the pattern across this role class is
+  // strong enough to not wait for a fourth individual failure before fixing it.
+  return callModel(env, {system: ADJUDICATE_SYSTEM_PROMPT, user: buildAdjudicateUserPrompt(propositions, attempt), maxTokens: 3000});
 }
 
 async function writeFact(env, attempt, verdictText) {
@@ -218,18 +250,27 @@ async function writeFact(env, attempt, verdictText) {
 }
 
 async function classifyOutcome(env, verdictText) {
-  const raw = await callModel(env, {system: OUTCOME_CLASSIFIER_SYSTEM_PROMPT, user: verdictText, jsonSchema: OUTCOME_CLASSIFIER_JSON_SCHEMA, maxTokens: 1500});
+  const raw = await callModel(env, {
+    system: OUTCOME_CLASSIFIER_SYSTEM_PROMPT, user: verdictText, jsonSchema: OUTCOME_CLASSIFIER_JSON_SCHEMA, maxTokens: 800,
+    model: MODEL_LIGHT_CLASSIFIER, reasoningEffort: undefined
+  });
   return JSON.parse(raw);
 }
 
 async function proposeCollapse(env, propositions, attempt, missingAbout) {
-  return callModel(env, {system: CONTINUITY_RESOLVER_SYSTEM_PROMPT, user: buildContinuityResolverUserPrompt(propositions, attempt, missingAbout), maxTokens: 1800});
+  // 1800 observed fully consumed by reasoning trace alone (zero content,
+  // finish_reason=length) in a real /attempt call 2026-08-29, arguing at length over
+  // whether a candidate completion contradicts an established fact. Same class of
+  // issue as extractClaims -- see docs/reasoning-token-diagnosis-findings-2026-08-29.md.
+  return callModel(env, {system: CONTINUITY_RESOLVER_SYSTEM_PROMPT, user: buildContinuityResolverUserPrompt(propositions, attempt, missingAbout), maxTokens: 3000});
 }
 
 async function runJurorsAndClerk(env, propositions, proposedFact) {
+  // Raised proactively alongside adjudicate() -- same reasoning-heavy-role class, see
+  // that comment.
   const verdicts = await Promise.all([1, 2, 3].map(() =>
-    callModel(env, {system: JUROR_SYSTEM_PROMPT, user: buildJurorUserPrompt(propositions, proposedFact), maxTokens: 1800})));
-  const clerkRaw = await callModel(env, {system: CLERK_SYSTEM_PROMPT, user: buildClerkUserPrompt(propositions, proposedFact, verdicts), jsonSchema: CLERK_JSON_SCHEMA, maxTokens: 1800});
+    callModel(env, {system: JUROR_SYSTEM_PROMPT, user: buildJurorUserPrompt(propositions, proposedFact), maxTokens: 3000})));
+  const clerkRaw = await callModel(env, {system: CLERK_SYSTEM_PROMPT, user: buildClerkUserPrompt(propositions, proposedFact, verdicts), jsonSchema: CLERK_JSON_SCHEMA, maxTokens: 3000});
   return {verdicts, clerk: JSON.parse(clerkRaw)};
 }
 
@@ -256,8 +297,19 @@ async function extractClaims(env, propositions, narrationText) {
 }
 
 async function checkReachable(env, propositions, claim) {
-  const verdictText = await callModel(env, {system: REACHABILITY_SYSTEM_PROMPT, user: buildReachabilityUserPrompt(propositions.map(p => p.text), claim), maxTokens: 1800});
-  const classifiedRaw = await callModel(env, {system: REACHABILITY_CLASSIFIER_SYSTEM_PROMPT, user: verdictText, jsonSchema: REACHABILITY_CLASSIFIER_JSON_SCHEMA, maxTokens: 1200});
+  // The judge call itself is real inference (multi-hop reasoning over propositions) --
+  // stays on the baseline model. Only the classifier that reads the judge's own
+  // free-text verdict and picks true/false moves to the lighter model, same as
+  // classifyOutcome above.
+  // 1800 observed fully consumed by reasoning trace alone (zero content,
+  // finish_reason=length) in a real /attempt call 2026-08-29, arguing at length over
+  // a compression/size comparison. Same class of issue as extractClaims -- see
+  // docs/reasoning-token-diagnosis-findings-2026-08-29.md.
+  const verdictText = await callModel(env, {system: REACHABILITY_SYSTEM_PROMPT, user: buildReachabilityUserPrompt(propositions.map(p => p.text), claim), maxTokens: 3000});
+  const classifiedRaw = await callModel(env, {
+    system: REACHABILITY_CLASSIFIER_SYSTEM_PROMPT, user: verdictText, jsonSchema: REACHABILITY_CLASSIFIER_JSON_SCHEMA, maxTokens: 600,
+    model: MODEL_LIGHT_CLASSIFIER, reasoningEffort: undefined
+  });
   return {claim, verdictText, reachable: JSON.parse(classifiedRaw).reachable};
 }
 

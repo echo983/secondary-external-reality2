@@ -1,0 +1,740 @@
+{
+  "generatedAt": "2026-08-29T14:23:19.333Z",
+  "models": [
+    "@cf/qwen/qwen3.8-27b",
+    "@cf/qwen/qwen3-30b-a3b-fp8",
+    "@cf/meta/llama-3.1-8b-instruct"
+  ],
+  "suites": [
+    {
+      "name": "GROUND",
+      "models": [
+        {
+          "modelId": "@cf/qwen/qwen3.8-27b",
+          "label": "baseline (current)",
+          "correctCount": 8,
+          "total": 8,
+          "avgLatencyMs": 4072,
+          "results": [
+            {
+              "case": 0,
+              "correct": true,
+              "latencyMs": 3867,
+              "parsed": {
+                "entities": [
+                  "blanket-1"
+                ],
+                "unbound": []
+              }
+            },
+            {
+              "case": 1,
+              "correct": true,
+              "latencyMs": 4438,
+              "parsed": {
+                "entities": [
+                  "door-1"
+                ],
+                "unbound": []
+              }
+            },
+            {
+              "case": 2,
+              "correct": true,
+              "latencyMs": 4411,
+              "parsed": {
+                "entities": [],
+                "unbound": [
+                  "五斗柜",
+                  "枪"
+                ]
+              }
+            },
+            {
+              "case": 3,
+              "correct": true,
+              "latencyMs": 4313,
+              "parsed": {
+                "entities": [
+                  "self",
+                  "bed-1"
+                ],
+                "unbound": []
+              }
+            },
+            {
+              "case": 4,
+              "correct": true,
+              "latencyMs": 4300,
+              "parsed": {
+                "entities": [
+                  "floor-1"
+                ],
+                "unbound": []
+              }
+            },
+            {
+              "case": 5,
+              "correct": true,
+              "latencyMs": 4845,
+              "parsed": {
+                "entities": [
+                  "blanket-1",
+                  "door-1"
+                ],
+                "unbound": []
+              }
+            },
+            {
+              "case": 6,
+              "correct": true,
+              "latencyMs": 3961,
+              "parsed": {
+                "entities": [],
+                "unbound": [
+                  "窗户"
+                ]
+              }
+            },
+            {
+              "case": 7,
+              "correct": true,
+              "latencyMs": 2441,
+              "parsed": {
+                "entities": [
+                  "blanket-1",
+                  "bed-1"
+                ],
+                "unbound": []
+              }
+            }
+          ]
+        },
+        {
+          "modelId": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "label": "candidate: qwen3-30b-a3b (MoE, 3B active)",
+          "correctCount": 8,
+          "total": 8,
+          "avgLatencyMs": 2576,
+          "results": [
+            {
+              "case": 0,
+              "correct": true,
+              "latencyMs": 1432,
+              "parsed": {
+                "entities": [
+                  "blanket-1"
+                ],
+                "unbound": []
+              }
+            },
+            {
+              "case": 1,
+              "correct": true,
+              "latencyMs": 2093,
+              "parsed": {
+                "entities": [
+                  "door-1"
+                ],
+                "unbound": []
+              }
+            },
+            {
+              "case": 2,
+              "correct": true,
+              "latencyMs": 3334,
+              "parsed": {
+                "entities": [],
+                "unbound": [
+                  "五斗柜",
+                  "枪"
+                ]
+              }
+            },
+            {
+              "case": 3,
+              "correct": true,
+              "latencyMs": 2578,
+              "parsed": {
+                "entities": [
+                  "self",
+                  "bed-1"
+                ],
+                "unbound": []
+              }
+            },
+            {
+              "case": 4,
+              "correct": true,
+              "latencyMs": 2164,
+              "parsed": {
+                "entities": [
+                  "floor-1"
+                ],
+                "unbound": []
+              }
+            },
+            {
+              "case": 5,
+              "correct": true,
+              "latencyMs": 4205,
+              "parsed": {
+                "entities": [
+                  "blanket-1",
+                  "door-1"
+                ],
+                "unbound": []
+              }
+            },
+            {
+              "case": 6,
+              "correct": true,
+              "latencyMs": 1935,
+              "parsed": {
+                "entities": [],
+                "unbound": [
+                  "窗户"
+                ]
+              }
+            },
+            {
+              "case": 7,
+              "correct": true,
+              "latencyMs": 2864,
+              "parsed": {
+                "entities": [
+                  "blanket-1",
+                  "bed-1"
+                ],
+                "unbound": []
+              }
+            }
+          ]
+        },
+        {
+          "modelId": "@cf/meta/llama-3.1-8b-instruct",
+          "label": "calibration floor: llama-3.1-8b (non-Qwen, smaller)",
+          "correctCount": 3,
+          "total": 8,
+          "avgLatencyMs": 308,
+          "results": [
+            {
+              "case": 0,
+              "correct": true,
+              "latencyMs": 307,
+              "parsed": {
+                "entities": [
+                  "blanket-1"
+                ],
+                "unbound": []
+              }
+            },
+            {
+              "case": 1,
+              "correct": false,
+              "latencyMs": 367,
+              "parsed": {
+                "entities": [
+                  "门"
+                ],
+                "unbound": []
+              }
+            },
+            {
+              "case": 2,
+              "correct": false,
+              "latencyMs": 326,
+              "parsed": {
+                "entities": [
+                  "五斗柜"
+                ],
+                "unbound": []
+              }
+            },
+            {
+              "case": 3,
+              "correct": false,
+              "latencyMs": 322,
+              "parsed": {
+                "entities": [
+                  "bed-1"
+                ],
+                "unbound": []
+              }
+            },
+            {
+              "case": 4,
+              "correct": true,
+              "latencyMs": 327,
+              "parsed": {
+                "entities": [
+                  "floor-1"
+                ],
+                "unbound": []
+              }
+            },
+            {
+              "case": 5,
+              "correct": false,
+              "latencyMs": 390,
+              "parsed": {
+                "entities": [
+                  "bedroom",
+                  "door-1",
+                  "blanket-1"
+                ],
+                "unbound": []
+              }
+            },
+            {
+              "case": 6,
+              "correct": true,
+              "latencyMs": 206,
+              "parsed": {
+                "entities": [],
+                "unbound": [
+                  "窗户"
+                ]
+              }
+            },
+            {
+              "case": 7,
+              "correct": false,
+              "latencyMs": 221,
+              "parsed": {
+                "entities": [
+                  "bed-1"
+                ],
+                "unbound": []
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CLASSIFY",
+      "models": [
+        {
+          "modelId": "@cf/qwen/qwen3.8-27b",
+          "label": "baseline (current)",
+          "correctCount": 8,
+          "total": 8,
+          "avgLatencyMs": 2545,
+          "results": [
+            {
+              "case": 0,
+              "correct": true,
+              "latencyMs": 1665,
+              "parsed": {
+                "missingAbout": "",
+                "outcome": "plausible"
+              }
+            },
+            {
+              "case": 1,
+              "correct": true,
+              "latencyMs": 1835,
+              "parsed": {
+                "missingAbout": "",
+                "outcome": "implausible"
+              }
+            },
+            {
+              "case": 2,
+              "correct": true,
+              "latencyMs": 6175,
+              "parsed": {
+                "missingAbout": "毛毯",
+                "outcome": "insufficient"
+              }
+            },
+            {
+              "case": 3,
+              "correct": true,
+              "latencyMs": 2276,
+              "parsed": {
+                "missingAbout": "",
+                "outcome": "plausible"
+              }
+            },
+            {
+              "case": 4,
+              "correct": true,
+              "latencyMs": 3093,
+              "parsed": {
+                "missingAbout": "",
+                "outcome": "implausible"
+              }
+            },
+            {
+              "case": 5,
+              "correct": true,
+              "latencyMs": 1885,
+              "parsed": {
+                "missingAbout": "桌子重量和玩家力量",
+                "outcome": "insufficient"
+              }
+            },
+            {
+              "case": 6,
+              "correct": true,
+              "latencyMs": 1910,
+              "parsed": {
+                "missingAbout": "",
+                "outcome": "plausible"
+              }
+            },
+            {
+              "case": 7,
+              "correct": true,
+              "latencyMs": 1521,
+              "parsed": {
+                "missingAbout": "",
+                "outcome": "implausible"
+              }
+            }
+          ]
+        },
+        {
+          "modelId": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "label": "candidate: qwen3-30b-a3b (MoE, 3B active)",
+          "correctCount": 8,
+          "total": 8,
+          "avgLatencyMs": 5829,
+          "results": [
+            {
+              "case": 0,
+              "correct": true,
+              "latencyMs": 3541,
+              "parsed": {
+                "missingAbout": "",
+                "outcome": "plausible"
+              }
+            },
+            {
+              "case": 1,
+              "correct": true,
+              "latencyMs": 3276,
+              "parsed": {
+                "missingAbout": "",
+                "outcome": "implausible"
+              }
+            },
+            {
+              "case": 2,
+              "correct": true,
+              "latencyMs": 4883,
+              "parsed": {
+                "missingAbout": "毛毯厚度",
+                "outcome": "insufficient"
+              }
+            },
+            {
+              "case": 3,
+              "correct": true,
+              "latencyMs": 2208,
+              "parsed": {
+                "missingAbout": "",
+                "outcome": "plausible"
+              }
+            },
+            {
+              "case": 4,
+              "correct": true,
+              "latencyMs": 23413,
+              "parsed": {
+                "missingAbout": "",
+                "outcome": "implausible"
+              }
+            },
+            {
+              "case": 5,
+              "correct": true,
+              "latencyMs": 3998,
+              "parsed": {
+                "missingAbout": "桌子重量, 玩家力量",
+                "outcome": "insufficient"
+              }
+            },
+            {
+              "case": 6,
+              "correct": true,
+              "latencyMs": 2045,
+              "parsed": {
+                "missingAbout": "",
+                "outcome": "plausible"
+              }
+            },
+            {
+              "case": 7,
+              "correct": true,
+              "latencyMs": 3264,
+              "parsed": {
+                "missingAbout": "",
+                "outcome": "implausible"
+              }
+            }
+          ]
+        },
+        {
+          "modelId": "@cf/meta/llama-3.1-8b-instruct",
+          "label": "calibration floor: llama-3.1-8b (non-Qwen, smaller)",
+          "correctCount": 8,
+          "total": 8,
+          "avgLatencyMs": 284,
+          "results": [
+            {
+              "case": 0,
+              "correct": true,
+              "latencyMs": 370,
+              "parsed": {
+                "missingAbout": "",
+                "outcome": "plausible"
+              }
+            },
+            {
+              "case": 1,
+              "correct": true,
+              "latencyMs": 310,
+              "parsed": {
+                "missingAbout": "",
+                "outcome": "implausible"
+              }
+            },
+            {
+              "case": 2,
+              "correct": true,
+              "latencyMs": 235,
+              "parsed": {
+                "missingAbout": "",
+                "outcome": "insufficient"
+              }
+            },
+            {
+              "case": 3,
+              "correct": true,
+              "latencyMs": 230,
+              "parsed": {
+                "missingAbout": "",
+                "outcome": "plausible"
+              }
+            },
+            {
+              "case": 4,
+              "correct": true,
+              "latencyMs": 303,
+              "parsed": {
+                "missingAbout": "",
+                "outcome": "implausible"
+              }
+            },
+            {
+              "case": 5,
+              "correct": true,
+              "latencyMs": 254,
+              "parsed": {
+                "missingAbout": "桌子重量,玩家力量",
+                "outcome": "insufficient"
+              }
+            },
+            {
+              "case": 6,
+              "correct": true,
+              "latencyMs": 252,
+              "parsed": {
+                "missingAbout": "",
+                "outcome": "plausible"
+              }
+            },
+            {
+              "case": 7,
+              "correct": true,
+              "latencyMs": 316,
+              "parsed": {
+                "missingAbout": "",
+                "outcome": "implausible"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "REACHABILITY_CLASSIFIER",
+      "models": [
+        {
+          "modelId": "@cf/qwen/qwen3.8-27b",
+          "label": "baseline (current)",
+          "correctCount": 6,
+          "total": 6,
+          "avgLatencyMs": 3493,
+          "results": [
+            {
+              "case": 0,
+              "correct": true,
+              "latencyMs": 3897,
+              "parsed": {
+                "reachable": true
+              }
+            },
+            {
+              "case": 1,
+              "correct": true,
+              "latencyMs": 1397,
+              "parsed": {
+                "reachable": false
+              }
+            },
+            {
+              "case": 2,
+              "correct": true,
+              "latencyMs": 1523,
+              "parsed": {
+                "reachable": true
+              }
+            },
+            {
+              "case": 3,
+              "correct": true,
+              "latencyMs": 1365,
+              "parsed": {
+                "reachable": false
+              }
+            },
+            {
+              "case": 4,
+              "correct": true,
+              "latencyMs": 11320,
+              "parsed": {
+                "reachable": true
+              }
+            },
+            {
+              "case": 5,
+              "correct": true,
+              "latencyMs": 1453,
+              "parsed": {
+                "reachable": false
+              }
+            }
+          ]
+        },
+        {
+          "modelId": "@cf/qwen/qwen3-30b-a3b-fp8",
+          "label": "candidate: qwen3-30b-a3b (MoE, 3B active)",
+          "correctCount": 6,
+          "total": 6,
+          "avgLatencyMs": 4144,
+          "results": [
+            {
+              "case": 0,
+              "correct": true,
+              "latencyMs": 4149,
+              "parsed": {
+                "reachable": true
+              }
+            },
+            {
+              "case": 1,
+              "correct": true,
+              "latencyMs": 5521,
+              "parsed": {
+                "reachable": false
+              }
+            },
+            {
+              "case": 2,
+              "correct": true,
+              "latencyMs": 3239,
+              "parsed": {
+                "reachable": true
+              }
+            },
+            {
+              "case": 3,
+              "correct": true,
+              "latencyMs": 2946,
+              "parsed": {
+                "reachable": false
+              }
+            },
+            {
+              "case": 4,
+              "correct": true,
+              "latencyMs": 4605,
+              "parsed": {
+                "reachable": true
+              }
+            },
+            {
+              "case": 5,
+              "correct": true,
+              "latencyMs": 4405,
+              "parsed": {
+                "reachable": false
+              }
+            }
+          ]
+        },
+        {
+          "modelId": "@cf/meta/llama-3.1-8b-instruct",
+          "label": "calibration floor: llama-3.1-8b (non-Qwen, smaller)",
+          "correctCount": 6,
+          "total": 6,
+          "avgLatencyMs": 187,
+          "results": [
+            {
+              "case": 0,
+              "correct": true,
+              "latencyMs": 202,
+              "parsed": {
+                "reachable": true
+              }
+            },
+            {
+              "case": 1,
+              "correct": true,
+              "latencyMs": 206,
+              "parsed": {
+                "reachable": false
+              }
+            },
+            {
+              "case": 2,
+              "correct": true,
+              "latencyMs": 183,
+              "parsed": {
+                "reachable": true
+              }
+            },
+            {
+              "case": 3,
+              "correct": true,
+              "latencyMs": 216,
+              "parsed": {
+                "reachable": false
+              }
+            },
+            {
+              "case": 4,
+              "correct": true,
+              "latencyMs": 140,
+              "parsed": {
+                "reachable": true
+              }
+            },
+            {
+              "case": 5,
+              "correct": true,
+              "latencyMs": 177,
+              "parsed": {
+                "reachable": false
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
