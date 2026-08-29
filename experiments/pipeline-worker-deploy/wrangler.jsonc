@@ -1,0 +1,12 @@
+{
+  "name": "sr2-pipeline-worker",
+  "main": "src/index.mjs",
+  "compatibility_date": "2026-08-01",
+  "ai": {
+    "binding": "AI"
+  },
+  "vars": {
+    "ACCOUNT_ID": "00f6c85f82f6297c8c0bef9460e013d9",
+    "AI_SEARCH_INSTANCE": "sr2-truth-store"
+  }
+}
