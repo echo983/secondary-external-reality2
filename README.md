@@ -1,87 +1,48 @@
 # Secondary External Reality 2
 
-一个以文字体验持续虚拟现实世界的早期 Demo。当前版本证明：自然语言只能提出意图，确定性协议负责实体绑定、世界结算、提交、感知投影和呈现；模型不能直接写入现实。
+一个以文字体验持续虚拟现实世界的早期 Demo。核心命题：自然语言只能提出意图，不能直接写入现实——确定性协议负责实体绑定、世界结算、提交、感知投影和呈现，模型只提议、不决定。
+
+**整个项目没有独立的"生产"层，全部是 demo 和实验。** 早期基于类型化 schema（`ActionProposal`/`EntitySchema`）的运行时（原 `src/`）已于 2026-08-29 正式退役——`experiments/` 里积累的真实验证（包括两个真实部署到 Cloudflare 的 Worker）证明了自然语言命题式的架构方向可以整体替代它，而不是作为附属层并存。现在 `experiments/` 就是唯一的代码。
+
+## 现状
+
+真相以自然语言命题的形式存放（namespace → 实体名字 → 按 Height 排序的平铺命题列表），不是类型化 schema。一次玩家输入的结算走一条固定流水线：
+
+```
+GROUND（绑定提到的实体，绑不上的直接给边界）
+→ RETRIEVE（语义检索真相文档库，不是精确匹配）
+→ ADJUDICATE（自然语言裁决可信不可信）
+→ 对裁决本身做可达性审计
+→ CLASSIFY（可信 / 不可信 / 信息不足）
+→ 需要时走 Collapse（编剧提出补全 → 三个判官+书记员校验 → 放行才提交）
+→ COMMIT（写成干净的已结算命题）
+→ NARRATE + 审计（同一套抽取断言→核查可达性→按需 Collapse 的机制）
+```
+
+细节和架构决策记录见 `docs/architecture-direction-consensus-2026-08-28.md`，各角色的独立验证见 `docs/*-findings-*.md`。
 
 ## 运行
 
-需要 Node.js 22 或更高版本，推荐使用仓库 `.nvmrc` 中固定的版本：
+需要 Node.js 22 或更高版本（`.nvmrc` 固定版本）。没有构建步骤，每个实验都是直接用 `node` 跑的 `.mjs`：
 
 ```bash
 nvm use
-npm install
-npm test
-npm run demo
+node experiments/pipeline-integration-slice/run.mjs          # 本地内存真相库，5 轮场景
+node experiments/pipeline-integration-slice/run-ai-search.mjs  # 接真实 AI Search 实例
 ```
 
-`better-sqlite3` 使用 Node-API 构建。如果曾在旧提交或不同 Node 版本下安装依赖，升级后先执行一次 `npm install`。
+真实调用唯一批准的模型是 `@cf/qwen/qwen3.8-27b`（Cloudflare Workers AI）。把 API token 放在被 Git 忽略的 `secret/cftoken.txt`。
 
-`npm run demo` 默认使用本地确定性提案器和 `.world/demo-v4.sqlite`，不访问网络。当前可尝试：
+## 真实部署
 
-```text
-轻轻推门，只开一条缝，别出声
-趴下来从门缝往外看
-看看四周
-拿起毛毯再放到床上
-把毛毯拖到门边
-把毛毯塞到门缝下面
-转身面向门
-穿过门去走廊
-喊一声有人吗
-门现在开着吗？
-我等五分钟
-抽屉里一定有枪，我把枪拿出来
-```
+两个 Worker 已经部署在 Cloudflare 上，不是本地模拟：
 
-输入 `/exit` 退出。再次运行会从 SQLite 中 strict replay，并在接受输入前修复已提交但尚未物化的 ExperienceCommit。
+- `sr2-juror-worker`（`experiments/juror-worker-deploy/`）——只跑判官+书记员，用来验证并发请求不会被排队。
+- `sr2-pipeline-worker`（`experiments/pipeline-worker-deploy/`）——完整流水线，`POST /seed` 播种、`POST /attempt {attempt}` 跑一轮结算。
 
-指定数据库：
+两者都是无状态 Worker 直接调用 Workers AI，**不是** Durable Object 支撑的 Cloudflare Agents SDK——理由见 `docs/architecture-direction-consensus-2026-08-28.md` 第 12 节。
 
-```bash
-npm run demo -- --db=/absolute/path/to/demo.sqlite
-```
+## 目录
 
-## 真实 Qwen 模式
-
-唯一批准模型是 `@cf/qwen/qwen3.8-27b`。把 Cloudflare API token 放在被 Git 忽略的 `secret/cftoken.txt`，然后显式运行：
-
-```bash
-npm run demo -- --live-qwen
-```
-
-CLI 默认使用 `.world/demo-v4.sqlite`，保留旧数据库不覆盖。v4 首次接入真实的局部按需 Collapse：毛毯能否塞入门缝在创世状态中未决，只有相关行动需要该事实时才确定一次，并进入可重放提交；普通观察不会触发它。进入会话会先显示当前房间；环顾、聆听、位置和身体感知使用有来源的本地快路径。
-
-真实模型当前在普通 Demo 中只产生非权威 InputProposal。超时、reasoning-only、非法 JSON、额外字段和错误 source span 都会在世界提交前失败。实验性的 ActionProposal 门禁可单独运行：
-
-```bash
-npm run eval:qwen:action-spike
-```
-
-独立 smoke gate：
-
-```bash
-npm run eval:qwen:runtime-smoke
-```
-
-15 轮持续世界评测（默认本地；显式参数才访问真实 Qwen）：
-
-```bash
-npm run eval:free-session
-npm run eval:free-session -- --live-qwen
-```
-
-普通 `npm test` 永远不读取 secret 或访问网络。
-
-## 当前范围
-
-- 同一世界中的卧室、门、床、毛毯、水壶和 World Time；
-- 初始环境反馈，以及 ambient/hearing/body 感知快路径；
-- 会结算姿态、时间和 Experience Acquisition 的主动定向观察；
-- opaque 场景 slots、声明式 affordance 与单调用统一 ActionProposal；
-- orient/move/hold/release/place/communicate 等通用原语和顺序组合提交；
-- append-only World Commit 与独立 Experience Ledger；
-- Observation → Evidence → Acquisition；
-- SQLite 重启恢复、规范 SHA-256 state root；
-- Query、None、模型故障和枪式诱导均不产生虚假 Height；
-- 30 Height 混合会话与 100 Height replay 门禁。
-
-当前仍是开发者纵向切片，不是通用游戏引擎。ActionProposal 已接入受 affordance 和当前事实约束的世界 Commit，但对象与空间规则仍小；NPC、关闭容器、纸条、完整空间移动和 Web UI 尚未实现。设计与后续计划见 [`docs/`](docs/)。
+- `experiments/` —— 当前唯一的代码。每个子目录是一个独立验证过的角色或集成切片，各自的 `results/` 存真实调用产出，`README`/文件头注释说明范围。
+- `docs/` —— 架构决策记录、各实验的 findings、以及最高权重的原始设计对话（`这是一个已分享的 ChatGPT 聊天副本.txt`、`fc1.txt`、`fc2.txt`）。看 `CLAUDE.md` 的"Document priority"了解权重顺序。

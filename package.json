@@ -7,25 +7,8 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "test": "npm run build && node --test dist/test/*.test.js",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "eval:qwen:runtime-smoke": "npm run build && node dist/scripts/qwen-runtime-smoke.js",
-    "eval:qwen:action-spike": "npm run build && node dist/scripts/qwen-action-proposal-spike.js",
-    "eval:free-session": "npm run build && node dist/scripts/free-session-eval.js",
-    "eval:qwen:phase8d-targeted": "npm run build && node dist/scripts/qwen-phase8d-targeted.js",
-    "export:session": "npm run build && node dist/scripts/export-session.js",
-    "demo": "npm run build && node dist/scripts/demo-cli.js",
     "eval:qwen:smoke": "node experiments/qwen-boundary/run.mjs --smoke",
     "eval:qwen:full": "node experiments/qwen-boundary/run.mjs",
     "eval:qwen:score": "node experiments/qwen-boundary/score.mjs"
-  },
-  "devDependencies": {
-    "@types/better-sqlite3": "^9.6.0",
-    "@types/node": "^26.4.0",
-    "typescript": "^7.0.2"
-  },
-  "dependencies": {
-    "better-sqlite3": "^13.0.3"
   }
 }
